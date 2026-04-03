@@ -1,65 +1,847 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { AnimatePresence, motion } from "framer-motion";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/ui/accordion";
+import { Button } from "@/ui/button";
+import { Card, CardContent } from "@/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/ui/dialog";
+import { Input } from "@/ui/input";
+import { Textarea } from "@/ui/textarea";
+import {
+  ArrowRight,
+  ChevronDown,
+  Clock,
+  Code2,
+  Cpu,
+  Eye,
+  Film,
+  Globe,
+  LogIn,
+  Menu,
+  MessageSquare,
+  Moon,
+  Send,
+  ShieldCheck,
+  Smartphone,
+  Star,
+  Sun,
+  TrendingUp,
+  X,
+} from "lucide-react";
+import { SiGithub, SiInstagram, SiX } from "react-icons/si";
+
+const LANGUAGES = [
+  { code: "EN", label: "English", flag: "🇺🇸" },
+  { code: "ES", label: "Español", flag: "🇪🇸" },
+  { code: "FR", label: "Français", flag: "🇫🇷" },
+];
+
+const FAQS = [
+  {
+    q: "What makes PlixBlog different from other tech blogs?",
+    a: "We treat every story like it deserves a graphic novel. Ink borders, halftone panels, and origin-story framing: tech journalism with a soul.",
+  },
+  {
+    q: "How often is new content published?",
+    a: "Daily issues drop every morning. Long-form origin stories land twice a week. You'll never run out of panels to read.",
+  },
+  {
+    q: "Can I contribute an article or tip?",
+    a: "Absolutely. Use the feedback form below or email us at tips@plixblog.com. We credit every contributor.",
+  },
+  {
+    q: "Is PlixBlog free to read?",
+    a: "The daily strip is always free. Premium long-form origin stories are available through a subscription, coming soon.",
+  },
+];
+
+const REVIEWS = [
+  {
+    name: "Kira Nakamura",
+    handle: "@kira_nx",
+    rating: 5,
+    text: "PlixBlog is the only tech blog my brain actually retains. The comic format makes complex topics feel like reading X-Men. Addicted.",
+    avatar: "KN",
+    avatarColor: "from-violet-600 to-indigo-700",
+  },
+  {
+    name: "Darius Osei",
+    handle: "@d_osei_dev",
+    rating: 5,
+    text: "Finally, tech journalism that has style. The halftone headers alone deserve a design award. Keep the issues coming.",
+    avatar: "DO",
+    avatarColor: "from-emerald-600 to-teal-700",
+  },
+  {
+    name: "Sofia Reyes",
+    handle: "@sofiatech",
+    rating: 4,
+    text: "The Origin Stories section is my Saturday morning ritual. The Crypto Mob piece? Outstanding. I sent it to everyone I know.",
+    avatar: "SR",
+    avatarColor: "from-rose-600 to-pink-700",
+  },
+];
+
+const NAV_ITEMS = [
+  { label: "Home", href: "#home" },
+  { label: "Blog", href: "#blog" },
+  { label: "About Us", href: "#about" },
+];
+
+const CATEGORIES = [
+  { icon: Cpu, name: "AI & Algorithms", desc: "The ghosts in the machine.", href: "#ai" },
+  { icon: Code2, name: "Code & Creativity", desc: "Building the digital frontier.", href: "#code" },
+  { icon: Smartphone, name: "Gadgets & Gear", desc: "Hardware that hits different.", href: "#gadgets" },
+  { icon: Film, name: "Entertainment", desc: "Pixels, polygons & pop culture.", href: "#entertainment" },
+  { icon: ShieldCheck, name: "Cybersecurity", desc: "Guarding the mainframe.", href: "#cybersecurity" },
+];
+
+const SIDE_STORIES = [
+  { title: "How 5G Was Built on a Lie", tag: "Expose", time: "8 MIN", color: "from-rose-900 to-red-600" },
+  { title: "The Secret Life of Server Farms", tag: "Infrastructure", time: "5 MIN", color: "from-blue-900 to-indigo-600" },
+  { title: "When Crypto Met The Mob", tag: "Investigation", time: "15 MIN", color: "from-purple-900 to-fuchsia-600" },
+];
+
+export default function Page() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
+  const [langOpen, setLangOpen] = useState(false);
+  const [currentLang, setCurrentLang] = useState("EN");
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [feedbackSent, setFeedbackSent] = useState(false);
+  const langRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const storedTheme = window.localStorage.getItem("plixblog-theme");
+    const isDark = storedTheme !== "light";
+    setDarkMode(isDark);
+    document.documentElement.classList.toggle("dark", isDark);
+    document.documentElement.classList.toggle("light", !isDark);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", darkMode);
+    document.documentElement.classList.toggle("light", !darkMode);
+    window.localStorage.setItem("plixblog-theme", darkMode ? "dark" : "light");
+  }, [darkMode]);
+
+  useEffect(() => {
+    function handleClick(event: MouseEvent) {
+      if (langRef.current && !langRef.current.contains(event.target as Node)) {
+        setLangOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  function handleFeedback(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setFeedbackSent(true);
+    window.setTimeout(() => setFeedbackSent(false), 4000);
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="min-h-screen overflow-x-hidden bg-background text-foreground transition-colors duration-300">
+      <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
+        <DialogContent className="max-w-md border-primary bg-card p-8 shadow-2xl comic-border">
+          <DialogHeader className="text-left">
+            <span className="font-bangers text-3xl logo-gradient">PLIXBLOG</span>
+            <DialogTitle className="mt-1 mb-1 font-bangers text-4xl">ENTER THE UNIVERSE</DialogTitle>
+            <DialogDescription className="font-oswald text-sm uppercase tracking-wide text-muted-foreground">
+              Sign in to your account
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              setLoginOpen(false);
+            }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <div>
+              <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
+                Email
+              </label>
+              <Input
+                type="email"
+                placeholder="hero@plixblog.com"
+                className="h-auto border-primary bg-background px-4 py-3 font-oswald text-lg comic-border"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
+                Password
+              </label>
+              <Input
+                type="password"
+                placeholder="********"
+                className="h-auto border-primary bg-background px-4 py-3 font-oswald text-lg comic-border"
+              />
+            </div>
+            <Button
+              type="submit"
+              className="mt-2 h-auto w-full bg-accent py-3 font-bangers text-2xl text-background hover:bg-primary comic-border"
+            >
+              LOGIN
+            </Button>
+            <p className="text-center font-oswald text-sm text-muted-foreground">
+              No account?{" "}
+              <a href="#" className="text-accent underline transition-colors hover:text-primary">
+                Join the universe
+              </a>
+            </p>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <header className="sticky top-0 z-50 border-b-[4px] border-primary bg-background/95 shadow-md backdrop-blur transition-colors duration-300">
+        <div className="container mx-auto flex h-20 items-center justify-between gap-4 px-4">
+          <Link href="/" className="cursor-pointer text-4xl tracking-wider drop-shadow-[2px_2px_0px_#5C6E6B] transition-opacity hover:opacity-80 font-bangers logo-gradient">
+            PLIXBLOG
+          </Link>
+
+          <nav className="hidden items-center gap-5 font-oswald text-base uppercase tracking-wide lg:flex">
+            {NAV_ITEMS.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                className="group relative whitespace-nowrap transition-colors hover:text-primary"
+              >
+                {item.label}
+                <span className="absolute -bottom-1 left-0 h-[3px] w-0 bg-accent transition-all group-hover:w-full" />
+              </a>
+            ))}
+          </nav>
+
+          <div className="hidden shrink-0 items-center gap-2 md:flex">
+            <div ref={langRef} className="relative">
+              <button
+                onClick={() => setLangOpen((open) => !open)}
+                className="flex items-center gap-1 px-3 py-2 font-oswald text-sm uppercase transition-all hover:border-accent hover:text-accent comic-border"
+              >
+                <Globe size={15} /> {currentLang}
+                <ChevronDown size={13} className={`transition-transform ${langOpen ? "rotate-180" : ""}`} />
+              </button>
+              <AnimatePresence>
+                {langOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-full z-50 mt-1 w-36 bg-card shadow-lg comic-border"
+                  >
+                    {LANGUAGES.map((language) => (
+                      <button
+                        key={language.code}
+                        onClick={() => {
+                          setCurrentLang(language.code);
+                          setLangOpen(false);
+                        }}
+                        className={`flex w-full items-center gap-2 px-4 py-2 text-left font-oswald text-sm uppercase transition-colors hover:bg-primary/20 hover:text-primary ${
+                          currentLang === language.code ? "text-accent" : ""
+                        }`}
+                      >
+                        <span>{language.flag}</span>
+                        {language.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            <button
+              onClick={() => setDarkMode((mode) => !mode)}
+              className="p-2 transition-all hover:border-accent hover:text-accent comic-border"
+              aria-label="Toggle theme"
+            >
+              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <Button
+              variant="ghost"
+              onClick={() => setLoginOpen(true)}
+              className="h-auto border-primary px-4 py-2 font-bangers text-lg hover:border-accent hover:bg-transparent hover:text-accent comic-border"
+            >
+              <LogIn size={16} /> LOGIN
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-2 md:hidden">
+            <button onClick={() => setDarkMode((mode) => !mode)} className="p-2 text-primary" aria-label="Toggle theme">
+              {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            <button className="text-primary" onClick={() => setMobileMenuOpen((open) => !open)}>
+              {mobileMenuOpen ? <X size={30} /> : <Menu size={30} />}
+            </button>
+          </div>
         </div>
+
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden border-b-4 border-primary bg-card md:hidden"
+            >
+              <nav className="flex flex-col gap-3 p-4 font-oswald text-xl uppercase">
+                {NAV_ITEMS.map((item) => (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    className="border-b border-secondary/30 pb-3 transition-colors hover:text-primary"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item.label}
+                  </a>
+                ))}
+                <div className="mt-2 flex gap-3">
+                  {LANGUAGES.map((language) => (
+                    <button
+                      key={language.code}
+                      onClick={() => setCurrentLang(language.code)}
+                      className={`px-3 py-1 font-oswald text-sm transition-all comic-border ${
+                        currentLang === language.code ? "bg-primary text-background" : "hover:text-primary"
+                      }`}
+                    >
+                      {language.code}
+                    </button>
+                  ))}
+                </div>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setLoginOpen(true);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="mt-1 h-auto justify-start border-secondary px-4 py-2 font-bangers text-2xl hover:bg-transparent hover:text-accent comic-border-secondary"
+                >
+                  <LogIn size={20} /> LOGIN
+                </Button>
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
+
+      <main>
+        <section id="home" className="container mx-auto px-4 py-12 md:py-16">
+          <motion.div
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6 }}
+            className="relative overflow-hidden bg-card p-4 md:p-8 comic-border halftone-bg"
+          >
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20" />
+            <div className="relative z-10 flex flex-col items-center gap-8 md:flex-row">
+              <div className="flex-1 space-y-5">
+                <div className="inline-block -rotate-2 bg-primary px-4 py-1 font-bangers text-xl text-background comic-border-secondary">
+                  DAILY ISSUE #402
+                </div>
+                <h1 className="font-bangers text-6xl leading-none uppercase drop-shadow-[4px_4px_0px_hsl(var(--secondary))] md:text-8xl">
+                  The Silicon <br />
+                  <span className="text-accent">Awakening</span>
+                </h1>
+                <div className="inline-block max-w-lg p-4 font-oswald text-xl text-foreground md:p-5 speech-bubble">
+                  &quot;AI chips are eating the world and we&apos;ve got the full origin story inside.&quot;
+                </div>
+                <div className="pt-4">
+                  <Button
+                    asChild
+                    className="h-auto bg-accent px-8 py-4 font-bangers text-2xl text-background transition-all hover:-translate-y-2 hover:rotate-1 hover:bg-accent hover:shadow-lg comic-border"
+                  >
+                    <a href="#top-story">
+                      READ THE FULL STRIP <ArrowRight size={22} />
+                    </a>
+                  </Button>
+                </div>
+              </div>
+              <div className="w-full flex-1">
+                <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden bg-gradient-to-tr from-indigo-900 via-primary/50 to-accent md:aspect-[4/3] comic-border-accent">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                    className="flex h-32 w-32 items-center justify-center rounded-lg border-[8px] border-background/50 md:h-64 md:w-64"
+                  >
+                    <div className="h-16 w-16 rounded-full bg-accent/80 blur-xl md:h-32 md:w-32" />
+                  </motion.div>
+                  <div className="pointer-events-none absolute inset-0 z-10 border-[16px] border-card/20" />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </section>
+
+        <section id="blog" className="container mx-auto px-4 py-10">
+          <div className="mb-6 flex items-center gap-4">
+            <TrendingUp size={28} className="shrink-0 text-accent" />
+            <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">TODAY&apos;S MOST READ</h2>
+            <div className="h-1 flex-1 bg-secondary" />
+          </div>
+          <motion.article
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="group cursor-pointer"
+          >
+            <Card className="flex flex-col overflow-hidden border-primary bg-card transition-colors hover:border-accent md:flex-row comic-border">
+              <div className="relative min-h-[240px] aspect-video overflow-hidden bg-gradient-to-br from-violet-900 via-purple-700 to-accent/70 md:w-2/5 md:aspect-auto">
+                <div className="absolute inset-0 opacity-30 halftone-bg" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <motion.div
+                    animate={{ scale: [1, 1.08, 1] }}
+                    transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+                    className="flex h-24 w-24 items-center justify-center rounded-full border-4 border-primary/60 md:h-36 md:w-36"
+                  >
+                    <Eye size={40} className="text-primary/80" />
+                  </motion.div>
+                </div>
+                <div className="absolute top-4 left-4 bg-accent px-3 py-1 font-bangers text-lg text-background comic-border-secondary">
+                  #1 TODAY
+                </div>
+              </div>
+              <CardContent className="flex flex-1 flex-col justify-center p-6 md:p-10">
+                <div className="mb-4 flex flex-wrap gap-3">
+                  <span className="bg-secondary px-3 py-1 font-oswald text-sm uppercase text-background comic-border-accent">
+                    Exclusive
+                  </span>
+                  <span className="flex items-center gap-1 py-1 font-oswald text-sm text-muted-foreground">
+                    <Clock size={14} /> 11 MIN READ
+                  </span>
+                  <span className="flex items-center gap-1 py-1 font-oswald text-sm text-accent">
+                    <Eye size={14} /> 48.2k views
+                  </span>
+                </div>
+                <h3 className="mb-4 font-bangers text-4xl leading-tight transition-colors group-hover:text-accent md:text-6xl">
+                  The Algorithm That Broke Democracy
+                </h3>
+                <p className="mb-6 max-w-2xl font-sans text-lg text-muted-foreground">
+                  A whistleblower inside a major social platform reveals how a single recommendation model rewired
+                  political discourse across 40 countries, and why it was never shut down.
+                </p>
+                <Button asChild variant="ghost" className="h-auto justify-start border-0 px-0 py-0 font-bangers text-xl text-accent hover:bg-transparent hover:text-primary">
+                  <a href="#">
+                    CONTINUE READING <ArrowRight size={20} />
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.article>
+        </section>
+
+        <section className="container mx-auto px-4 py-10">
+          <div className="mb-6 flex items-center gap-4">
+            <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">ORIGIN STORIES</h2>
+            <div className="h-1 flex-1 bg-secondary" />
+          </div>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <motion.article
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="group cursor-pointer lg:col-span-2"
+            >
+              <div className="flex h-full flex-col overflow-hidden bg-muted transition-colors hover:border-primary comic-border-secondary">
+                <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-cyan-900 to-emerald-800 md:aspect-[21/9]">
+                  <div className="absolute inset-0 opacity-30 halftone-bg" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-900 to-emerald-800 transition-transform duration-500 group-hover:scale-105" />
+                </div>
+                <div className="relative z-10 -mt-10 flex flex-1 flex-col justify-end border-t-4 border-secondary bg-card p-6 transition-colors group-hover:border-primary md:p-8">
+                  <div className="mb-3 flex gap-3">
+                    <span className="bg-secondary px-3 py-1 font-oswald text-sm font-bold uppercase text-background comic-border-accent">
+                      Deep Dive
+                    </span>
+                    <span className="py-1 font-oswald text-sm text-muted-foreground">12 MIN READ</span>
+                  </div>
+                  <h3 className="mb-4 font-bangers text-4xl transition-colors group-hover:text-accent md:text-5xl">
+                    The Man Who Taught Machines to Dream
+                  </h3>
+                  <p className="line-clamp-3 font-sans text-lg text-muted-foreground">
+                    Before neural networks were mainstream, one rogue engineer decided to feed a supercomputer nothing
+                    but classic comic books. The results were terrifyingly beautiful.
+                  </p>
+                </div>
+              </div>
+            </motion.article>
+
+            <div className="flex flex-col gap-5">
+              {SIDE_STORIES.map((post, index) => (
+                <motion.article
+                  key={post.title}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex gap-4 bg-card p-4 transition-all hover:-translate-y-1 hover:border-primary comic-border-secondary group cursor-pointer"
+                >
+                  <div className={`h-24 w-24 shrink-0 bg-gradient-to-br ${post.color} comic-border-accent`} />
+                  <div className="flex flex-col justify-center">
+                    <div className="mb-1 flex gap-2 font-oswald text-xs uppercase">
+                      <span className="text-accent">{post.tag}</span>
+                      <span className="text-muted-foreground">• {post.time}</span>
+                    </div>
+                    <h4 className="font-bangers text-2xl leading-tight transition-colors group-hover:text-primary">
+                      {post.title}
+                    </h4>
+                  </div>
+                </motion.article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="ai" className="relative my-10 border-y-4 border-secondary bg-muted/30 py-14">
+          <div className="pointer-events-none absolute inset-0 opacity-15 halftone-bg" />
+          <div className="relative z-10 container mx-auto px-4">
+            <h2 className="mb-10 text-center font-bangers text-4xl drop-shadow-[2px_2px_0px_hsl(var(--primary))]">
+              CHOOSE YOUR ADVENTURE
+            </h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-5">
+              {CATEGORIES.map((category, index) => {
+                const Icon = category.icon;
+                return (
+                  <motion.div
+                    key={category.name}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.1 }}
+                    className="group"
+                  >
+                    <Card className="border-primary bg-card p-6 text-center transition-all hover:-translate-y-2 hover:border-accent comic-border">
+                      <a href={category.href} className="flex flex-col items-center gap-4">
+                        <div className="flex h-18 w-18 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-accent/20 group-hover:text-accent">
+                          <Icon size={32} />
+                        </div>
+                        <div>
+                          <h3 className="mb-2 font-bangers text-2xl leading-tight">{category.name}</h3>
+                          <p className="font-sans text-sm text-muted-foreground">{category.desc}</p>
+                        </div>
+                      </a>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        <section id="code" className="container mx-auto grid grid-cols-1 gap-6 px-4 py-10 lg:grid-cols-[1.2fr_0.8fr]">
+          <motion.article
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="overflow-hidden bg-card comic-border"
+          >
+            <div className="border-b-4 border-secondary bg-gradient-to-r from-primary/80 to-accent/80 px-6 py-4 text-background">
+              <div className="mb-2 font-oswald text-xs uppercase tracking-[0.3em]">Feature Story</div>
+              <h2 className="font-bangers text-4xl">CODE IS THE NEW SUPERPOWER</h2>
+            </div>
+            <div className="grid gap-6 p-6 md:grid-cols-[1fr_1.1fr]">
+              <div className="aspect-[4/5] bg-gradient-to-br from-slate-900 via-slate-700 to-primary halftone-bg comic-border-secondary" />
+              <div className="flex flex-col justify-center">
+                <p className="mb-4 font-oswald text-sm uppercase tracking-[0.2em] text-accent">
+                  Builders. Breakers. World-shapers.
+                </p>
+                <h3 className="mb-4 font-bangers text-4xl leading-tight md:text-5xl">
+                  The Open Source Crew Saving the Internet One Patch at a Time
+                </h3>
+                <p className="mb-6 font-sans text-lg text-muted-foreground">
+                  Meet the maintainers holding critical infrastructure together while billion-dollar companies depend
+                  on their unpaid labor. The issue tracks burnout, brilliance, and the communities keeping the lights on.
+                </p>
+                <a href="#" className="inline-flex items-center gap-2 font-bangers text-xl text-primary transition-colors hover:text-accent">
+                  READ THE DOSSIER <ArrowRight size={20} />
+                </a>
+              </div>
+            </div>
+          </motion.article>
+
+          <motion.aside
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col gap-6"
+          >
+            <Card className="border-accent bg-card p-6 comic-border-accent">
+              <div className="mb-3 flex items-center gap-3">
+                <MessageSquare className="text-accent" size={24} />
+                <h3 className="font-bangers text-3xl">Signal Box</h3>
+              </div>
+              <p className="mb-5 font-sans text-muted-foreground">
+                Subscribe for weekly issue drops, behind-the-scenes sketches, and reader polls that shape the next
+                cover story.
+              </p>
+              <form className="flex flex-col gap-3">
+                <Input
+                  type="email"
+                  placeholder="you@originstory.dev"
+                  className="h-auto border-primary bg-background px-4 py-3 font-oswald text-base comic-border"
+                />
+                <Button className="h-auto bg-primary px-4 py-3 font-bangers text-xl text-background hover:bg-accent comic-border">
+                  JOIN THE PANEL <Send size={18} />
+                </Button>
+              </form>
+            </Card>
+
+            <div id="gadgets" className="bg-card p-6 comic-border-secondary">
+              <p className="mb-2 font-oswald text-sm uppercase tracking-[0.2em] text-muted-foreground">Gadgets Watch</p>
+              <h3 className="mb-3 font-bangers text-3xl text-primary">Pocket Tech With Main Character Energy</h3>
+              <p className="font-sans text-muted-foreground">
+                Foldables, wearables, and strange prototypes are all getting field-tested for durability, drama, and
+                whether they actually deserve a place in your bag.
+              </p>
+            </div>
+          </motion.aside>
+        </section>
+
+        <section id="entertainment" className="container mx-auto px-4 py-10">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <motion.article
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-card p-6 comic-border"
+            >
+              <p className="mb-2 font-oswald text-sm uppercase tracking-[0.2em] text-muted-foreground">Entertainment</p>
+              <h3 className="mb-4 font-bangers text-4xl text-primary">The Studio Rendering the Future Frame by Frame</h3>
+              <p className="font-sans text-muted-foreground">
+                A long-form piece on the animation team blending AI tooling with hand-drawn sensibility for the next
+                generation of sci-fi cinema.
+              </p>
+            </motion.article>
+
+            <motion.article
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="bg-card p-6 comic-border-secondary"
+            >
+              <p className="mb-2 font-oswald text-sm uppercase tracking-[0.2em] text-muted-foreground">Watchlist</p>
+              <h3 className="mb-4 font-bangers text-4xl text-accent">Five cyberpunk releases worth your weekend</h3>
+              <p className="font-sans text-muted-foreground">
+                A short stack of films, games, and series for readers who want their interfaces glitchy and their plots
+                conspiratorial.
+              </p>
+            </motion.article>
+
+            <motion.article
+              id="cybersecurity"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="bg-card p-6 comic-border-accent"
+            >
+              <p className="mb-2 font-oswald text-sm uppercase tracking-[0.2em] text-muted-foreground">Cybersecurity</p>
+              <h3 className="mb-4 font-bangers text-4xl">Inside the breach report no one wanted published</h3>
+              <p className="font-sans text-muted-foreground">
+                The report traces a supply-chain attack from one compromised package to a multinational incident response
+                sprint, complete with the timeline and the mistakes that made it possible.
+              </p>
+            </motion.article>
+          </div>
+        </section>
+
+        <section className="container mx-auto px-4 py-14">
+          <div className="mb-10 flex items-center gap-4">
+            <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">FREQUENTLY ASKED</h2>
+            <div className="h-1 flex-1 bg-secondary" />
+          </div>
+          <Accordion type="single" collapsible className="space-y-4">
+            {FAQS.map((faq, index) => (
+              <motion.div
+                key={faq.q}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.08 }}
+              >
+                <AccordionItem value={`faq-${index}`} className="overflow-hidden border-0">
+                  <Card className="border-primary bg-card comic-border">
+                    <AccordionTrigger className="px-5 py-5 font-bangers text-xl hover:no-underline md:text-2xl">
+                      {faq.q}
+                    </AccordionTrigger>
+                    <AccordionContent className="border-l-4 border-primary bg-muted/40 px-5 pb-5 font-sans text-base text-muted-foreground faq-bubble">
+                      {faq.a}
+                    </AccordionContent>
+                  </Card>
+                </AccordionItem>
+              </motion.div>
+            ))}
+          </Accordion>
+        </section>
+
+        <section className="border-y-4 border-secondary bg-muted/20 py-14">
+          <div className="container mx-auto px-4">
+            <div className="mb-10 flex items-center gap-4">
+              <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">READER REVIEWS</h2>
+              <div className="h-1 flex-1 bg-secondary" />
+            </div>
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+              {REVIEWS.map((review, index) => (
+                <motion.div
+                  key={review.handle}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.12 }}
+                  className="relative"
+                >
+                  <div className="relative bg-card p-6 comic-border review-bubble">
+                    <div className="mb-3 flex gap-1">
+                      {Array.from({ length: 5 }).map((_, starIndex) => (
+                        <Star
+                          key={`${review.handle}-${starIndex}`}
+                          size={16}
+                          className={starIndex < review.rating ? "fill-primary text-primary" : "text-muted-foreground"}
+                        />
+                      ))}
+                    </div>
+                    <p className="mb-4 font-sans text-base italic text-foreground">&quot;{review.text}&quot;</p>
+                    <div className="mt-4 flex items-center gap-3 border-t border-border pt-4">
+                      <div
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br ${review.avatarColor} font-bangers text-sm text-white`}
+                      >
+                        {review.avatar}
+                      </div>
+                      <div>
+                        <div className="font-bangers text-lg leading-tight">{review.name}</div>
+                        <div className="font-oswald text-xs text-accent">{review.handle}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="review-tail" />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="container mx-auto max-w-2xl px-4 py-14">
+          <div className="mb-8 flex items-center gap-4">
+            <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">SEND FEEDBACK</h2>
+            <div className="h-1 flex-1 bg-secondary" />
+          </div>
+          <Card className="relative border-primary bg-card p-6 md:p-10 comic-border">
+            <div className="pointer-events-none absolute top-0 left-0 h-full w-full -translate-x-1 -translate-y-1 border-[3px] border-secondary" />
+            <AnimatePresence>
+              {feedbackSent && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-card/95 p-8 text-center"
+                >
+                  <div className="font-bangers text-5xl text-accent">THANKS!</div>
+                  <p className="font-oswald text-xl uppercase text-muted-foreground">
+                    Thanks for your feedback! We read every message.
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <form onSubmit={handleFeedback} className="flex flex-col gap-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
+                    Name
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Your name"
+                    required
+                    className="h-auto border-primary bg-background px-4 py-3 font-oswald text-base comic-border"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
+                    Email
+                  </label>
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    required
+                    className="h-auto border-primary bg-background px-4 py-3 font-oswald text-base comic-border"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
+                  Message
+                </label>
+                <Textarea
+                  placeholder="What's on your mind?"
+                  rows={5}
+                  required
+                  className="min-h-[140px] border-primary bg-background px-4 py-3 font-oswald text-base resize-none comic-border"
+                />
+              </div>
+              <Button
+                type="submit"
+                className="group h-auto w-full bg-accent py-4 font-bangers text-2xl text-background hover:bg-primary comic-border"
+              >
+                SUBMIT FEEDBACK <Send size={20} className="transition-transform group-hover:translate-x-1" />
+              </Button>
+            </form>
+          </Card>
+        </section>
       </main>
+
+      <footer id="about" className="relative mt-4 overflow-hidden py-12" style={{ backgroundColor: "#F0B443" }}>
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ backgroundImage: "radial-gradient(rgba(0,0,0,0.12) 2px, transparent 2px)", backgroundSize: "12px 12px" }}
+        />
+        <div className="relative z-10 container mx-auto px-4">
+          <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
+            <div className="flex flex-col items-center gap-1 md:items-start">
+              <span className="font-bangers text-5xl drop-shadow-[2px_2px_0px_rgba(0,0,0,0.3)]" style={{ color: "#1a1a1a" }}>
+                PLIXBLOG
+              </span>
+              <p className="font-oswald text-sm uppercase tracking-widest" style={{ color: "#3a3a3a" }}>
+                Every piece of tech has an origin story.
+              </p>
+            </div>
+
+            <nav className="flex flex-wrap justify-center gap-6 font-oswald text-lg uppercase" style={{ color: "#1a1a1a" }}>
+              {["About", "Privacy", "Advertise", "Contact"].map((link) => (
+                <a key={link} href="#" className="transition-colors hover:opacity-70" style={{ color: "#1a1a1a" }}>
+                  {link}
+                </a>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-3">
+              {[SiX, SiGithub, SiInstagram].map((Icon, index) => (
+                <a
+                  key={index}
+                  href="#"
+                  className="flex h-11 w-11 items-center justify-center transition-all hover:-translate-y-1 comic-border"
+                  style={{ backgroundColor: "#1a1a1a", color: "#F0B443" }}
+                >
+                  <Icon size={20} />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-10 text-center font-sans text-sm" style={{ color: "#3a3a3a" }}>
+            © {new Date().getFullYear()} PlixBlog Universe. All rights reserved.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
