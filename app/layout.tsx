@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bangers, Inter, Oswald, Geist } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { SiteHeader } from "@/components/site-header";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
@@ -33,7 +34,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn("scroll-smooth", "font-sans", geist.variable)}>
-      <body className={`${bangers.variable} ${oswald.variable} ${inter.variable} antialiased`}>{children}</body>
+      <body className={`${bangers.variable} ${oswald.variable} ${inter.variable} antialiased`}>
+        <SiteHeader />
+        {children}
+      </body>
     </html>
   );
 }
