@@ -1,12 +1,6 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   ArrowRight,
   Clock,
@@ -22,11 +16,12 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { SiGithub, SiInstagram, SiX } from "react-icons/si";
+import { useState } from "react";
 
 const FAQS = [
   {
     q: "What makes PlixBlog different from other tech blogs?",
-    a: "We treat every story like it deserves a graphic novel. Ink borders, halftone panels, and origin-story framing: tech journalism with a soul.",
+    a: "We treat every story like it deserves a graphic novel. Ink borders, halftone panels, and origin-story framing — tech journalism with a soul.",
   },
   {
     q: "How often is new content published?",
@@ -34,11 +29,11 @@ const FAQS = [
   },
   {
     q: "Can I contribute an article or tip?",
-    a: "Absolutely. Use the feedback form below or email us at tips@plixblog.com. We credit every contributor.",
+    a: "Absolutely. Use the Feedback form below or email us at tips@plixblog.com. We credit every contributor.",
   },
   {
     q: "Is PlixBlog free to read?",
-    a: "The daily strip is always free. Premium long-form origin stories are available through a subscription, coming soon.",
+    a: "The daily strip is always free. Premium long-form origin stories are available through a subscription — coming soon.",
   },
 ];
 
@@ -55,7 +50,7 @@ const REVIEWS = [
     name: "Darius Osei",
     handle: "@d_osei_dev",
     rating: 5,
-    text: "Finally, tech journalism that has style. The halftone headers alone deserve a design award. Keep the issues coming.",
+    text: "Finally — tech journalism that has style. The halftone headers alone deserve a design award. Keep the issues coming.",
     avatar: "DO",
     avatarColor: "from-emerald-600 to-teal-700",
   },
@@ -69,6 +64,12 @@ const REVIEWS = [
   },
 ];
 
+const SIDE_STORIES = [
+  { title: "How 5G Was Built on a Lie", tag: "Exposé", time: "8 MIN", color: "from-rose-900 to-red-600" },
+  { title: "The Secret Life of Server Farms", tag: "Infrastructure", time: "5 MIN", color: "from-blue-900 to-indigo-600" },
+  { title: "When Crypto Met The Mob", tag: "Investigation", time: "15 MIN", color: "from-purple-900 to-fuchsia-600" },
+];
+
 const CATEGORIES = [
   { icon: Cpu, name: "AI & Algorithms", desc: "The ghosts in the machine.", href: "#ai" },
   { icon: Code2, name: "Code & Creativity", desc: "Building the digital frontier.", href: "#code" },
@@ -77,13 +78,15 @@ const CATEGORIES = [
   { icon: ShieldCheck, name: "Cybersecurity", desc: "Guarding the mainframe.", href: "#cybersecurity" },
 ];
 
-const SIDE_STORIES = [
-  { title: "How 5G Was Built on a Lie", tag: "Expose", time: "8 MIN", color: "from-rose-900 to-red-600" },
-  { title: "The Secret Life of Server Farms", tag: "Infrastructure", time: "5 MIN", color: "from-blue-900 to-indigo-600" },
-  { title: "When Crypto Met The Mob", tag: "Investigation", time: "15 MIN", color: "from-purple-900 to-fuchsia-600" },
+const POPULAR_ISSUES = [
+  { title: "The Death of the Passcode", cat: "CYBER", time: "4 MIN", color: "from-slate-700 to-slate-900" },
+  { title: "Review: The Neural-Link Headset", cat: "GADGETS", time: "9 MIN", color: "from-amber-600 to-orange-900" },
+  { title: "Hollywood's AI Writer Strike", cat: "ENTERTAIN", time: "7 MIN", color: "from-pink-800 to-rose-600" },
+  { title: "Open Source vs Big Tech: Round 2", cat: "CODE", time: "6 MIN", color: "from-teal-800 to-cyan-600" },
 ];
 
 export default function Page() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [feedbackSent, setFeedbackSent] = useState(false);
 
   function handleFeedback(event: React.FormEvent<HTMLFormElement>) {
@@ -95,7 +98,7 @@ export default function Page() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-background text-foreground transition-colors duration-300">
       <main>
-        <section id="home" className="container mx-auto px-4 py-12 md:py-16">
+        <section className="container mx-auto px-4 py-12 md:py-16">
           <motion.div
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -113,11 +116,11 @@ export default function Page() {
                   <span className="text-accent">Awakening</span>
                 </h1>
                 <div className="inline-block max-w-lg p-4 font-oswald text-xl text-foreground md:p-5 speech-bubble">
-                  &quot;AI chips are eating the world and we&apos;ve got the full origin story inside.&quot;
+                  &quot;AI chips are eating the world — and we&apos;ve got the full origin story inside.&quot;
                 </div>
                 <div className="pt-4">
                   <a
-                    href="#blog"
+                    href="#"
                     className="inline-flex items-center gap-3 bg-accent px-8 py-4 font-bangers text-2xl text-background transition-all hover:-translate-y-2 hover:rotate-1 hover:shadow-lg comic-border"
                   >
                     READ THE FULL STRIP <ArrowRight size={22} />
@@ -125,7 +128,7 @@ export default function Page() {
                 </div>
               </div>
               <div className="w-full flex-1">
-                <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden bg-gradient-to-tr from-indigo-900 via-primary/50 to-accent md:aspect-[4/3] comic-border-accent">
+                <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden bg-gradient-to-tr from-indigo-900 via-primary/50 to-accent comic-border-accent md:aspect-[4/3]">
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 20, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
@@ -140,20 +143,15 @@ export default function Page() {
           </motion.div>
         </section>
 
-        <section id="blog" className="container mx-auto px-4 py-10">
+        <section className="container mx-auto px-4 py-10">
           <div className="mb-6 flex items-center gap-4">
             <TrendingUp size={28} className="shrink-0 text-accent" />
             <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">TODAY&apos;S MOST READ</h2>
             <div className="h-1 flex-1 bg-secondary" />
           </div>
-          <motion.article
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="group cursor-pointer"
-          >
-            <Card className="flex flex-col overflow-hidden border-primary bg-card transition-colors hover:border-accent md:flex-row comic-border">
-              <div className="relative min-h-[240px] aspect-video overflow-hidden bg-gradient-to-br from-violet-900 via-purple-700 to-accent/70 md:w-2/5 md:aspect-auto">
+          <motion.article initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="group cursor-pointer">
+            <div className="flex flex-col overflow-hidden bg-card transition-colors hover:border-accent md:flex-row comic-border">
+              <div className="relative aspect-video min-h-[240px] overflow-hidden bg-gradient-to-br from-violet-900 via-purple-700 to-accent/70 md:w-2/5 md:aspect-auto">
                 <div className="absolute inset-0 opacity-30 halftone-bg" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <motion.div
@@ -168,7 +166,7 @@ export default function Page() {
                   #1 TODAY
                 </div>
               </div>
-              <CardContent className="flex flex-1 flex-col justify-center p-6 md:p-10">
+              <div className="flex flex-1 flex-col justify-center p-6 md:p-10">
                 <div className="mb-4 flex flex-wrap gap-3">
                   <span className="bg-secondary px-3 py-1 font-oswald text-sm uppercase text-background comic-border-accent">
                     Exclusive
@@ -184,14 +182,13 @@ export default function Page() {
                   The Algorithm That Broke Democracy
                 </h3>
                 <p className="mb-6 max-w-2xl font-sans text-lg text-muted-foreground">
-                  A whistleblower inside a major social platform reveals how a single recommendation model rewired
-                  political discourse across 40 countries, and why it was never shut down.
+                  A whistleblower inside a major social platform reveals how a single recommendation model rewired political discourse across 40 countries — and why it was never shut down.
                 </p>
                 <a href="#" className="inline-flex items-center gap-2 font-bangers text-xl text-accent transition-colors hover:text-primary">
                   CONTINUE READING <ArrowRight size={20} />
                 </a>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </motion.article>
         </section>
 
@@ -201,12 +198,7 @@ export default function Page() {
             <div className="h-1 flex-1 bg-secondary" />
           </div>
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <motion.article
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="group cursor-pointer lg:col-span-2"
-            >
+            <motion.article initial={{ opacity: 0, x: -50 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} className="group cursor-pointer lg:col-span-2">
               <div className="flex h-full flex-col overflow-hidden bg-muted transition-colors hover:border-primary comic-border-secondary">
                 <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-cyan-900 to-emerald-800 md:aspect-[21/9]">
                   <div className="absolute inset-0 opacity-30 halftone-bg" />
@@ -223,8 +215,7 @@ export default function Page() {
                     The Man Who Taught Machines to Dream
                   </h3>
                   <p className="line-clamp-3 font-sans text-lg text-muted-foreground">
-                    Before neural networks were mainstream, one rogue engineer decided to feed a supercomputer nothing
-                    but classic comic books. The results were terrifyingly beautiful.
+                    Before neural networks were mainstream, one rogue engineer decided to feed a supercomputer nothing but classic comic books. The results were terrifyingly beautiful.
                   </p>
                 </div>
               </div>
@@ -265,157 +256,68 @@ export default function Page() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-5">
               {CATEGORIES.map((category, index) => {
                 const Icon = category.icon;
+
                 return (
-                  <motion.div
+                  <motion.a
+                    href={category.href}
                     key={category.name}
                     initial={{ opacity: 0, scale: 0.9 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="group"
+                    className="relative flex flex-col items-center overflow-hidden bg-card p-6 text-center transition-all duration-300 hover:scale-105 hover:border-accent hover:shadow-coral comic-border group"
                   >
-                    <Card className="border-primary bg-card p-6 text-center transition-all hover:-translate-y-2 hover:border-accent comic-border">
-                      <a href={category.href} className="flex flex-col items-center gap-4">
-                        <div className="flex h-18 w-18 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-accent/20 group-hover:text-accent">
-                          <Icon size={32} />
-                        </div>
-                        <div>
-                          <h3 className="mb-2 font-bangers text-2xl leading-tight">{category.name}</h3>
-                          <p className="font-sans text-sm text-muted-foreground">{category.desc}</p>
-                        </div>
-                      </a>
-                    </Card>
-                  </motion.div>
+                    <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-10 halftone-bg" />
+                    <Icon size={44} className="mb-4 text-primary transition-colors group-hover:text-accent" />
+                    <h3 className="mb-2 font-bangers text-2xl">{category.name}</h3>
+                    <p className="mb-4 font-sans text-sm text-muted-foreground">{category.desc}</p>
+                    <span className="flex items-center gap-1 font-oswald text-sm text-accent transition-all group-hover:gap-2">
+                      Explore <ArrowRight size={14} />
+                    </span>
+                  </motion.a>
                 );
               })}
             </div>
           </div>
         </section>
 
-        <section id="code" className="container mx-auto grid grid-cols-1 gap-6 px-4 py-10 lg:grid-cols-[1.2fr_0.8fr]">
-          <motion.article
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="overflow-hidden bg-card comic-border"
-          >
-            <div className="border-b-4 border-secondary bg-gradient-to-r from-primary/80 to-accent/80 px-6 py-4 text-background">
-              <div className="mb-2 font-oswald text-xs uppercase tracking-[0.3em]">Feature Story</div>
-              <h2 className="font-bangers text-4xl">CODE IS THE NEW SUPERPOWER</h2>
-            </div>
-            <div className="grid gap-6 p-6 md:grid-cols-[1fr_1.1fr]">
-              <div className="aspect-[4/5] bg-gradient-to-br from-slate-900 via-slate-700 to-primary halftone-bg comic-border-secondary" />
-              <div className="flex flex-col justify-center">
-                <p className="mb-4 font-oswald text-sm uppercase tracking-[0.2em] text-accent">
-                  Builders. Breakers. World-shapers.
-                </p>
-                <h3 className="mb-4 font-bangers text-4xl leading-tight md:text-5xl">
-                  The Open Source Crew Saving the Internet One Patch at a Time
-                </h3>
-                <p className="mb-6 font-sans text-lg text-muted-foreground">
-                  Meet the maintainers holding critical infrastructure together while billion-dollar companies depend
-                  on their unpaid labor. The issue tracks burnout, brilliance, and the communities keeping the lights on.
-                </p>
-                <a href="#" className="inline-flex items-center gap-2 font-bangers text-xl text-primary transition-colors hover:text-accent">
-                  READ THE DOSSIER <ArrowRight size={20} />
-                </a>
-              </div>
-            </div>
-          </motion.article>
-
-          <motion.aside
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col gap-6"
-          >
-            <Card className="border-accent bg-card p-6 comic-border-accent">
-              <div className="mb-3 flex items-center gap-3">
-                <MessageSquare className="text-accent" size={24} />
-                <h3 className="font-bangers text-3xl">Signal Box</h3>
-              </div>
-              <p className="mb-5 font-sans text-muted-foreground">
-                Subscribe for weekly issue drops, behind-the-scenes sketches, and reader polls that shape the next
-                cover story.
-              </p>
-              <form className="flex flex-col gap-3">
-                <Input
-                  type="email"
-                  placeholder="you@originstory.dev"
-                  className="h-auto border-primary bg-background px-4 py-3 font-oswald text-base comic-border"
-                />
-                <Button className="h-auto bg-primary px-4 py-3 font-bangers text-xl text-background hover:bg-accent comic-border">
-                  JOIN THE PANEL <Send size={18} />
-                </Button>
-              </form>
-            </Card>
-
-            <div id="gadgets" className="bg-card p-6 comic-border-secondary">
-              <p className="mb-2 font-oswald text-sm uppercase tracking-[0.2em] text-muted-foreground">Gadgets Watch</p>
-              <h3 className="mb-3 font-bangers text-3xl text-primary">Pocket Tech With Main Character Energy</h3>
-              <p className="font-sans text-muted-foreground">
-                Foldables, wearables, and strange prototypes are all getting field-tested for durability, drama, and
-                whether they actually deserve a place in your bag.
-              </p>
-            </div>
-          </motion.aside>
-        </section>
-
-        <section id="entertainment" className="container mx-auto px-4 py-10">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            <motion.article
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="bg-card p-6 comic-border"
-            >
-              <p className="mb-2 font-oswald text-sm uppercase tracking-[0.2em] text-muted-foreground">Entertainment</p>
-              <h3 className="mb-4 font-bangers text-4xl text-primary">The Studio Rendering the Future Frame by Frame</h3>
-              <p className="font-sans text-muted-foreground">
-                A long-form piece on the animation team blending AI tooling with hand-drawn sensibility for the next
-                generation of sci-fi cinema.
-              </p>
-            </motion.article>
-
-            <motion.article
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="bg-card p-6 comic-border-secondary"
-            >
-              <p className="mb-2 font-oswald text-sm uppercase tracking-[0.2em] text-muted-foreground">Watchlist</p>
-              <h3 className="mb-4 font-bangers text-4xl text-accent">Five cyberpunk releases worth your weekend</h3>
-              <p className="font-sans text-muted-foreground">
-                A short stack of films, games, and series for readers who want their interfaces glitchy and their plots
-                conspiratorial.
-              </p>
-            </motion.article>
-
-            <motion.article
-              id="cybersecurity"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="bg-card p-6 comic-border-accent"
-            >
-              <p className="mb-2 font-oswald text-sm uppercase tracking-[0.2em] text-muted-foreground">Cybersecurity</p>
-              <h3 className="mb-4 font-bangers text-4xl">Inside the breach report no one wanted published</h3>
-              <p className="font-sans text-muted-foreground">
-                The report traces a supply-chain attack from one compromised package to a multinational incident response
-                sprint, complete with the timeline and the mistakes that made it possible.
-              </p>
-            </motion.article>
-          </div>
-        </section>
-
-        <section className="container mx-auto px-4 py-14">
-          <div className="mb-10 flex items-center gap-4">
-            <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">FREQUENTLY ASKED</h2>
+        <section className="container mx-auto px-4 py-10">
+          <div className="mb-8 flex items-center gap-4">
+            <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">POPULAR ISSUES</h2>
             <div className="h-1 flex-1 bg-secondary" />
           </div>
-          <Accordion defaultValue={[]} className="space-y-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {POPULAR_ISSUES.map((post, index) => (
+              <motion.article
+                key={post.title}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="flex cursor-pointer flex-col group"
+              >
+                <div className={`relative mb-4 aspect-[3/2] w-full overflow-hidden bg-gradient-to-br ${post.color} comic-border`}>
+                  <div className="absolute inset-0 opacity-20 halftone-bg" />
+                  <div className="absolute top-3 left-3 rotate-[-2deg] bg-accent px-2 py-0.5 font-bangers text-sm text-background transition-transform group-hover:rotate-0 comic-border-secondary">
+                    {post.cat}
+                  </div>
+                </div>
+                <div className="mb-1 flex items-center gap-2 font-oswald text-xs font-bold uppercase text-primary">
+                  <Clock size={12} /> {post.time} READ
+                </div>
+                <h3 className="font-bangers text-2xl leading-tight transition-colors group-hover:text-accent">{post.title}</h3>
+              </motion.article>
+            ))}
+          </div>
+        </section>
+
+        <section className="container mx-auto max-w-4xl px-4 py-10">
+          <div className="mb-8 flex items-center gap-4">
+            <MessageSquare size={28} className="shrink-0 text-accent" />
+            <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">FAQ</h2>
+            <div className="h-1 flex-1 bg-secondary" />
+          </div>
+          <div className="flex flex-col gap-4">
             {FAQS.map((faq, index) => (
               <motion.div
                 key={faq.q}
@@ -424,19 +326,33 @@ export default function Page() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.08 }}
               >
-                <AccordionItem value={`faq-${index}`} className="overflow-hidden border-0">
-                  <Card className="border-primary bg-card comic-border">
-                    <AccordionTrigger className="px-5 py-5 font-bangers text-xl hover:no-underline md:text-2xl">
-                      {faq.q}
-                    </AccordionTrigger>
-                    <AccordionContent className="border-l-4 border-primary bg-muted/40 px-5 pb-5 font-sans text-base text-muted-foreground faq-bubble">
-                      {faq.a}
-                    </AccordionContent>
-                  </Card>
-                </AccordionItem>
+                <button
+                  onClick={() => setOpenFaq(openFaq === index ? null : index)}
+                  className="flex w-full items-center justify-between gap-4 bg-card p-5 text-left transition-colors hover:border-accent comic-border group"
+                >
+                  <span className="font-bangers text-xl transition-colors group-hover:text-accent md:text-2xl">{faq.q}</span>
+                  <span className={`text-2xl ${openFaq === index ? "text-accent" : "text-primary"}`}>
+                    {openFaq === index ? "−" : "+"}
+                  </span>
+                </button>
+                <AnimatePresence>
+                  {openFaq === index && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="border-l-4 border-t-0 border-primary bg-muted/40 p-5 font-sans text-base text-muted-foreground faq-bubble">
+                        {faq.a}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
             ))}
-          </Accordion>
+          </div>
         </section>
 
         <section className="border-y-4 border-secondary bg-muted/20 py-14">
@@ -490,7 +406,7 @@ export default function Page() {
             <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">SEND FEEDBACK</h2>
             <div className="h-1 flex-1 bg-secondary" />
           </div>
-          <Card className="relative border-primary bg-card p-6 md:p-10 comic-border">
+          <div className="relative bg-card p-6 md:p-10 comic-border">
             <div className="pointer-events-none absolute top-0 left-0 h-full w-full -translate-x-1 -translate-y-1 border-[3px] border-secondary" />
             <AnimatePresence>
               {feedbackSent && (
@@ -513,22 +429,22 @@ export default function Page() {
                   <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
                     Name
                   </label>
-                  <Input
+                  <input
                     type="text"
                     placeholder="Your name"
                     required
-                    className="h-auto border-primary bg-background px-4 py-3 font-oswald text-base comic-border"
+                    className="w-full bg-background px-4 py-3 font-oswald text-base text-foreground transition-colors placeholder:text-muted-foreground/60 focus:border-accent focus:outline-none comic-border"
                   />
                 </div>
                 <div>
                   <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
                     Email
                   </label>
-                  <Input
+                  <input
                     type="email"
                     placeholder="your@email.com"
                     required
-                    className="h-auto border-primary bg-background px-4 py-3 font-oswald text-base comic-border"
+                    className="w-full bg-background px-4 py-3 font-oswald text-base text-foreground transition-colors placeholder:text-muted-foreground/60 focus:border-accent focus:outline-none comic-border"
                   />
                 </div>
               </div>
@@ -536,21 +452,21 @@ export default function Page() {
                 <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
                   Message
                 </label>
-                <Textarea
+                <textarea
                   placeholder="What's on your mind?"
                   rows={5}
                   required
-                  className="min-h-[140px] border-primary bg-background px-4 py-3 font-oswald text-base resize-none comic-border"
+                  className="w-full resize-none bg-background px-4 py-3 font-oswald text-base text-foreground transition-colors placeholder:text-muted-foreground/60 focus:border-accent focus:outline-none comic-border"
                 />
               </div>
-              <Button
+              <button
                 type="submit"
-                className="group h-auto w-full bg-accent py-4 font-bangers text-2xl text-background hover:bg-primary comic-border"
+                className="group flex w-full items-center justify-center gap-3 bg-accent py-4 font-bangers text-2xl text-background transition-colors hover:bg-primary comic-border"
               >
                 SUBMIT FEEDBACK <Send size={20} className="transition-transform group-hover:translate-x-1" />
-              </Button>
+              </button>
             </form>
-          </Card>
+          </div>
         </section>
       </main>
 

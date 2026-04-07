@@ -1,30 +1,17 @@
 "use client";
 
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Globe, LogIn, Menu, Moon, Sun, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-
-const NAV_ITEMS = [
-  { label: "Home", href: "/" },
-  { label: "Blog", href: "/#blog" },
-  { label: "About Us", href: "/about" },
-];
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 
 const LANGUAGES = [
   { code: "EN", label: "English", flag: "🇺🇸" },
   { code: "ES", label: "Español", flag: "🇪🇸" },
   { code: "FR", label: "Français", flag: "🇫🇷" },
 ];
+
+const NAV_ITEMS = ["AI", "Code", "Gadgets", "Entertainment", "Cybersecurity", "About"];
 
 export function SiteHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -61,57 +48,77 @@ export function SiteHeader() {
 
   return (
     <>
-      <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
-        <DialogContent className="max-w-md border-primary bg-card p-8 shadow-2xl comic-border">
-          <DialogHeader className="text-left">
-            <span className="font-bangers text-3xl logo-gradient">PLIXBLOG</span>
-            <DialogTitle className="mt-1 mb-1 font-bangers text-4xl">ENTER THE UNIVERSE</DialogTitle>
-            <DialogDescription className="font-oswald text-sm uppercase tracking-wide text-muted-foreground">
-              Sign in to your account
-            </DialogDescription>
-          </DialogHeader>
-          <form
-            className="flex flex-col gap-4"
-            onSubmit={(event) => {
-              event.preventDefault();
-              setLoginOpen(false);
-            }}
+      <AnimatePresence>
+        {loginOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+            onClick={() => setLoginOpen(false)}
           >
-            <div>
-              <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
-                Email
-              </label>
-              <Input
-                type="email"
-                placeholder="hero@plixblog.com"
-                className="h-auto border-primary bg-background px-4 py-3 font-oswald text-lg comic-border"
-              />
-            </div>
-            <div>
-              <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
-                Password
-              </label>
-              <Input
-                type="password"
-                placeholder="********"
-                className="h-auto border-primary bg-background px-4 py-3 font-oswald text-lg comic-border"
-              />
-            </div>
-            <Button
-              type="submit"
-              className="mt-2 h-auto w-full bg-accent py-3 font-bangers text-2xl text-background hover:bg-primary comic-border"
+            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.85, opacity: 0, y: 30 }}
+              transition={{ type: "spring", bounce: 0.3 }}
+              className="relative z-10 w-full max-w-md bg-card p-8 shadow-2xl comic-border"
+              onClick={(event) => event.stopPropagation()}
             >
-              LOGIN
-            </Button>
-            <p className="text-center font-oswald text-sm text-muted-foreground">
-              No account?{" "}
-              <a href="#" className="text-accent underline transition-colors hover:text-primary">
-                Join the universe
-              </a>
-            </p>
-          </form>
-        </DialogContent>
-      </Dialog>
+              <button
+                onClick={() => setLoginOpen(false)}
+                className="absolute top-4 right-4 text-muted-foreground transition-colors hover:text-accent"
+              >
+                <X size={24} />
+              </button>
+              <span className="font-bangers text-3xl logo-gradient">PLIXBLOG</span>
+              <h2 className="mt-1 mb-1 font-bangers text-4xl">ENTER THE UNIVERSE</h2>
+              <p className="mb-6 font-oswald text-sm uppercase tracking-wide text-muted-foreground">Sign in to your account</p>
+              <form
+                className="flex flex-col gap-4"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  setLoginOpen(false);
+                }}
+              >
+                <div>
+                  <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="hero@plixblog.com"
+                    className="w-full bg-background px-4 py-3 font-oswald text-lg text-foreground transition-colors placeholder:text-muted-foreground/60 focus:border-accent focus:outline-none comic-border"
+                  />
+                </div>
+                <div>
+                  <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    className="w-full bg-background px-4 py-3 font-oswald text-lg text-foreground transition-colors placeholder:text-muted-foreground/60 focus:border-accent focus:outline-none comic-border"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="mt-2 w-full bg-accent py-3 font-bangers text-2xl text-background transition-colors hover:bg-primary comic-border"
+                >
+                  LOGIN
+                </button>
+                <p className="text-center font-oswald text-sm text-muted-foreground">
+                  No account?{" "}
+                  <a href="#" className="text-accent underline transition-colors hover:text-primary">
+                    Join the universe
+                  </a>
+                </p>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <header className="sticky top-0 z-50 border-b-[4px] border-primary bg-background/95 shadow-md backdrop-blur transition-colors duration-300">
         <div className="container mx-auto flex h-20 items-center justify-between gap-4 px-4">
@@ -124,14 +131,14 @@ export function SiteHeader() {
 
           <nav className="hidden items-center gap-5 font-oswald text-base uppercase tracking-wide lg:flex">
             {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
+              <a
+                key={item}
+                href={`#${item.toLowerCase()}`}
                 className="group relative whitespace-nowrap transition-colors hover:text-primary"
               >
-                {item.label}
+                {item}
                 <span className="absolute -bottom-1 left-0 h-[3px] w-0 bg-accent transition-all group-hover:w-full" />
-              </Link>
+              </a>
             ))}
           </nav>
 
@@ -179,13 +186,12 @@ export function SiteHeader() {
             >
               {darkMode ? <Sun size={18} /> : <Moon size={18} />}
             </button>
-            <Button
-              variant="ghost"
+            <button
               onClick={() => setLoginOpen(true)}
-              className="h-auto border-primary px-4 py-2 font-bangers text-lg hover:border-accent hover:bg-transparent hover:text-accent comic-border"
+              className="flex items-center gap-2 px-4 py-2 font-bangers text-lg transition-all hover:border-accent hover:text-accent comic-border"
             >
               <LogIn size={16} /> LOGIN
-            </Button>
+            </button>
           </div>
 
           <div className="flex items-center gap-2 md:hidden">
@@ -209,14 +215,14 @@ export function SiteHeader() {
             >
               <nav className="flex flex-col gap-3 p-4 font-oswald text-xl uppercase">
                 {NAV_ITEMS.map((item) => (
-                  <Link
-                    key={item.label}
-                    href={item.href}
+                  <a
+                    key={item}
+                    href={`#${item.toLowerCase()}`}
                     className="border-b border-secondary/30 pb-3 transition-colors hover:text-primary"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    {item.label}
-                  </Link>
+                    {item}
+                  </a>
                 ))}
                 <div className="mt-2 flex gap-3">
                   {LANGUAGES.map((language) => (
@@ -231,16 +237,15 @@ export function SiteHeader() {
                     </button>
                   ))}
                 </div>
-                <Button
-                  variant="ghost"
+                <button
                   onClick={() => {
                     setLoginOpen(true);
                     setMobileMenuOpen(false);
                   }}
-                  className="mt-1 h-auto justify-start border-secondary px-4 py-2 font-bangers text-2xl hover:bg-transparent hover:text-accent comic-border-secondary"
+                  className="mt-1 flex items-center gap-2 px-4 py-2 font-bangers text-2xl transition-colors hover:text-accent comic-border-secondary"
                 >
                   <LogIn size={20} /> LOGIN
-                </Button>
+                </button>
               </nav>
             </motion.div>
           )}

@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-import { Bangers, Inter, Oswald, Geist } from "next/font/google";
-import "./globals.css";
-import { cn } from "@/lib/utils";
+import { Bangers, Inter, Oswald } from "next/font/google";
 import { SiteHeader } from "@/components/site-header";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+import "./globals.css";
 
 const bangers = Bangers({
   weight: "400",
@@ -23,7 +20,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "PlixBlog – Every Piece of Tech Has an Origin Story",
+  title: "Comic Tech Blog",
   description: "Where silicon meets sequels. PlixBlog covers the arc of technology — from the first commit to the final panel.",
 };
 
@@ -33,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("scroll-smooth", "font-sans", geist.variable)}>
+    <html lang="en" className="scroll-smooth">
       <body className={`${bangers.variable} ${oswald.variable} ${inter.variable} antialiased`}>
         <SiteHeader />
         {children}
