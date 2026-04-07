@@ -173,7 +173,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <footer className="container mx-auto px-4 py-14">
+      <section className="container mx-auto px-4 py-14">
         <Card className="border-accent bg-card comic-border-accent">
           <CardContent className="flex flex-col items-start justify-between gap-6 p-8 md:flex-row md:items-center">
             <div>
@@ -188,7 +188,7 @@ export default function AboutPage() {
             </a>
           </CardContent>
         </Card>
-      </footer>
+      </section>
     </main>
   );
 }

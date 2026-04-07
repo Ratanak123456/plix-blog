@@ -94,19 +94,19 @@
 }
 
 :root {
-  --background: 43 30% 96%;
+  --background: 0 0% 100%;
   --foreground: 240 10% 8%;
 
-  --card: 43 25% 93%;
+  --card: 43 30% 98%;
   --card-foreground: 240 10% 8%;
-  --card-border: 39 60% 70%;
+  --card-border: 240 5.9% 90%;
 
-  --popover: 43 25% 93%;
+  --popover: 0 0% 100%;
   --popover-foreground: 240 10% 8%;
-  --popover-border: 39 60% 70%;
+  --popover-border: 240 5.9% 90%;
 
-  --muted: 43 20% 86%;
-  --muted-foreground: 170 12% 32%;
+  --muted: 240 4.8% 95.9%;
+  --muted-foreground: 240 3.8% 46.1%;
 
   --border: 39 70% 55%;
   --input: 39 30% 78%;
@@ -259,6 +259,30 @@
   .faq-bubble {
     border-left: 4px solid hsl(var(--primary));
     border-radius: 0 0 4px 4px;
+  }
+
+  .faq-question {
+    background: hsl(var(--card));
+    border-color: hsl(var(--border));
+    box-shadow: 3px 3px 0 hsl(var(--border));
+    color: hsl(var(--foreground));
+  }
+
+  .faq-question:hover,
+  .faq-question-active {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  .faq-answer-shell {
+    border: 3px solid hsl(var(--border));
+    border-top: 0;
+    background: hsl(var(--background));
+  }
+
+  .faq-answer-bubble {
+    margin-bottom: 0;
+    background: hsl(var(--card));
   }
 
   .review-bubble {

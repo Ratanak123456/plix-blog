@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bangers, Inter, Oswald } from "next/font/google";
 import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
 
 const bangers = Bangers({
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body className={`${bangers.variable} ${oswald.variable} ${inter.variable} antialiased`}>
         <SiteHeader />
         {children}
+        <SiteFooter />
       </body>
     </html>
   );
