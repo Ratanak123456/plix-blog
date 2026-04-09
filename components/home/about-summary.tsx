@@ -1,8 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+
+import { AboutCard } from "./about-card";
 
 export function AboutSummary() {
   return (
@@ -44,28 +46,7 @@ export function AboutSummary() {
           </div>
         </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, rotate: 2 }}
-          whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="relative flex-1"
-        >
-          <div className="relative z-10 aspect-video overflow-hidden bg-card p-8 text-center comic-border shadow-2xl">
-            <div className="flex h-full flex-col items-center justify-center gap-6">
-              <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <Users size={40} />
-              </div>
-              <p className="font-bangers text-3xl leading-tight">
-                &quot;Tech journalism with a soul. Every story has a face, and 
-                every face has a mission.&quot;
-              </p>
-              <div className="h-1 w-20 bg-accent rounded-full" />
-            </div>
-          </div>
-          {/* Decorative background shape */}
-          <div className="absolute inset-0 -z-10 translate-x-4 translate-y-4 bg-secondary opacity-20 comic-border" />
-        </motion.div>
+        <AboutCard />
       </div>
     </section>
   );

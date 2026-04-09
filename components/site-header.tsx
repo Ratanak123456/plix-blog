@@ -1,9 +1,13 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Globe, LogIn, Menu, Moon, PenSquare, Sun, X } from "lucide-react";
+import { ChevronDown, Globe, LogIn, LogOut, Menu, Moon, PenSquare, Sun, User2, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { AuthModal } from "@/components/auth-modal";
+import { logout } from "@/lib/features/auth/auth-slice";
+import { useGetMyProfileQuery } from "@/lib/services/auth-api";
+import { useAppDispatch, useAppSelector } from "@/lib/store";
 
 const LANGUAGES = [
   { code: "EN", label: "English", flag: "🇺🇸" },
@@ -18,21 +22,25 @@ const NAV_ITEMS = [
 ];
 
 export function SiteHeader() {
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window === "undefined") {
+      return true;
+    }
+
+    return window.localStorage.getItem("plixblog-theme") !== "light";
+  });
   const [langOpen, setLangOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState("EN");
   const [loginOpen, setLoginOpen] = useState(false);
   const [modalType, setModalType] = useState<"login" | "register">("login");
   const langRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const storedTheme = window.localStorage.getItem("plixblog-theme");
-    const isDark = storedTheme !== "light";
-    setDarkMode(isDark);
-    document.documentElement.classList.toggle("dark", isDark);
-    document.documentElement.classList.toggle("light", !isDark);
-  }, []);
+  useGetMyProfileQuery(undefined, {
+    skip: !isAuthenticated,
+  });
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
@@ -53,112 +61,7 @@ export function SiteHeader() {
 
   return (
     <>
-      <AnimatePresence>
-        {loginOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-            onClick={() => setLoginOpen(false)}
-          >
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
-            <motion.div
-              initial={{ scale: 0.85, opacity: 0, y: 30 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.85, opacity: 0, y: 30 }}
-              transition={{ type: "spring", bounce: 0.3 }}
-              className="relative z-10 w-full max-w-md bg-card p-8 shadow-2xl comic-border"
-              onClick={(event) => event.stopPropagation()}
-            >
-              <button
-                onClick={() => setLoginOpen(false)}
-                className="absolute top-4 right-4 text-muted-foreground transition-colors hover:text-accent"
-              >
-                <X size={24} />
-              </button>
-              <span className="font-bangers text-3xl logo-gradient">PLIXBLOG</span>
-              <h2 className="mt-1 mb-1 font-bangers text-4xl">
-                {modalType === "login" ? "ENTER THE UNIVERSE" : "JOIN THE HEROES"}
-              </h2>
-              <p className="mb-6 font-oswald text-sm uppercase tracking-wide text-muted-foreground">
-                {modalType === "login" ? "Sign in to your account" : "Create your secret identity"}
-              </p>
-              <form
-                className="flex flex-col gap-4"
-                onSubmit={(event) => {
-                  event.preventDefault();
-                  setLoginOpen(false);
-                }}
-              >
-                {modalType === "register" && (
-                  <div>
-                    <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
-                      Username
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="SuperReader99"
-                      className="w-full bg-background px-4 py-3 font-oswald text-lg text-foreground transition-colors placeholder:text-muted-foreground/60 focus:border-accent focus:outline-none comic-border"
-                    />
-                  </div>
-                )}
-                <div>
-                  <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    placeholder="hero@plixblog.com"
-                    className="w-full bg-background px-4 py-3 font-oswald text-lg text-foreground transition-colors placeholder:text-muted-foreground/60 focus:border-accent focus:outline-none comic-border"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    placeholder="••••••••"
-                    className="w-full bg-background px-4 py-3 font-oswald text-lg text-foreground transition-colors placeholder:text-muted-foreground/60 focus:border-accent focus:outline-none comic-border"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="mt-2 w-full bg-accent py-3 font-bangers text-2xl text-background transition-colors hover:bg-primary comic-border"
-                >
-                  {modalType === "login" ? "LOGIN" : "REGISTER"}
-                </button>
-                <p className="text-center font-oswald text-sm text-muted-foreground">
-                  {modalType === "login" ? (
-                    <>
-                      No account?{" "}
-                      <button
-                        type="button"
-                        onClick={() => setModalType("register")}
-                        className="text-accent underline transition-colors hover:text-primary"
-                      >
-                        Join the universe
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      Already a hero?{" "}
-                      <button
-                        type="button"
-                        onClick={() => setModalType("login")}
-                        className="text-accent underline transition-colors hover:text-primary"
-                      >
-                        Login here
-                      </button>
-                    </>
-                  )}
-                </p>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <AuthModal open={loginOpen} mode={modalType} onClose={() => setLoginOpen(false)} onModeChange={setModalType} />
 
       <header className="sticky top-0 z-50 border-b-[4px] border-primary bg-background/95 shadow-md backdrop-blur transition-colors duration-300">
         <div className="container mx-auto flex h-20 items-center justify-between gap-4 px-4">
@@ -232,15 +135,30 @@ export function SiteHeader() {
             >
               <PenSquare size={16} /> WRITE
             </Link>
-            <button
-              onClick={() => {
-                setModalType("login");
-                setLoginOpen(true);
-              }}
-              className="flex items-center gap-2 px-4 py-2 font-bangers text-lg transition-all hover:border-accent hover:text-accent comic-border"
-            >
-              <LogIn size={16} /> LOGIN
-            </button>
+            {isAuthenticated && user ? (
+              <>
+                <div className="flex items-center gap-2 px-4 py-2 font-oswald text-sm uppercase tracking-wide comic-border">
+                  <User2 size={16} />
+                  <span>{user.username}</span>
+                </div>
+                <button
+                  onClick={() => dispatch(logout())}
+                  className="flex items-center gap-2 px-4 py-2 font-bangers text-lg transition-all hover:border-accent hover:text-accent comic-border"
+                >
+                  <LogOut size={16} /> LOGOUT
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => {
+                  setModalType("login");
+                  setLoginOpen(true);
+                }}
+                className="flex items-center gap-2 px-4 py-2 font-bangers text-lg transition-all hover:border-accent hover:text-accent comic-border"
+              >
+                <LogIn size={16} /> LOGIN
+              </button>
+            )}
           </div>
 
           <div className="flex items-center gap-2 md:hidden">
@@ -293,16 +211,33 @@ export function SiteHeader() {
                 >
                   <PenSquare size={20} /> WRITE
                 </Link>
-                <button
-                  onClick={() => {
-                    setModalType("login");
-                    setLoginOpen(true);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="mt-1 flex items-center gap-2 px-4 py-2 font-bangers text-2xl transition-colors hover:text-accent comic-border-secondary"
-                >
-                  <LogIn size={20} /> LOGIN
-                </button>
+                {isAuthenticated && user ? (
+                  <>
+                    <div className="mt-2 flex items-center gap-2 px-4 py-2 font-oswald text-base uppercase comic-border">
+                      <User2 size={18} /> {user.username}
+                    </div>
+                    <button
+                      onClick={() => {
+                        dispatch(logout());
+                        setMobileMenuOpen(false);
+                      }}
+                      className="mt-1 flex items-center gap-2 px-4 py-2 font-bangers text-2xl transition-colors hover:text-accent comic-border-secondary"
+                    >
+                      <LogOut size={20} /> LOGOUT
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setModalType("login");
+                      setLoginOpen(true);
+                      setMobileMenuOpen(false);
+                    }}
+                    className="mt-1 flex items-center gap-2 px-4 py-2 font-bangers text-2xl transition-colors hover:text-accent comic-border-secondary"
+                  >
+                    <LogIn size={20} /> LOGIN
+                  </button>
+                )}
               </nav>
             </motion.div>
           )}

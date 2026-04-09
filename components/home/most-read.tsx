@@ -20,7 +20,7 @@ export function MostRead() {
         className="group cursor-pointer"
       >
         <div className="flex flex-col overflow-hidden bg-card transition-colors hover:border-accent md:flex-row comic-border">
-          <div className="relative aspect-video min-h-[240px] overflow-hidden bg-gradient-to-br from-violet-900 via-purple-700 to-accent/70 md:w-2/5 md:aspect-auto">
+          <div className="relative aspect-video min-h-60 overflow-hidden bg-gradient-to-br from-violet-900 via-purple-700 to-accent/70 md:w-2/5 md:aspect-auto">
             <div className="absolute inset-0 opacity-30 halftone-bg" />
             <div className="absolute inset-0 flex items-center justify-center">
               <motion.div

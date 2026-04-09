@@ -26,10 +26,14 @@
     "next-env.d.ts",
     "app/**/*.ts",
     "app/**/*.tsx",
+    "components/**/*.ts",
+    "components/**/*.tsx",
+    "lib/**/*.ts",
+    "lib/**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "*.ts",
     "*.mts"
   ],
-  "exclude": ["node_modules", "hooks/**", "lib/**", "pages/**", "ui/**"]
+  "exclude": ["node_modules", "pages/**"]
 }

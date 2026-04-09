@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, HeartHandshake, NotebookText, Sparkles, Users } from "lucide-react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const VALUES = [
@@ -71,12 +72,12 @@ export default function AboutPage() {
                 matters now.
               </p>
               <div className="mt-8">
-                <a
+                <Link
                   href="/#blog"
                   className="inline-flex items-center gap-2 bg-accent px-6 py-3 font-bangers text-xl text-background transition-colors hover:bg-primary comic-border"
                 >
                   READ THE LATEST ISSUE <ArrowRight size={18} />
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -180,12 +181,12 @@ export default function AboutPage() {
               <p className="font-oswald text-sm uppercase tracking-[0.25em] text-muted-foreground">Join The Universe</p>
               <h2 className="mt-2 font-bangers text-4xl text-primary">Follow the stories behind the screens.</h2>
             </div>
-            <a
+            <Link
               href="/#blog"
               className="inline-flex items-center gap-2 bg-accent px-6 py-3 font-bangers text-xl text-background transition-colors hover:bg-primary comic-border"
             >
               Back To Blog <ArrowRight size={18} />
-            </a>
+            </Link>
           </CardContent>
         </Card>
       </section>

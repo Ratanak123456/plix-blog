@@ -1,7 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Clock } from "lucide-react";
+import { BlogCard } from "./blog-card";
 
 const POPULAR_ISSUES = [
   {
@@ -53,40 +52,7 @@ export function PopularIssues() {
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {POPULAR_ISSUES.map((post, index) => (
-          <motion.article
-            key={post.title}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
-            className="flex cursor-pointer flex-col group"
-          >
-            <div
-              className={`relative mb-4 aspect-[3/2] w-full overflow-hidden bg-gradient-to-br ${post.color} comic-border`}
-            >
-              <div className="absolute inset-0 opacity-20 halftone-bg" />
-              <div className="absolute top-3 left-3 rotate-[-2deg] bg-accent px-2 py-0.5 font-bangers text-sm text-background transition-transform group-hover:rotate-0 comic-border-secondary">
-                {post.cat}
-              </div>
-            </div>
-            <div className="mb-2 flex items-center justify-between font-oswald text-xs font-bold uppercase text-primary">
-              <div className="flex items-center gap-2">
-                <Clock size={12} /> {post.time} READ
-              </div>
-              <div className="text-muted-foreground">{post.date}</div>
-            </div>
-            <h3 className="mb-4 font-bangers text-2xl leading-tight transition-colors group-hover:text-accent">
-              {post.title}
-            </h3>
-            <div className="mt-auto flex items-center gap-3 border-t border-border pt-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary font-bangers text-xs text-white">
-                {post.avatar}
-              </div>
-              <div className="font-oswald text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                BY {post.author}
-              </div>
-            </div>
-          </motion.article>
+          <BlogCard key={post.title} {...post} index={index} />
         ))}
       </div>
     </section>

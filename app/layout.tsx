@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bangers, Inter, Oswald } from "next/font/google";
+import { Providers } from "@/components/providers";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
@@ -33,9 +34,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body className={`${bangers.variable} ${oswald.variable} ${inter.variable} antialiased`}>
-        <SiteHeader />
-        {children}
-        <SiteFooter />
+        <Providers>
+          <SiteHeader />
+          {children}
+          <SiteFooter />
+        </Providers>
       </body>
     </html>
   );
