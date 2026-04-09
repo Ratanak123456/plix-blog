@@ -2,19 +2,26 @@
 
 import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { loadAuthState, saveAuthState } from "@/lib/auth-storage";
+import { emptyAuthState, saveAuthState } from "@/lib/auth-storage";
 import { authReducer } from "@/lib/features/auth/auth-slice";
 import { authApi } from "@/lib/services/auth-api";
 
 const authPersistenceMiddleware: Middleware = (storeApi) => (next) => (action) => {
   const result = next(action);
-  saveAuthState(storeApi.getState().auth);
+
+  if (typeof action === "object" && action !== null && "type" in action) {
+    const actionType = String(action.type);
+    if (actionType.startsWith("auth/")) {
+      saveAuthState(storeApi.getState().auth);
+    }
+  }
+
   return result;
 };
 
 export const store = configureStore({
   preloadedState: {
-    auth: loadAuthState(),
+    auth: emptyAuthState,
   },
   reducer: {
     auth: authReducer,

@@ -4,13 +4,17 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, MessageSquare } from "lucide-react";
 
-// Pre-calculate SVG line coordinates to avoid hydration mismatch
+function toSvgCoord(value: number) {
+  return value.toFixed(6);
+}
+
+// Pre-calculate SVG line coordinates as strings to avoid hydration mismatch
 const SPEED_LINES_TOP = Array.from({ length: 18 }).map((_, i) => {
   const angle = (i / 18) * 360;
   const rad = (angle * Math.PI) / 180;
   return {
-    x2: 100 + Math.cos(rad) * 160,
-    y2: 100 + Math.sin(rad) * 160,
+    x2: toSvgCoord(100 + Math.cos(rad) * 160),
+    y2: toSvgCoord(100 + Math.sin(rad) * 160),
     strokeWidth: i % 3 === 0 ? "2" : "0.8",
   };
 });
@@ -19,8 +23,8 @@ const SPEED_LINES_BOTTOM = Array.from({ length: 14 }).map((_, i) => {
   const angle = (i / 14) * 360;
   const rad = (angle * Math.PI) / 180;
   return {
-    x2: 100 + Math.cos(rad) * 140,
-    y2: 100 + Math.sin(rad) * 140,
+    x2: toSvgCoord(100 + Math.cos(rad) * 140),
+    y2: toSvgCoord(100 + Math.sin(rad) * 140),
     strokeWidth: i % 2 === 0 ? "1.5" : "0.6",
   };
 });

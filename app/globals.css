@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "quill/dist/quill.snow.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -300,5 +301,95 @@
 
   .shadow-coral {
     box-shadow: var(--shadow-coral);
+  }
+
+  .quill-shell .ql-toolbar {
+    border: 3px solid hsl(var(--primary));
+    border-bottom-width: 0;
+    background: hsl(var(--card));
+    color: hsl(var(--foreground));
+  }
+
+  .quill-shell .ql-container {
+    border: 3px solid hsl(var(--primary));
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-plix-inter), sans-serif;
+    font-size: 1rem;
+  }
+
+  .quill-shell .ql-editor {
+    min-height: 18rem;
+    line-height: 1.75;
+  }
+
+  .quill-shell .ql-editor.ql-blank::before {
+    color: hsl(var(--muted-foreground));
+    font-style: normal;
+  }
+
+  .quill-shell .ql-stroke {
+    stroke: hsl(var(--foreground));
+  }
+
+  .quill-shell .ql-fill {
+    fill: hsl(var(--foreground));
+  }
+
+  .quill-shell .ql-picker {
+    color: hsl(var(--foreground));
+  }
+
+  .editor-preview h1,
+  .editor-preview h2,
+  .editor-preview h3 {
+    font-family: var(--font-plix-bangers), cursive;
+    line-height: 1.1;
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .editor-preview h1 {
+    font-size: 2rem;
+  }
+
+  .editor-preview h2 {
+    font-size: 1.6rem;
+  }
+
+  .editor-preview h3 {
+    font-size: 1.3rem;
+  }
+
+  .editor-preview p,
+  .editor-preview ul,
+  .editor-preview ol,
+  .editor-preview blockquote {
+    margin-bottom: 0.95rem;
+  }
+
+  .editor-preview ul,
+  .editor-preview ol {
+    padding-left: 1.5rem;
+  }
+
+  .editor-preview ul {
+    list-style: disc;
+  }
+
+  .editor-preview ol {
+    list-style: decimal;
+  }
+
+  .editor-preview blockquote {
+    border-left: 4px solid hsl(var(--accent));
+    padding-left: 1rem;
+    color: hsl(var(--muted-foreground));
+    font-style: italic;
+  }
+
+  .editor-preview a {
+    color: hsl(var(--accent));
+    text-decoration: underline;
   }
 }

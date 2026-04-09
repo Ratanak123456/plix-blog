@@ -51,6 +51,15 @@ type BackendPostResponse = {
     id: string;
     name: string;
   } | null;
+  likedByCurrentUser?: boolean;
+  bookmarkedByCurrentUser?: boolean;
+};
+
+type BackendTagResponse = {
+  id: string;
+  name: string;
+  slug: string;
+  postCount: number | null;
 };
 
 type PageResponse<T> = {
@@ -86,6 +95,8 @@ export type BlogPost = {
     id: string;
     name: string;
   } | null;
+  likedByCurrentUser: boolean;
+  bookmarkedByCurrentUser: boolean;
 };
 
 export type BlogCategory = {
@@ -94,6 +105,40 @@ export type BlogCategory = {
   slug: string;
   description: string | null;
   postCount: number;
+};
+
+export type BlogTag = {
+  id: string;
+  name: string;
+  slug: string;
+  postCount: number;
+};
+
+export type CreatePostRequest = {
+  title: string;
+  content: string;
+  thumbnail?: string | null;
+  categoryId?: string | null;
+  tagIds?: string[];
+  status: "DRAFT" | "PUBLISHED";
+};
+
+type ToggleLikeResponse = {
+  liked: boolean;
+  likeCount: number;
+};
+
+type ToggleBookmarkResponse = {
+  bookmarked: boolean;
+  bookmarkCount: number;
+};
+
+type LikeStatusResponse = {
+  liked: boolean;
+};
+
+type BookmarkStatusResponse = {
+  bookmarked: boolean;
 };
 
 type LoginRequest = {
@@ -147,6 +192,8 @@ function normalizePost(post: BackendPostResponse): BlogPost {
     updatedAt: post.updatedAt,
     author: post.author,
     category: post.category,
+    likedByCurrentUser: post.likedByCurrentUser ?? false,
+    bookmarkedByCurrentUser: post.bookmarkedByCurrentUser ?? false,
   };
 }
 
@@ -163,6 +210,15 @@ function normalizeCategory(category: {
     slug: category.slug,
     description: category.description,
     postCount: category.postCount ?? 0,
+  };
+}
+
+function normalizeTag(tag: BackendTagResponse): BlogTag {
+  return {
+    id: tag.id,
+    name: tag.name,
+    slug: tag.slug,
+    postCount: tag.postCount ?? 0,
   };
 }
 
@@ -220,7 +276,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Profile"],
+  tagTypes: ["Profile", "Posts"],
   endpoints: (builder) => ({
     register: builder.mutation<BackendAuthResponse, RegisterRequest>({
       query: (body) => ({
@@ -276,6 +332,18 @@ export const authApi = createApi({
       }),
       transformResponse: (response: PageResponse<BackendPostResponse>) => response.content.map(normalizePost),
     }),
+    getLatestPosts: builder.query<BlogPost[], { page?: number; size?: number } | void>({
+      query: (params) => ({
+        url: "/posts",
+        params: {
+          page: params?.page ?? 0,
+          size: params?.size ?? 4,
+          sort: "createdAt,desc",
+        },
+      }),
+      transformResponse: (response: PageResponse<BackendPostResponse>) => response.content.map(normalizePost),
+      providesTags: ["Posts"],
+    }),
     getCategories: builder.query<BlogCategory[], void>({
       query: () => "/categories",
       transformResponse: (
@@ -288,14 +356,61 @@ export const authApi = createApi({
         }>,
       ) => response.map(normalizeCategory),
     }),
+    getTags: builder.query<BlogTag[], void>({
+      query: () => "/tags",
+      transformResponse: (response: BackendTagResponse[]) => response.map(normalizeTag),
+    }),
+    createPost: builder.mutation<BlogPost, CreatePostRequest>({
+      query: (body) => ({
+        url: "/posts",
+        method: "POST",
+        body: {
+          ...body,
+          thumbnail: body.thumbnail?.trim() ? body.thumbnail.trim() : null,
+          categoryId: body.categoryId || null,
+          tagIds: body.tagIds ?? [],
+        },
+      }),
+      transformResponse: (response: BackendPostResponse) => normalizePost(response),
+      invalidatesTags: ["Posts"],
+    }),
+    getPostLikeStatus: builder.query<boolean, string>({
+      query: (postId) => `/posts/${postId}/like/status`,
+      transformResponse: (response: LikeStatusResponse) => response.liked,
+    }),
+    getPostBookmarkStatus: builder.query<boolean, string>({
+      query: (postId) => `/posts/${postId}/bookmark/status`,
+      transformResponse: (response: BookmarkStatusResponse) => response.bookmarked,
+    }),
+    togglePostLike: builder.mutation<ToggleLikeResponse, string>({
+      query: (postId) => ({
+        url: `/posts/${postId}/like`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Posts"],
+    }),
+    togglePostBookmark: builder.mutation<ToggleBookmarkResponse, string>({
+      query: (postId) => ({
+        url: `/posts/${postId}/bookmark`,
+        method: "POST",
+      }),
+      invalidatesTags: ["Posts"],
+    }),
   }),
 });
 
 export const {
+  useCreatePostMutation,
   useGetCategoriesQuery,
+  useGetLatestPostsQuery,
+  useGetPostBookmarkStatusQuery,
+  useGetPostLikeStatusQuery,
   useGetMyProfileQuery,
   useGetMostLikedPostsQuery,
+  useGetTagsQuery,
   useLoginMutation,
   useRefreshMutation,
   useRegisterMutation,
+  useTogglePostBookmarkMutation,
+  useTogglePostLikeMutation,
 } = authApi;

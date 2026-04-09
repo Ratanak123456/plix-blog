@@ -17,6 +17,7 @@ export function AboutCard() {
           src="/talk.jpg"
           alt="Our team discussing"
           fill
+          sizes="(max-width: 1024px) 100vw, 50vw"
           className="object-cover"
         />
       </div>
