@@ -228,12 +228,32 @@ function normalizeTag(tag: BackendTagResponse): BlogTag {
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://plix-blog-api.onrender.com/api/v1",
-  prepareHeaders: (headers, { getState }) => {
+  prepareHeaders: (headers, { getState, endpoint, type }) => {
     const token = (getState() as RootState).auth.accessToken;
-    if (token) {
+    const endpointsRequiringAuth = new Set([
+      "getMyProfile",
+      "getPostLikeStatus",
+      "getPostBookmarkStatus",
+      "createTag",
+      "createPost",
+      "togglePostLike",
+      "togglePostBookmark",
+    ]);
+    const endpointsWithJsonBody = new Set([
+      "register",
+      "login",
+      "refresh",
+      "createTag",
+      "createPost",
+    ]);
+
+    if (token && endpointsRequiringAuth.has(endpoint)) {
       headers.set("authorization", `Bearer ${token}`);
     }
-    headers.set("content-type", "application/json");
+    if (type === "mutation" && endpointsWithJsonBody.has(endpoint)) {
+      headers.set("content-type", "application/json");
+    }
+
     return headers;
   },
 });
