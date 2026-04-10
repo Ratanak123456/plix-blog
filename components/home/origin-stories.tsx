@@ -62,7 +62,7 @@ export function OriginStories() {
       </div>
       {isLoading ? (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <div className="h-[28rem] animate-pulse bg-card comic-border-secondary lg:col-span-2" />
+          <div className="h-112 animate-pulse bg-card comic-border-secondary lg:col-span-2" />
           <div className="flex flex-col gap-5">
             {Array.from({ length: 3 }).map((_, index) => (
               <div key={index} className="h-32 animate-pulse bg-card comic-border-secondary" />
@@ -86,7 +86,7 @@ export function OriginStories() {
           >
             <div className="flex h-full flex-col overflow-hidden bg-muted transition-colors hover:border-primary comic-border-secondary">
               <Link href={`/#blog-${leadPost.slug}`} className="block cursor-pointer">
-                <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-cyan-900 to-emerald-800 md:aspect-[21/9]">
+                <div className="relative aspect-video w-full overflow-hidden bg-linear-to-br from-cyan-900 to-emerald-800 md:aspect-21/9">
                   <div className="absolute inset-0 opacity-30 halftone-bg" />
                   {leadPost.thumbnailUrl ? (
                     <div
@@ -94,7 +94,7 @@ export function OriginStories() {
                       style={{ backgroundImage: `url(${leadPost.thumbnailUrl})` }}
                     />
                   ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-900 to-emerald-800 transition-transform duration-500 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-linear-to-br from-cyan-900 to-emerald-800 transition-transform duration-500 group-hover:scale-105" />
                   )}
                 </div>
               </Link>
@@ -151,7 +151,7 @@ export function OriginStories() {
                 <div className="bg-card p-4 transition-all hover:-translate-y-1 hover:border-primary comic-border-secondary">
                   <Link href={`/#blog-${post.slug}`} className="flex cursor-pointer gap-4">
                     <div
-                      className="h-24 w-24 shrink-0 overflow-hidden bg-gradient-to-br from-orange-700 to-amber-500 comic-border-accent"
+                      className="h-24 w-24 shrink-0 overflow-hidden bg-linear-to-br from-orange-700 to-amber-500 comic-border-accent"
                       style={post.thumbnailUrl ? { backgroundImage: `url(${post.thumbnailUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
                     />
                     <div className="flex flex-col justify-center">
@@ -161,7 +161,7 @@ export function OriginStories() {
                           • {getReadTime(post.content)} • {formatDate(post.publishedAt ?? post.createdAt)}
                         </span>
                       </div>
-                      <h4 className="mb-1 font-bangers text-2xl leading-tight transition-colors group-hover:text-primary">
+                      <h4 className="mb-1 font-bangers text-2xl leading-tight transition-colors group-hover:text-primary line-clamp-1">
                         {post.title}
                       </h4>
                       <div className="font-oswald text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
@@ -169,7 +169,7 @@ export function OriginStories() {
                       </div>
                     </div>
                   </Link>
-                  <div className="mt-3 ml-[7rem]">
+                  <div className="mt-3 ml-28">
                     <PostActions
                       postId={post.id}
                       initialLikeCount={post.likeCount}

@@ -46,7 +46,7 @@ export function Hero() {
         transition={{ duration: 0.6 }}
         className="relative overflow-hidden bg-card p-4 md:p-8 comic-border halftone-bg"
       >
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20" />
+        <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-primary/20 via-transparent to-accent/20" />
         <div className="relative z-10 flex flex-col items-center gap-8 md:flex-row">
           <div className="flex-1 space-y-5">
             <div className="inline-block -rotate-2 bg-primary px-4 py-1 font-bangers text-xl text-background comic-border-secondary">
@@ -69,7 +69,7 @@ export function Hero() {
               </>
             ) : (
               <>
-                <h1 className="font-bangers text-6xl leading-none uppercase drop-shadow-[4px_4px_0px_hsl(var(--secondary))] md:text-8xl">
+                <h1 className="font-bangers line-clamp-2 text-6xl leading-none uppercase drop-shadow-[4px_4px_0px_hsl(var(--secondary))] md:text-8xl">
                   {featuredPost.title}
                 </h1>
                 <div className="flex flex-wrap items-center gap-3 font-oswald text-sm uppercase tracking-wider text-muted-foreground">
@@ -96,14 +96,14 @@ export function Hero() {
             )}
           </div>
           <div className="w-full flex-1">
-            <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden bg-gradient-to-tr from-indigo-900 via-primary/50 to-accent comic-border-accent md:aspect-[4/3]">
+            <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden bg-linear-to-tr from-indigo-900 via-primary/50 to-accent comic-border-accent md:aspect-4/3">
               {featuredPost?.thumbnailUrl ? (
                 <>
                   <div
                     className="absolute inset-0 bg-cover bg-center"
                     style={{ backgroundImage: `url(${featuredPost.thumbnailUrl})` }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-background/60 via-transparent to-transparent" />
                 </>
               ) : (
                 <motion.div
@@ -119,7 +119,7 @@ export function Hero() {
                 </motion.div>
               )}
               {featuredPost?.category && (
-                <div className="absolute top-4 left-4 z-20 rotate-[-2deg] bg-accent px-3 py-1 font-bangers text-lg text-background comic-border-secondary">
+                <div className="absolute top-4 left-4 z-20 -rotate-2 bg-accent px-3 py-1 font-bangers text-lg text-background comic-border-secondary">
                   {featuredPost.category.name}
                 </div>
               )}

@@ -123,6 +123,10 @@ export type CreatePostRequest = {
   status: "DRAFT" | "PUBLISHED";
 };
 
+export type CreateTagRequest = {
+  name: string;
+};
+
 type ToggleLikeResponse = {
   liked: boolean;
   likeCount: number;
@@ -223,7 +227,7 @@ function normalizeTag(tag: BackendTagResponse): BlogTag {
 }
 
 const rawBaseQuery = fetchBaseQuery({
-  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8080/api/v1",
+  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://plix-blog-api.onrender.com/api/v1",
   prepareHeaders: (headers, { getState }) => {
     const token = (getState() as RootState).auth.accessToken;
     if (token) {
@@ -276,7 +280,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Profile", "Posts"],
+  tagTypes: ["Profile", "Posts", "Tags"],
   endpoints: (builder) => ({
     register: builder.mutation<BackendAuthResponse, RegisterRequest>({
       query: (body) => ({
@@ -359,6 +363,16 @@ export const authApi = createApi({
     getTags: builder.query<BlogTag[], void>({
       query: () => "/tags",
       transformResponse: (response: BackendTagResponse[]) => response.map(normalizeTag),
+      providesTags: ["Tags"],
+    }),
+    createTag: builder.mutation<BlogTag, CreateTagRequest>({
+      query: (body) => ({
+        url: "/tags",
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response: BackendTagResponse) => normalizeTag(response),
+      invalidatesTags: ["Tags"],
     }),
     createPost: builder.mutation<BlogPost, CreatePostRequest>({
       query: (body) => ({
@@ -401,6 +415,7 @@ export const authApi = createApi({
 
 export const {
   useCreatePostMutation,
+  useCreateTagMutation,
   useGetCategoriesQuery,
   useGetLatestPostsQuery,
   useGetPostBookmarkStatusQuery,

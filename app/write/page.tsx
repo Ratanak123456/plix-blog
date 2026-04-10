@@ -5,7 +5,7 @@ import { AlertCircle, BookOpenText, CheckCircle2, LoaderCircle, PenSquare, Spark
 import { useMemo, useState } from "react";
 import { AuthModal } from "@/components/auth-modal";
 import { QuillEditor } from "@/components/write/quill-editor";
-import { useGetCategoriesQuery, useGetTagsQuery, useCreatePostMutation } from "@/lib/services/auth-api";
+import { useCreatePostMutation, useCreateTagMutation, useGetCategoriesQuery, useGetTagsQuery } from "@/lib/services/auth-api";
 import { useAppSelector } from "@/lib/store";
 
 type ApiErrorPayload = {
@@ -38,6 +38,7 @@ export default function WritePage() {
   const [thumbnail, setThumbnail] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [tagIds, setTagIds] = useState<string[]>([]);
+  const [newTagName, setNewTagName] = useState("");
   const [content, setContent] = useState(EMPTY_PARAGRAPH);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
@@ -47,6 +48,7 @@ export default function WritePage() {
   const { data: categories = [], isLoading: categoriesLoading } = useGetCategoriesQuery();
   const { data: tags = [], isLoading: tagsLoading } = useGetTagsQuery();
   const [createPost, { isLoading: isSaving }] = useCreatePostMutation();
+  const [createTag, { isLoading: isCreatingTag }] = useCreateTagMutation();
 
   const plainText = useMemo(() => stripHtml(content), [content]);
   const wordCount = plainText ? plainText.split(" ").length : 0;
@@ -56,6 +58,33 @@ export default function WritePage() {
     setTagIds((current) =>
       current.includes(tagId) ? current.filter((value) => value !== tagId) : [...current, tagId].slice(0, 10),
     );
+  }
+
+  async function handleCreateTag() {
+    const trimmedName = newTagName.trim();
+    if (!isAuthenticated || !trimmedName) {
+      return;
+    }
+
+    const existingTag = tags.find((tag) => tag.name.toLowerCase() === trimmedName.toLowerCase());
+    if (existingTag) {
+      setTagIds((current) => (current.includes(existingTag.id) ? current : [...current, existingTag.id].slice(0, 10)));
+      setNewTagName("");
+      setFeedback(`Tag "${existingTag.name}" already exists, so it was selected for this post.`);
+      setCreatedSlug(null);
+      return;
+    }
+
+    try {
+      const createdTag = await createTag({ name: trimmedName }).unwrap();
+      setTagIds((current) => (current.includes(createdTag.id) ? current : [...current, createdTag.id].slice(0, 10)));
+      setNewTagName("");
+      setFeedback(`Tag "${createdTag.name}" created and selected.`);
+      setCreatedSlug(null);
+    } catch (error) {
+      setFeedback(getErrorMessage(error));
+      setCreatedSlug(null);
+    }
   }
 
   async function handleSubmit(status: "DRAFT" | "PUBLISHED") {
@@ -82,6 +111,7 @@ export default function WritePage() {
       setThumbnail("");
       setCategoryId("");
       setTagIds([]);
+      setNewTagName("");
       setContent(EMPTY_PARAGRAPH);
     } catch (error) {
       setFeedback(getErrorMessage(error));
@@ -257,6 +287,29 @@ export default function WritePage() {
                     <Tags size={14} />
                     Pick up to 10 tags
                   </div>
+                  <div className="mb-4 flex gap-3">
+                    <input
+                      value={newTagName}
+                      onChange={(event) => setNewTagName(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          event.preventDefault();
+                          void handleCreateTag();
+                        }
+                      }}
+                      placeholder="Create a new tag"
+                      disabled={!isAuthenticated || isCreatingTag || tagIds.length >= 10}
+                      className="flex-1 bg-background px-4 py-3 font-sans text-base text-foreground placeholder:text-muted-foreground/50 disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none comic-border-secondary"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => void handleCreateTag()}
+                      disabled={!isAuthenticated || !newTagName.trim() || isCreatingTag || tagIds.length >= 10}
+                      className="px-4 py-3 font-bangers text-xl transition-colors hover:text-accent disabled:cursor-not-allowed disabled:opacity-50 comic-border-secondary"
+                    >
+                      {isCreatingTag ? "Adding..." : "Add Tag"}
+                    </button>
+                  </div>
                   <div className="flex flex-wrap gap-3">
                     {tags.map((tag) => {
                       const active = tagIds.includes(tag.id);
@@ -348,7 +401,7 @@ export default function WritePage() {
                 <ul className="mt-4 space-y-3 font-sans text-sm text-muted-foreground">
                   <li>The backend accepts HTML content from Quill in the `content` field.</li>
                   <li>`thumbnail` must be a valid `http` or `https` URL.</li>
-                  <li>`categoryId` is optional. `tagIds` can include up to 10 tags.</li>
+                  <li>`categoryId` is optional. You can create a new tag here or select up to 10 existing tags.</li>
                   <li>Use `Save Draft` for `DRAFT` or `Publish` for `PUBLISHED`.</li>
                 </ul>
                 {isSaving && (
