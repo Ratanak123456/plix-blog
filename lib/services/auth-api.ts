@@ -114,6 +114,12 @@ export type BlogTag = {
   postCount: number;
 };
 
+type GetPostsParams = {
+  page?: number;
+  size?: number;
+  sort?: string;
+};
+
 export type CreatePostRequest = {
   title: string;
   content: string;
@@ -368,6 +374,11 @@ export const authApi = createApi({
       transformResponse: (response: PageResponse<BackendPostResponse>) => response.content.map(normalizePost),
       providesTags: ["Posts"],
     }),
+    getPostBySlug: builder.query<BlogPost, string>({
+      query: (slug) => `/posts/${slug}`,
+      transformResponse: (response: BackendPostResponse) => normalizePost(response),
+      providesTags: ["Posts"],
+    }),
     getCategories: builder.query<BlogCategory[], void>({
       query: () => "/categories",
       transformResponse: (
@@ -438,6 +449,7 @@ export const {
   useCreateTagMutation,
   useGetCategoriesQuery,
   useGetLatestPostsQuery,
+  useGetPostBySlugQuery,
   useGetPostBookmarkStatusQuery,
   useGetPostLikeStatusQuery,
   useGetMyProfileQuery,

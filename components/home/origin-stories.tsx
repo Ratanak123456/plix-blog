@@ -85,7 +85,7 @@ export function OriginStories() {
             className="group lg:col-span-2"
           >
             <div className="flex h-full flex-col overflow-hidden bg-muted transition-colors hover:border-primary comic-border-secondary">
-              <Link href={`/#blog-${leadPost.slug}`} className="block cursor-pointer">
+              <Link href={`/posts/${leadPost.slug}`} className="block cursor-pointer">
                 <div className="relative aspect-video w-full overflow-hidden bg-linear-to-br from-cyan-900 to-emerald-800 md:aspect-21/9">
                   <div className="absolute inset-0 opacity-30 halftone-bg" />
                   {leadPost.thumbnailUrl ? (
@@ -99,7 +99,7 @@ export function OriginStories() {
                 </div>
               </Link>
               <div className="relative z-10 -mt-10 flex flex-1 flex-col justify-end border-t-4 border-secondary bg-card p-6 transition-colors group-hover:border-primary md:p-8">
-                <Link href={`/#blog-${leadPost.slug}`} className="block cursor-pointer">
+                <Link href={`/posts/${leadPost.slug}`} className="block cursor-pointer">
                   <div className="mb-3 flex flex-wrap items-center gap-4">
                     <div className="flex items-center gap-2">
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary font-bangers text-xs text-white">
@@ -149,7 +149,7 @@ export function OriginStories() {
                 className="group"
               >
                 <div className="bg-card p-4 transition-all hover:-translate-y-1 hover:border-primary comic-border-secondary">
-                  <Link href={`/#blog-${post.slug}`} className="flex cursor-pointer gap-4">
+                  <Link href={`/posts/${post.slug}`} className="flex cursor-pointer gap-4">
                     <div
                       className="h-24 w-24 shrink-0 overflow-hidden bg-linear-to-br from-orange-700 to-amber-500 comic-border-accent"
                       style={post.thumbnailUrl ? { backgroundImage: `url(${post.thumbnailUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
