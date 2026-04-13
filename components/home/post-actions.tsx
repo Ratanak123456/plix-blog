@@ -1,7 +1,7 @@
 "use client";
 
 import { Bookmark, Heart } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   useGetPostBookmarkStatusQuery,
   useGetPostLikeStatusQuery,
@@ -33,23 +33,15 @@ export function PostActions({
   const [toggleLike, { isLoading: likePending }] = useTogglePostLikeMutation();
   const [toggleBookmark, { isLoading: bookmarkPending }] = useTogglePostBookmarkMutation();
 
-  const [liked, setLiked] = useState(initialLiked);
-  const [bookmarked, setBookmarked] = useState(initialBookmarked);
-  const [likeCount, setLikeCount] = useState(initialLikeCount);
-  const [bookmarkCount, setBookmarkCount] = useState(initialBookmarkCount);
+  const [likedOverride, setLikedOverride] = useState<boolean | null>(null);
+  const [bookmarkedOverride, setBookmarkedOverride] = useState<boolean | null>(null);
+  const [likeCountOverride, setLikeCountOverride] = useState<number | null>(null);
+  const [bookmarkCountOverride, setBookmarkCountOverride] = useState<number | null>(null);
 
-  useEffect(() => {
-    setLikeCount(initialLikeCount);
-    setBookmarkCount(initialBookmarkCount);
-  }, [initialLikeCount, initialBookmarkCount]);
-
-  useEffect(() => {
-    setLiked(isAuthenticated ? (likedStatus ?? initialLiked) : false);
-  }, [initialLiked, isAuthenticated, likedStatus]);
-
-  useEffect(() => {
-    setBookmarked(isAuthenticated ? (bookmarkedStatus ?? initialBookmarked) : false);
-  }, [bookmarkedStatus, initialBookmarked, isAuthenticated]);
+  const liked = likedOverride ?? (isAuthenticated ? (likedStatus ?? initialLiked) : false);
+  const bookmarked = bookmarkedOverride ?? (isAuthenticated ? (bookmarkedStatus ?? initialBookmarked) : false);
+  const likeCount = likeCountOverride ?? initialLikeCount;
+  const bookmarkCount = bookmarkCountOverride ?? initialBookmarkCount;
 
   async function handleLike(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
@@ -59,16 +51,16 @@ export function PostActions({
     }
 
     const nextLiked = !liked;
-    setLiked(nextLiked);
-    setLikeCount((count) => Math.max(0, count + (nextLiked ? 1 : -1)));
+    setLikedOverride(nextLiked);
+    setLikeCountOverride(Math.max(0, likeCount + (nextLiked ? 1 : -1)));
 
     try {
       const response = await toggleLike(postId).unwrap();
-      setLiked(response.liked);
-      setLikeCount(response.likeCount);
+      setLikedOverride(response.liked);
+      setLikeCountOverride(response.likeCount);
     } catch {
-      setLiked(liked);
-      setLikeCount(initialLikeCount);
+      setLikedOverride(null);
+      setLikeCountOverride(null);
     }
   }
 
@@ -80,16 +72,16 @@ export function PostActions({
     }
 
     const nextBookmarked = !bookmarked;
-    setBookmarked(nextBookmarked);
-    setBookmarkCount((count) => Math.max(0, count + (nextBookmarked ? 1 : -1)));
+    setBookmarkedOverride(nextBookmarked);
+    setBookmarkCountOverride(Math.max(0, bookmarkCount + (nextBookmarked ? 1 : -1)));
 
     try {
       const response = await toggleBookmark(postId).unwrap();
-      setBookmarked(response.bookmarked);
-      setBookmarkCount(response.bookmarkCount);
+      setBookmarkedOverride(response.bookmarked);
+      setBookmarkCountOverride(response.bookmarkCount);
     } catch {
-      setBookmarked(bookmarked);
-      setBookmarkCount(initialBookmarkCount);
+      setBookmarkedOverride(null);
+      setBookmarkCountOverride(null);
     }
   }
 

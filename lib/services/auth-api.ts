@@ -29,6 +29,19 @@ type BackendAuthResponse = {
   };
 };
 
+type BackendUserResponse = {
+  id: string;
+  username: string;
+  fullName: string;
+  email: string;
+  bio: string | null;
+  profileImage: string | null;
+  verified?: boolean;
+  isVerified?: boolean;
+  role: string;
+  createdAt: string;
+};
+
 type BackendPostResponse = {
   id: string;
   title: string;
@@ -53,6 +66,17 @@ type BackendPostResponse = {
   } | null;
   likedByCurrentUser?: boolean;
   bookmarkedByCurrentUser?: boolean;
+};
+
+type BackendCommentResponse = {
+  id: string;
+  content: string;
+  createdAt: string;
+  user: BackendUserResponse;
+  parentId: string | null;
+  replies: BackendCommentResponse[];
+  likeCount: number | null;
+  likedByCurrentUser?: boolean;
 };
 
 type BackendTagResponse = {
@@ -114,10 +138,17 @@ export type BlogTag = {
   postCount: number;
 };
 
-type GetPostsParams = {
-  page?: number;
-  size?: number;
-  sort?: string;
+export type UserProfile = AuthUser;
+
+export type BlogComment = {
+  id: string;
+  content: string;
+  createdAt: string;
+  user: UserProfile;
+  parentId: string | null;
+  replies: BlogComment[];
+  likeCount: number;
+  likedByCurrentUser: boolean;
 };
 
 export type CreatePostRequest = {
@@ -131,6 +162,12 @@ export type CreatePostRequest = {
 
 export type CreateTagRequest = {
   name: string;
+};
+
+export type CreateCommentRequest = {
+  postId: string;
+  content: string;
+  parentId?: string | null;
 };
 
 type ToggleLikeResponse = {
@@ -164,6 +201,20 @@ type RegisterRequest = {
 };
 
 function normalizeUser(user: BackendAuthResponse["user"]): AuthUser {
+  return {
+    id: user.id,
+    username: user.username,
+    fullName: user.fullName,
+    email: user.email,
+    bio: user.bio,
+    profileImage: user.profileImage,
+    verified: user.isVerified ?? user.verified ?? false,
+    role: user.role,
+    createdAt: user.createdAt,
+  };
+}
+
+function normalizePublicUser(user: BackendUserResponse): UserProfile {
   return {
     id: user.id,
     username: user.username,
@@ -232,6 +283,19 @@ function normalizeTag(tag: BackendTagResponse): BlogTag {
   };
 }
 
+function normalizeComment(comment: BackendCommentResponse): BlogComment {
+  return {
+    id: comment.id,
+    content: comment.content,
+    createdAt: comment.createdAt,
+    user: normalizePublicUser(comment.user),
+    parentId: comment.parentId,
+    replies: comment.replies.map(normalizeComment),
+    likeCount: comment.likeCount ?? 0,
+    likedByCurrentUser: comment.likedByCurrentUser ?? false,
+  };
+}
+
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://plix-blog-api.onrender.com/api/v1",
   prepareHeaders: (headers, { getState, endpoint, type }) => {
@@ -242,6 +306,7 @@ const rawBaseQuery = fetchBaseQuery({
       "getPostBookmarkStatus",
       "createTag",
       "createPost",
+      "createComment",
       "togglePostLike",
       "togglePostBookmark",
     ]);
@@ -251,6 +316,7 @@ const rawBaseQuery = fetchBaseQuery({
       "refresh",
       "createTag",
       "createPost",
+      "createComment",
     ]);
 
     if (token && endpointsRequiringAuth.has(endpoint)) {
@@ -306,7 +372,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Profile", "Posts", "Tags"],
+  tagTypes: ["Profile", "Posts", "Tags", "Comments", "Likes"],
   endpoints: (builder) => ({
     register: builder.mutation<BackendAuthResponse, RegisterRequest>({
       query: (body) => ({
@@ -351,6 +417,19 @@ export const authApi = createApi({
           dispatch(updateCurrentUser(data));
         } catch {}
       },
+    }),
+    getPublicProfile: builder.query<UserProfile, string>({
+      query: (username) => `/profiles/${username}`,
+      transformResponse: (response: BackendUserResponse) => normalizePublicUser(response),
+      providesTags: (_result, _error, username) => [{ type: "Profile", id: username }],
+    }),
+    getUserPosts: builder.query<BlogPost[], { username: string; page?: number; size?: number }>({
+      query: ({ username, page = 0, size = 12 }) => ({
+        url: `/profiles/${username}/posts`,
+        params: { page, size },
+      }),
+      transformResponse: (response: PageResponse<BackendPostResponse>) => response.content.map(normalizePost),
+      providesTags: (_result, _error, { username }) => [{ type: "Posts", id: `user-${username}` }],
     }),
     getMostLikedPosts: builder.query<BlogPost[], { page?: number; size?: number } | void>({
       query: (params) => ({
@@ -419,6 +498,37 @@ export const authApi = createApi({
       transformResponse: (response: BackendPostResponse) => normalizePost(response),
       invalidatesTags: ["Posts"],
     }),
+    getPostLikes: builder.query<UserProfile[], { postId: string; page?: number; size?: number }>({
+      query: ({ postId, page = 0, size = 50 }) => ({
+        url: `/posts/${postId}/likes`,
+        params: { page, size },
+      }),
+      transformResponse: (response: PageResponse<BackendUserResponse>) => response.content.map(normalizePublicUser),
+      providesTags: (_result, _error, { postId }) => [{ type: "Likes", id: postId }],
+    }),
+    getPostComments: builder.query<BlogComment[], { postId: string; page?: number; size?: number }>({
+      query: ({ postId, page = 0, size = 50 }) => ({
+        url: `/posts/${postId}/comments`,
+        params: { page, size },
+      }),
+      transformResponse: (response: PageResponse<BackendCommentResponse>) => response.content.map(normalizeComment),
+      providesTags: (_result, _error, { postId }) => [{ type: "Comments", id: postId }],
+    }),
+    createComment: builder.mutation<BlogComment, CreateCommentRequest>({
+      query: ({ postId, content, parentId }) => ({
+        url: `/posts/${postId}/comments`,
+        method: "POST",
+        body: {
+          content,
+          parentId: parentId ?? null,
+        },
+      }),
+      transformResponse: (response: BackendCommentResponse) => normalizeComment(response),
+      invalidatesTags: (_result, _error, { postId }) => [
+        { type: "Comments", id: postId },
+        "Posts",
+      ],
+    }),
     getPostLikeStatus: builder.query<boolean, string>({
       query: (postId) => `/posts/${postId}/like/status`,
       transformResponse: (response: LikeStatusResponse) => response.liked,
@@ -445,16 +555,21 @@ export const authApi = createApi({
 });
 
 export const {
+  useCreateCommentMutation,
   useCreatePostMutation,
   useCreateTagMutation,
   useGetCategoriesQuery,
   useGetLatestPostsQuery,
   useGetPostBySlugQuery,
+  useGetPostCommentsQuery,
   useGetPostBookmarkStatusQuery,
+  useGetPostLikesQuery,
   useGetPostLikeStatusQuery,
   useGetMyProfileQuery,
   useGetMostLikedPostsQuery,
+  useGetPublicProfileQuery,
   useGetTagsQuery,
+  useGetUserPostsQuery,
   useLoginMutation,
   useRefreshMutation,
   useRegisterMutation,

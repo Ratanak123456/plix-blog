@@ -1,9 +1,19 @@
 "use client";
 
+import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Bookmark, Eye, Heart, MessageCircle } from "lucide-react";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { ArrowLeft, Bookmark, Eye, Heart, MessageCircle, Send } from "lucide-react";
 import { PostActions } from "@/components/home/post-actions";
-import { useGetPostBySlugQuery } from "@/lib/services/auth-api";
+import {
+  type BlogComment,
+  type UserProfile,
+  useCreateCommentMutation,
+  useGetPostBySlugQuery,
+  useGetPostCommentsQuery,
+  useGetPostLikesQuery,
+} from "@/lib/services/auth-api";
+import { useAppSelector } from "@/lib/store";
 
 function stripHtml(input: string) {
   return input
@@ -30,6 +40,16 @@ function formatDate(input: string | null) {
   }).format(new Date(input));
 }
 
+function formatDateTime(input: string) {
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(new Date(input));
+}
+
 function getAuthorInitials(name: string) {
   return name
     .split(" ")
@@ -39,8 +59,82 @@ function getAuthorInitials(name: string) {
     .join("") || "PB";
 }
 
+function UserProfileLink({ user, labelClassName }: { user: UserProfile; labelClassName?: string }) {
+  return (
+    <Link
+      href={`/users/${user.username}`}
+      className="group inline-flex items-center gap-3 transition-transform hover:-translate-y-0.5"
+    >
+      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary font-bangers text-base text-primary-foreground">
+        {getAuthorInitials(user.fullName)}
+      </div>
+      <div>
+        <p className={`font-bangers text-2xl text-primary transition-colors group-hover:text-accent ${labelClassName ?? ""}`}>
+          {user.fullName}
+        </p>
+        <p className="font-sans text-sm text-muted-foreground">@{user.username}</p>
+      </div>
+    </Link>
+  );
+}
+
+function CommentCard({ comment }: { comment: BlogComment }) {
+  return (
+    <div className="space-y-4">
+      <article className="bg-background p-4 comic-border-secondary">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <UserProfileLink user={comment.user} labelClassName="text-xl" />
+          <div className="text-right">
+            <p className="font-oswald text-[10px] uppercase tracking-[0.28em] text-muted-foreground">Commented</p>
+            <p className="font-sans text-xs text-muted-foreground">{formatDateTime(comment.createdAt)}</p>
+          </div>
+        </div>
+        <p className="mt-4 whitespace-pre-wrap font-sans text-sm leading-7 text-foreground">{comment.content}</p>
+      </article>
+
+      {comment.replies.length ? (
+        <div className="ml-4 space-y-4 border-l-4 border-accent pl-4 md:ml-8 md:pl-6">
+          {comment.replies.map((reply) => (
+            <CommentCard key={reply.id} comment={reply} />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function PostDetailView({ slug }: { slug: string }) {
   const { data: post, isLoading, isError } = useGetPostBySlugQuery(slug);
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { data: likes = [] } = useGetPostLikesQuery(post ? { postId: post.id } : skipToken);
+  const { data: comments = [] } = useGetPostCommentsQuery(post ? { postId: post.id } : skipToken);
+  const [createComment, { isLoading: isSubmittingComment }] = useCreateCommentMutation();
+  const [commentDraft, setCommentDraft] = useState("");
+  const [commentError, setCommentError] = useState<string | null>(null);
+
+  async function handleCommentSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!post || !isAuthenticated || isSubmittingComment) {
+      return;
+    }
+
+    const trimmed = commentDraft.trim();
+    if (!trimmed) {
+      setCommentError("Comment content is required.");
+      return;
+    }
+
+    try {
+      await createComment({
+        postId: post.id,
+        content: trimmed,
+      }).unwrap();
+      setCommentDraft("");
+      setCommentError(null);
+    } catch {
+      setCommentError("Unable to post the comment right now.");
+    }
+  }
 
   if (isLoading) {
     return (
@@ -110,13 +204,9 @@ export function PostDetailView({ slug }: { slug: string }) {
                   {post.title}
                 </h1>
                 <div className="mt-6 flex flex-wrap items-center gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary font-bangers text-lg text-primary-foreground">
-                    {getAuthorInitials(post.author.fullName)}
-                  </div>
                   <div>
-                    <p className="font-oswald text-xs uppercase tracking-[0.3em] text-muted-foreground">Written by</p>
-                    <p className="font-bangers text-3xl text-primary">{post.author.fullName}</p>
-                    <p className="font-sans text-sm text-muted-foreground">@{post.author.username}</p>
+                    <p className="mb-2 font-oswald text-xs uppercase tracking-[0.3em] text-muted-foreground">Written by</p>
+                    <UserProfileLink user={post.author} />
                   </div>
                 </div>
               </div>
@@ -169,30 +259,128 @@ export function PostDetailView({ slug }: { slug: string }) {
 
         <section className="container mx-auto px-4 py-10 md:py-12">
           <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
-            <article className="overflow-hidden bg-card comic-border">
-              <div className="relative aspect-[16/7] overflow-hidden bg-linear-to-br from-orange-800 via-primary/50 to-amber-300">
-                <div className="absolute inset-0 opacity-25 halftone-bg" />
-                {post.thumbnailUrl ? (
+            <div className="space-y-8">
+              <article className="overflow-hidden bg-card comic-border">
+                <div className="relative aspect-[16/7] overflow-hidden bg-linear-to-br from-orange-800 via-primary/50 to-amber-300">
+                  <div className="absolute inset-0 opacity-25 halftone-bg" />
+                  {post.thumbnailUrl ? (
+                    <div
+                      className="absolute inset-0 bg-cover bg-center"
+                      style={{ backgroundImage: `url(${post.thumbnailUrl})` }}
+                    />
+                  ) : null}
+                  <div className="absolute inset-0 bg-linear-to-t from-background/70 via-transparent to-transparent" />
+                </div>
+                <div className="prose prose-neutral max-w-none p-6 md:p-10 dark:prose-invert">
                   <div
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: `url(${post.thumbnailUrl})` }}
+                    className="post-content font-sans text-base leading-8 text-foreground"
+                    dangerouslySetInnerHTML={{ __html: post.content }}
                   />
-                ) : null}
-                <div className="absolute inset-0 bg-linear-to-t from-background/70 via-transparent to-transparent" />
-              </div>
-              <div className="prose prose-neutral max-w-none p-6 md:p-10 dark:prose-invert">
-                <div
-                  className="post-content font-sans text-base leading-8 text-foreground"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
-                />
-              </div>
-            </article>
+                </div>
+              </article>
 
-            <aside className="self-start bg-card p-6 comic-border-accent">
-              <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Story notes</p>
-              <div className="mt-4 space-y-4 font-sans text-sm text-muted-foreground">
-                <p>This issue was published on {formatDate(post.publishedAt ?? post.createdAt)}.</p>
-                <p>The current route is driven by the post slug, so links from the homepage now open the full article view.</p>
+              <section className="bg-card p-6 comic-border-secondary">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Reader reactions</p>
+                    <h2 className="mt-2 font-bangers text-4xl text-primary">Who liked this blog</h2>
+                  </div>
+                  <div className="flex items-center gap-2 bg-background px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground comic-border">
+                    <Heart size={14} />
+                    {likes.length} visible likes
+                  </div>
+                </div>
+
+                {likes.length ? (
+                  <div className="mt-6 grid gap-4 md:grid-cols-2">
+                    {likes.map((user) => (
+                      <div key={user.id} className="bg-background p-4 comic-border">
+                        <UserProfileLink user={user} labelClassName="text-2xl" />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="mt-6 font-sans text-sm text-muted-foreground">
+                    No public likes yet for this post.
+                  </p>
+                )}
+              </section>
+
+              <section className="bg-card p-6 comic-border-accent">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Discussion</p>
+                    <h2 className="mt-2 font-bangers text-4xl text-primary">Comments</h2>
+                  </div>
+                  <div className="bg-background px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground comic-border">
+                    {comments.length} thread{comments.length === 1 ? "" : "s"}
+                  </div>
+                </div>
+
+                <form onSubmit={handleCommentSubmit} className="mt-6 space-y-3">
+                  <label className="block font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                    Leave a comment
+                  </label>
+                  <textarea
+                    value={commentDraft}
+                    onChange={(event) => {
+                      setCommentDraft(event.target.value);
+                      if (commentError) {
+                        setCommentError(null);
+                      }
+                    }}
+                    placeholder={isAuthenticated ? "Add your thoughts about this post..." : "Login to join the discussion."}
+                    disabled={!isAuthenticated || isSubmittingComment}
+                    className="min-h-32 w-full resize-y bg-background px-4 py-3 font-sans text-sm text-foreground placeholder:text-muted-foreground/70 disabled:cursor-not-allowed disabled:opacity-60 comic-border"
+                  />
+                  {commentError ? <p className="font-sans text-sm text-red-500">{commentError}</p> : null}
+                  {!isAuthenticated ? (
+                    <p className="font-sans text-sm text-muted-foreground">
+                      You need to sign in before posting a comment.
+                    </p>
+                  ) : null}
+                  <button
+                    type="submit"
+                    disabled={!isAuthenticated || isSubmittingComment}
+                    className="inline-flex items-center gap-2 bg-accent px-5 py-3 font-bangers text-xl text-accent-foreground disabled:cursor-not-allowed disabled:opacity-60 comic-border"
+                  >
+                    <Send size={16} />
+                    {isSubmittingComment ? "Posting..." : "Post comment"}
+                  </button>
+                </form>
+
+                <div className="mt-8 space-y-4">
+                  {comments.length ? (
+                    comments.map((comment) => <CommentCard key={comment.id} comment={comment} />)
+                  ) : (
+                    <div className="bg-background p-5 font-sans text-sm text-muted-foreground comic-border">
+                      No comments yet. Be the first reader to start the discussion.
+                    </div>
+                  )}
+                </div>
+              </section>
+            </div>
+
+            <aside className="self-start space-y-6">
+              <div className="bg-card p-6 comic-border-accent">
+                <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Story notes</p>
+                <div className="mt-4 space-y-4 font-sans text-sm text-muted-foreground">
+                  <p>This issue was published on {formatDate(post.publishedAt ?? post.createdAt)}.</p>
+                  <p>The current route is driven by the post slug, so links from the homepage now open the full article view.</p>
+                </div>
+              </div>
+
+              <div className="bg-card p-6 comic-border">
+                <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Author route</p>
+                <p className="mt-3 font-sans text-sm leading-7 text-muted-foreground">
+                  Clicking the author or any commenter now opens a dedicated dynamic profile page for that user.
+                </p>
+                <Link
+                  href={`/users/${post.author.username}`}
+                  className="mt-4 inline-flex items-center gap-2 bg-primary px-4 py-2 font-bangers text-xl text-primary-foreground comic-border-secondary"
+                >
+                  View profile
+                </Link>
               </div>
             </aside>
           </div>

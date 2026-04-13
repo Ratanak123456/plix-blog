@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Comic Tech Blog ⚡️
 
-## Getting Started
+A modern, high-performance blog platform with a unique **comic book aesthetic**. Built with Next.js 16, TypeScript, and Tailwind CSS 4, this project combines a bold visual style with a robust technical foundation.
 
-First, run the development server:
+![Comic Tech Blog](public/talk.jpg)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🎨 Visual Identity
+The platform features a distinct "Comic Strip" design language:
+- **Typography:** Uses `Bangers` for bold headlines and `Oswald` for sharp metadata, giving it a classic comic feel.
+- **Styling:** 
+  - **Comic Border:** Custom borders that mimic thick ink strokes.
+  - **Halftone Patterns:** Background elements using dots to create shading, a hallmark of traditional comic printing.
+  - **Speech Bubbles:** Content often presented within stylized callouts for an interactive feel.
+  - **Color Palette:** High-contrast backgrounds with vibrant primary and accent colors.
+- **Interactions:** Smooth animations powered by Framer Motion, featuring hover-tilt effects and staggered entries.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚀 Features
+- **Featured "Daily Issue":** A dynamic hero section showcasing the most-liked stories.
+- **Origin Stories:** A dedicated section for the latest published blog posts.
+- **Interactive Posts:** Users can like, bookmark, and share stories.
+- **Rich Text Editor:** Fully integrated Quill editor for creating and editing blog posts.
+- **User Profiles:** Personalized user pages showing author stats and published works.
+- **Dynamic Routing:** Slug-based post delivery and username-based profile access.
+- **Responsive Design:** Optimized for everything from mobile "strips" to desktop "spreads."
+- **Feedback & Community:** Integrated reviews, FAQ, and feedback forms.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠 Tech Stack
+- **Framework:** [Next.js 16](https://nextjs.org/) (App Router)
+- **Language:** [TypeScript](https://www.typescriptlang.org/)
+- **State Management:** [Redux Toolkit](https://redux-toolkit.js.org/) & RTK Query
+- **Styling:** [Tailwind CSS 4](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/)
+- **UI Components:** [Radix UI](https://www.radix-ui.com/), [Lucide Icons](https://lucide.dev/), [React Icons](https://react-icons.github.io/react-icons/)
+- **Forms & Validation:** [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/)
+- **Editor:** [Quill.js](https://quilljs.com/)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📦 Getting Started
 
-## Learn More
+### Prerequisites
+- Node.js 20+
+- npm or yarn
 
-To learn more about Next.js, take a look at the following resources:
+### Installation
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd blogs-frontend
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. Create a `.env.local` file in the root directory:
+   ```env
+   NEXT_PUBLIC_API_BASE_URL=https://plix-blog-api.onrender.com/api/v1
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## Deploy on Vercel
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🏗 Project Structure
+- `app/`: Next.js App Router pages and layouts.
+- `components/`: Reusable UI components, organized by feature (home, posts, users, write).
+- `hooks/`: Custom React hooks.
+- `lib/`: Core logic, including Redux store, slices, and API services.
+- `ui/`: Base UI primitives (buttons, inputs, cards) powered by Shadcn/UI patterns.
+- `public/`: Static assets (images, icons).
+
+## 📜 Scripts
+- `npm run dev`: Starts the development server.
+- `npm run build`: Builds the application for production.
+- `npm run start`: Starts the production server.
+- `npm run lint`: Runs ESLint for code quality checks.
+
+---
+
+Built with ❤️ for tech enthusiasts and comic lovers.

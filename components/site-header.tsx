@@ -25,8 +25,13 @@ export function SiteHeader() {
   const dispatch = useAppDispatch();
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
-  const [themeReady, setThemeReady] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    if (typeof window === "undefined") {
+      return true;
+    }
+
+    return window.localStorage.getItem("plixblog-theme") !== "light";
+  });
   const [langOpen, setLangOpen] = useState(false);
   const [currentLang, setCurrentLang] = useState("EN");
   const [loginOpen, setLoginOpen] = useState(false);
@@ -38,20 +43,10 @@ export function SiteHeader() {
   });
 
   useEffect(() => {
-    const savedTheme = window.localStorage.getItem("plixblog-theme");
-    setDarkMode(savedTheme !== "light");
-    setThemeReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!themeReady) {
-      return;
-    }
-
     document.documentElement.classList.toggle("dark", darkMode);
     document.documentElement.classList.toggle("light", !darkMode);
     window.localStorage.setItem("plixblog-theme", darkMode ? "dark" : "light");
-  }, [darkMode, themeReady]);
+  }, [darkMode]);
 
   useEffect(() => {
     function handleClick(event: MouseEvent) {
@@ -132,7 +127,7 @@ export function SiteHeader() {
               className="p-2 transition-all hover:border-accent hover:text-accent comic-border"
               aria-label="Toggle theme"
             >
-              {themeReady && !darkMode ? <Moon size={18} /> : <Sun size={18} />}
+              {!darkMode ? <Moon size={18} /> : <Sun size={18} />}
             </button>
             <Link
               href="/write"
@@ -168,7 +163,7 @@ export function SiteHeader() {
 
           <div className="flex items-center gap-2 md:hidden">
             <button onClick={() => setDarkMode((mode) => !mode)} className="p-2 text-primary" aria-label="Toggle theme">
-              {themeReady && !darkMode ? <Moon size={20} /> : <Sun size={20} />}
+              {!darkMode ? <Moon size={20} /> : <Sun size={20} />}
             </button>
             <button className="text-primary" onClick={() => setMobileMenuOpen((open) => !open)}>
               {mobileMenuOpen ? <X size={30} /> : <Menu size={30} />}
