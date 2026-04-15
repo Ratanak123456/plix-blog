@@ -372,7 +372,7 @@ const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQue
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Profile", "Posts", "Tags", "Comments", "Likes"],
+  tagTypes: ["Profile", "Posts", "Tags", "Comments", "Likes", "Categories"],
   endpoints: (builder) => ({
     register: builder.mutation<BackendAuthResponse, RegisterRequest>({
       query: (body) => ({
@@ -469,6 +469,7 @@ export const authApi = createApi({
           postCount: number | null;
         }>,
       ) => response.map(normalizeCategory),
+      providesTags: ["Categories"],
     }),
     getTags: builder.query<BlogTag[], void>({
       query: () => "/tags",
@@ -496,7 +497,7 @@ export const authApi = createApi({
         },
       }),
       transformResponse: (response: BackendPostResponse) => normalizePost(response),
-      invalidatesTags: ["Posts"],
+      invalidatesTags: ["Posts", "Categories"],
     }),
     getPostLikes: builder.query<UserProfile[], { postId: string; page?: number; size?: number }>({
       query: ({ postId, page = 0, size = 50 }) => ({
