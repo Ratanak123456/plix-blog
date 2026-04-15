@@ -2,30 +2,33 @@
 
 import { motion } from "framer-motion";
 import { Clock } from "lucide-react";
+import Link from "next/link";
+import type { BlogPost } from "@/lib/services/auth-api";
 
 interface BlogCardProps {
-  title: string;
-  category?: string;
-  cat?: string;
-  time: string;
-  color: string;
-  author: string;
-  date: string;
-  avatar: string;
+  post: BlogPost;
   index?: number;
 }
 
-export function BlogCard({
-  title,
-  category,
-  cat,
-  time,
-  color,
-  author,
-  date,
-  avatar,
-  index = 0,
-}: BlogCardProps) {
+function stripHtml(value: string) {
+  return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function formatPublishedDate(dateString: string | null) {
+  const source = dateString ? new Date(dateString) : new Date();
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+  }).format(source);
+}
+
+function estimateReadMinutes(content: string) {
+  const words = stripHtml(content).split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / 200));
+}
+
+export function BlogCard({ post, index = 0 }: BlogCardProps) {
   return (
     <motion.article
       initial={{ opacity: 0, y: 40 }}
@@ -34,29 +37,46 @@ export function BlogCard({
       transition={{ delay: index * 0.1 }}
       className="flex cursor-pointer flex-col group"
     >
-      <div
-        className={`relative mb-4 aspect-[3/2] w-full overflow-hidden bg-gradient-to-br ${color} comic-border`}
-      >
-        <div className="absolute inset-0 opacity-20 halftone-bg" />
-        <div className="absolute top-3 left-3 rotate-[-2deg] bg-accent px-2 py-0.5 font-bangers text-sm text-background transition-transform group-hover:rotate-0 comic-border-secondary">
-          {category || cat}
+      <Link href={`/posts/${post.slug}`} className="block">
+        <div className="relative mb-4 aspect-[3/2] w-full overflow-hidden bg-gradient-to-br from-indigo-900 via-primary/50 to-accent comic-border">
+          {post.thumbnailUrl ? (
+            <>
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                style={{ backgroundImage: `url(${post.thumbnailUrl})` }}
+              />
+              <div className="absolute inset-0 bg-linear-to-t from-background/60 via-transparent to-transparent" />
+            </>
+          ) : (
+            <div className="absolute inset-0 halftone-bg opacity-30" />
+          )}
+          {post.category && (
+            <div className="absolute top-3 left-3 rotate-[-2deg] bg-accent px-2 py-0.5 font-bangers text-sm text-background transition-transform group-hover:rotate-0 comic-border-secondary">
+              {post.category.name}
+            </div>
+          )}
         </div>
-      </div>
+      </Link>
+      
       <div className="mb-2 flex items-center justify-between font-oswald text-xs font-bold uppercase text-primary">
         <div className="flex items-center gap-2">
-          <Clock size={12} /> {time} READ
+          <Clock size={12} /> {estimateReadMinutes(post.content)} MIN READ
         </div>
-        <div className="text-muted-foreground">{date}</div>
+        <div className="text-muted-foreground">{formatPublishedDate(post.publishedAt || post.createdAt)}</div>
       </div>
-      <h3 className="mb-4 font-bangers text-2xl leading-tight transition-colors group-hover:text-accent">
-        {title}
-      </h3>
+      
+      <Link href={`/posts/${post.slug}`}>
+        <h3 className="mb-4 font-bangers text-2xl leading-tight transition-colors group-hover:text-accent line-clamp-2">
+          {post.title}
+        </h3>
+      </Link>
+      
       <div className="mt-auto flex items-center gap-3 border-t border-border pt-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary font-bangers text-xs text-white">
-          {avatar}
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary font-bangers text-xs text-white uppercase">
+          {post.author.fullName.charAt(0)}
         </div>
         <div className="font-oswald text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          BY {author}
+          BY {post.author.fullName}
         </div>
       </div>
     </motion.article>
