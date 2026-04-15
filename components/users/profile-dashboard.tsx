@@ -200,6 +200,7 @@ function PostGrid({
 
 export function ProfileDashboard() {
   const { isAuthenticated, user: currentUser } = useAppSelector((state) => state.auth);
+  const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>("info");
   const [postsPageIndex, setPostsPageIndex] = useState(0);
   const [bookmarksPageIndex, setBookmarksPageIndex] = useState(0);
@@ -230,10 +231,16 @@ export function ProfileDashboard() {
   );
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
     if (!profile) {
       return;
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm({
       username: profile.username ?? "",
       fullName: profile.fullName ?? "",
@@ -245,7 +252,9 @@ export function ProfileDashboard() {
   }, [profile]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSaveMessage(null);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSaveError(null);
   }, [activeTab]);
 
@@ -257,6 +266,17 @@ export function ProfileDashboard() {
     ],
     [],
   );
+
+  if (!mounted) {
+    return (
+      <main className="container mx-auto px-4 py-12">
+        <div className="grid gap-8 lg:grid-cols-[22rem_minmax(0,1fr)]">
+          <div className="h-[32rem] animate-pulse bg-card comic-border" />
+          <div className="h-[32rem] animate-pulse bg-card comic-border-secondary" />
+        </div>
+      </main>
+    );
+  }
 
   if (!isAuthenticated) {
     return (

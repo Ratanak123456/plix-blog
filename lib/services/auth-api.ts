@@ -504,6 +504,16 @@ export const authApi = createApi({
       }),
       transformResponse: (response: PageResponse<BackendPostResponse>) => response.content.map(normalizePost),
     }),
+    getMostViewedPosts: builder.query<BlogPost[], { page?: number; size?: number } | void>({
+      query: (params) => ({
+        url: "/posts/most-viewed",
+        params: {
+          page: params?.page ?? 0,
+          size: params?.size ?? 10,
+        },
+      }),
+      transformResponse: (response: PageResponse<BackendPostResponse>) => response.content.map(normalizePost),
+    }),
     getLatestPosts: builder.query<BlogPost[], { page?: number; size?: number } | void>({
       query: (params) => ({
         url: "/posts",
@@ -632,6 +642,7 @@ export const {
   useGetPostLikeStatusQuery,
   useGetMyProfileQuery,
   useGetMostLikedPostsQuery,
+  useGetMostViewedPostsQuery,
   useGetPublicProfileQuery,
   useGetTagsQuery,
   useGetUserPostsQuery,
