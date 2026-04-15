@@ -337,6 +337,7 @@ const rawBaseQuery = fetchBaseQuery({
       "getPostBookmarkStatus",
       "createTag",
       "createPost",
+      "updatePost",
       "createComment",
       "togglePostLike",
       "togglePostBookmark",
@@ -348,6 +349,7 @@ const rawBaseQuery = fetchBaseQuery({
       "updateProfile",
       "createTag",
       "createPost",
+      "updatePost",
       "createComment",
     ]);
 
