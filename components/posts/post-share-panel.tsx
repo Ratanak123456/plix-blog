@@ -1,13 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { Check, Copy, ExternalLink, Link2 } from "lucide-react";
+import { Check, Copy, ExternalLink, Link2, Bookmark } from "lucide-react";
 import { useMemo, useState } from "react";
 import { SiFacebook, SiX } from "react-icons/si";
+import {
+  useGetPostBookmarkStatusQuery,
+  useTogglePostBookmarkMutation,
+} from "@/lib/services/auth-api";
+import { useAppSelector } from "@/lib/store";
 
 type PostSharePanelProps = {
+  postId: string;
   slug: string;
   title: string;
+  initialBookmarked?: boolean;
 };
 
 type ShareCardProps = {
@@ -52,8 +59,12 @@ function ShareCard({ href, icon, label, description, onClick }: ShareCardProps) 
   );
 }
 
-export function PostSharePanel({ slug, title }: PostSharePanelProps) {
+export function PostSharePanel({ postId, slug, title, initialBookmarked = false }: PostSharePanelProps) {
+  const { isAuthenticated } = useAppSelector((state) => state.auth);
   const [copied, setCopied] = useState(false);
+  const [bookmarkedOverride, setBookmarkedOverride] = useState<boolean | null>(null);
+  const { data: bookmarkedStatus } = useGetPostBookmarkStatusQuery(postId, { skip: !isAuthenticated });
+  const [toggleBookmark, { isLoading: bookmarkPending }] = useTogglePostBookmarkMutation();
   const shareUrl = useMemo(() => {
     if (typeof window === "undefined") {
       return `/posts/${slug}`;
@@ -70,8 +81,25 @@ export function PostSharePanel({ slug, title }: PostSharePanelProps) {
     } catch {}
   }
 
+  async function handleBookmarkToggle() {
+    if (!isAuthenticated || bookmarkPending) {
+      return;
+    }
+
+    const nextBookmarked = !bookmarked;
+    setBookmarkedOverride(nextBookmarked);
+
+    try {
+      const response = await toggleBookmark(postId).unwrap();
+      setBookmarkedOverride(response.bookmarked);
+    } catch {
+      setBookmarkedOverride(null);
+    }
+  }
+
   const encodedUrl = encodeURIComponent(shareUrl);
   const encodedTitle = encodeURIComponent(title);
+  const bookmarked = bookmarkedOverride ?? (isAuthenticated ? (bookmarkedStatus ?? initialBookmarked) : false);
 
   return (
     <section className="bg-card p-6 comic-border-accent">
@@ -103,6 +131,33 @@ export function PostSharePanel({ slug, title }: PostSharePanelProps) {
           label="X"
           description="Open X composer with the post link attached."
         />
+      </div>
+
+      <div className="mt-4">
+        <button
+          type="button"
+          onClick={handleBookmarkToggle}
+          disabled={!isAuthenticated || bookmarkPending}
+          className={`flex w-full items-center justify-between gap-4 bg-background p-4 text-left transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60 comic-border ${
+            bookmarked ? "border-accent bg-accent/10" : ""
+          }`}
+          title={isAuthenticated ? "Save this post" : "Login to save posts"}
+        >
+          <div className="flex items-center gap-4">
+            <div className={`flex h-12 w-12 items-center justify-center rounded-full ${bookmarked ? "bg-accent text-accent-foreground" : "bg-primary text-primary-foreground"}`}>
+              <Bookmark size={20} className={bookmarked ? "fill-current" : ""} />
+            </div>
+            <div>
+              <p className="font-bangers text-2xl text-primary">{bookmarked ? "Saved" : "Save for later"}</p>
+              <p className="font-sans text-sm text-muted-foreground">
+                {isAuthenticated
+                  ? "Keep this story in your bookmark collection."
+                  : "Sign in to save this story to your profile."}
+              </p>
+            </div>
+          </div>
+          <ExternalLink size={16} className="shrink-0 text-muted-foreground" />
+        </button>
       </div>
 
       <div className="mt-6 bg-background p-4 comic-border-secondary">

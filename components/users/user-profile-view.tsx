@@ -74,6 +74,18 @@ export function UserProfileView({ username }: { username: string }) {
   return (
     <main className="min-h-screen bg-background text-foreground">
       <section className="relative overflow-hidden border-b-4 border-primary bg-muted/40">
+        <div
+          className="absolute inset-0 bg-linear-to-br from-primary/40 via-orange-500/30 to-amber-300/30"
+          style={
+            user.coverImage
+              ? {
+                  backgroundImage: `linear-gradient(to bottom right, rgba(0,0,0,0.2), rgba(0,0,0,0.05)), url(${user.coverImage})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }
+              : undefined
+          }
+        />
         <div className="pointer-events-none absolute inset-0 opacity-20 halftone-bg" />
         <div className="relative container mx-auto px-4 py-10 md:py-14">
           <Link
@@ -87,8 +99,15 @@ export function UserProfileView({ username }: { username: string }) {
           <div className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem]">
             <div className="bg-card p-6 md:p-8 comic-border">
               <div className="flex flex-wrap items-start gap-5">
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-primary font-bangers text-4xl text-primary-foreground">
-                  {getInitials(user.fullName)}
+                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-primary font-bangers text-4xl text-primary-foreground">
+                  {user.profileImage ? (
+                    <div
+                      className="h-full w-full bg-cover bg-center"
+                      style={{ backgroundImage: `url(${user.profileImage})` }}
+                    />
+                  ) : (
+                    getInitials(user.fullName)
+                  )}
                 </div>
                 <div className="flex-1">
                   <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">User profile</p>

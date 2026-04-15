@@ -5,6 +5,7 @@ export type AuthUser = {
   email: string;
   bio: string | null;
   profileImage: string | null;
+  coverImage: string | null;
   verified: boolean;
   role: string;
   createdAt: string;

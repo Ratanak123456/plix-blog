@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Bookmark, Eye, Heart, MessageCircle } from "lucide-react";
+import { ArrowLeft, Eye, Heart, MessageCircle } from "lucide-react";
 import { PostEngagementBar } from "@/components/posts/post-engagement-bar";
 import { formatDate, getReadTime, UserProfileLink } from "@/components/posts/post-detail-shared";
 import { useGetPostBySlugQuery } from "@/lib/services/auth-api";
@@ -86,7 +86,7 @@ export function PostDetailView({ slug }: { slug: string }) {
 
               <aside className="self-start bg-card p-6 comic-border-secondary">
                 <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Panel stats</p>
-                <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="mt-4 grid gap-3 sm:grid-cols-3">
                   <div className="bg-background p-4 comic-border">
                     <div className="flex items-center gap-2 font-oswald text-xs uppercase tracking-wider text-muted-foreground">
                       <Eye size={14} />
@@ -100,13 +100,6 @@ export function PostDetailView({ slug }: { slug: string }) {
                       Likes
                     </div>
                     <p className="mt-2 font-bangers text-3xl text-primary">{post.likeCount}</p>
-                  </div>
-                  <div className="bg-background p-4 comic-border-secondary">
-                    <div className="flex items-center gap-2 font-oswald text-xs uppercase tracking-wider text-muted-foreground">
-                      <Bookmark size={14} />
-                      Saves
-                    </div>
-                    <p className="mt-2 font-bangers text-3xl text-primary">{post.bookmarkCount}</p>
                   </div>
                   <div className="bg-background p-4 comic-border">
                     <div className="flex items-center gap-2 font-oswald text-xs uppercase tracking-wider text-muted-foreground">

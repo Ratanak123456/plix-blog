@@ -137,10 +137,13 @@ export function SiteHeader() {
             </Link>
             {isAuthenticated && user ? (
               <>
-                <div className="flex items-center gap-2 px-4 py-2 font-oswald text-sm uppercase tracking-wide comic-border">
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-2 px-4 py-2 font-oswald text-sm uppercase tracking-wide transition-all hover:border-accent hover:text-accent comic-border"
+                >
                   <User2 size={16} />
                   <span>{user.username}</span>
-                </div>
+                </Link>
                 <button
                   onClick={() => dispatch(logout())}
                   className="flex items-center gap-2 px-4 py-2 font-bangers text-lg transition-all hover:border-accent hover:text-accent comic-border"
@@ -213,9 +216,13 @@ export function SiteHeader() {
                 </Link>
                 {isAuthenticated && user ? (
                   <>
-                    <div className="mt-2 flex items-center gap-2 px-4 py-2 font-oswald text-base uppercase comic-border">
+                    <Link
+                      href="/profile"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="mt-2 flex items-center gap-2 px-4 py-2 font-oswald text-base uppercase transition-colors hover:text-primary comic-border"
+                    >
                       <User2 size={18} /> {user.username}
-                    </div>
+                    </Link>
                     <button
                       onClick={() => {
                         dispatch(logout());

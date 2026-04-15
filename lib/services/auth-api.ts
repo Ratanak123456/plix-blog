@@ -22,6 +22,7 @@ type BackendAuthResponse = {
     email: string;
     bio: string | null;
     profileImage: string | null;
+    coverImage: string | null;
     verified?: boolean;
     isVerified?: boolean;
     role: string;
@@ -36,6 +37,7 @@ type BackendUserResponse = {
   email: string;
   bio: string | null;
   profileImage: string | null;
+  coverImage: string | null;
   verified?: boolean;
   isVerified?: boolean;
   role: string;
@@ -86,7 +88,7 @@ type BackendTagResponse = {
   postCount: number | null;
 };
 
-type PageResponse<T> = {
+export type PageResponse<T> = {
   content: T[];
   totalPages: number;
   totalElements: number;
@@ -170,6 +172,15 @@ export type CreateCommentRequest = {
   parentId?: string | null;
 };
 
+export type UpdateProfileRequest = {
+  username: string;
+  fullName: string;
+  email: string;
+  bio: string | null;
+  profileImage: string | null;
+  coverImage: string | null;
+};
+
 type ToggleLikeResponse = {
   liked: boolean;
   likeCount: number;
@@ -208,6 +219,7 @@ function normalizeUser(user: BackendAuthResponse["user"]): AuthUser {
     email: user.email,
     bio: user.bio,
     profileImage: user.profileImage,
+    coverImage: user.coverImage,
     verified: user.isVerified ?? user.verified ?? false,
     role: user.role,
     createdAt: user.createdAt,
@@ -222,6 +234,7 @@ function normalizePublicUser(user: BackendUserResponse): UserProfile {
     email: user.email,
     bio: user.bio,
     profileImage: user.profileImage,
+    coverImage: user.coverImage,
     verified: user.isVerified ?? user.verified ?? false,
     role: user.role,
     createdAt: user.createdAt,
@@ -302,6 +315,8 @@ const rawBaseQuery = fetchBaseQuery({
     const token = (getState() as RootState).auth.accessToken;
     const endpointsRequiringAuth = new Set([
       "getMyProfile",
+      "updateProfile",
+      "getMyBookmarks",
       "getPostLikeStatus",
       "getPostBookmarkStatus",
       "createTag",
@@ -314,6 +329,7 @@ const rawBaseQuery = fetchBaseQuery({
       "register",
       "login",
       "refresh",
+      "updateProfile",
       "createTag",
       "createPost",
       "createComment",
@@ -418,6 +434,28 @@ export const authApi = createApi({
         } catch {}
       },
     }),
+    updateProfile: builder.mutation<AuthUser, UpdateProfileRequest>({
+      query: (body) => ({
+        url: "/profile",
+        method: "PUT",
+        body: {
+          username: body.username.trim(),
+          fullName: body.fullName.trim(),
+          email: body.email.trim(),
+          bio: body.bio?.trim() ? body.bio.trim() : null,
+          profileImage: body.profileImage?.trim() ? body.profileImage.trim() : null,
+          coverImage: body.coverImage?.trim() ? body.coverImage.trim() : null,
+        },
+      }),
+      transformResponse: (response: BackendUserResponse) => normalizePublicUser(response),
+      invalidatesTags: ["Profile"],
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(updateCurrentUser(data));
+        } catch {}
+      },
+    }),
     getPublicProfile: builder.query<UserProfile, string>({
       query: (username) => `/profiles/${username}`,
       transformResponse: (response: BackendUserResponse) => normalizePublicUser(response),
@@ -430,6 +468,31 @@ export const authApi = createApi({
       }),
       transformResponse: (response: PageResponse<BackendPostResponse>) => response.content.map(normalizePost),
       providesTags: (_result, _error, { username }) => [{ type: "Posts", id: `user-${username}` }],
+    }),
+    getUserPostsPage: builder.query<PageResponse<BlogPost>, { username: string; page?: number; size?: number }>({
+      query: ({ username, page = 0, size = 9 }) => ({
+        url: `/profiles/${username}/posts`,
+        params: { page, size },
+      }),
+      transformResponse: (response: PageResponse<BackendPostResponse>) => ({
+        ...response,
+        content: response.content.map(normalizePost),
+      }),
+      providesTags: (_result, _error, { username }) => [{ type: "Posts", id: `user-${username}` }],
+    }),
+    getMyBookmarks: builder.query<PageResponse<BlogPost>, { page?: number; size?: number } | void>({
+      query: (params) => ({
+        url: "/profile/bookmarks",
+        params: {
+          page: params?.page ?? 0,
+          size: params?.size ?? 9,
+        },
+      }),
+      transformResponse: (response: PageResponse<BackendPostResponse>) => ({
+        ...response,
+        content: response.content.map(normalizePost),
+      }),
+      providesTags: ["Posts"],
     }),
     getMostLikedPosts: builder.query<BlogPost[], { page?: number; size?: number } | void>({
       query: (params) => ({
@@ -561,6 +624,7 @@ export const {
   useCreateTagMutation,
   useGetCategoriesQuery,
   useGetLatestPostsQuery,
+  useGetMyBookmarksQuery,
   useGetPostBySlugQuery,
   useGetPostCommentsQuery,
   useGetPostBookmarkStatusQuery,
@@ -571,9 +635,11 @@ export const {
   useGetPublicProfileQuery,
   useGetTagsQuery,
   useGetUserPostsQuery,
+  useGetUserPostsPageQuery,
   useLoginMutation,
   useRefreshMutation,
   useRegisterMutation,
   useTogglePostBookmarkMutation,
   useTogglePostLikeMutation,
+  useUpdateProfileMutation,
 } = authApi;

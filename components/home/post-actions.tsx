@@ -22,7 +22,7 @@ type PostActionsProps = {
 export function PostActions({
   postId,
   initialLikeCount,
-  initialBookmarkCount,
+  initialBookmarkCount: _initialBookmarkCount,
   initialLiked = false,
   initialBookmarked = false,
   compact = false,
@@ -36,12 +36,10 @@ export function PostActions({
   const [likedOverride, setLikedOverride] = useState<boolean | null>(null);
   const [bookmarkedOverride, setBookmarkedOverride] = useState<boolean | null>(null);
   const [likeCountOverride, setLikeCountOverride] = useState<number | null>(null);
-  const [bookmarkCountOverride, setBookmarkCountOverride] = useState<number | null>(null);
 
   const liked = likedOverride ?? (isAuthenticated ? (likedStatus ?? initialLiked) : false);
   const bookmarked = bookmarkedOverride ?? (isAuthenticated ? (bookmarkedStatus ?? initialBookmarked) : false);
   const likeCount = likeCountOverride ?? initialLikeCount;
-  const bookmarkCount = bookmarkCountOverride ?? initialBookmarkCount;
 
   async function handleLike(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
@@ -73,15 +71,12 @@ export function PostActions({
 
     const nextBookmarked = !bookmarked;
     setBookmarkedOverride(nextBookmarked);
-    setBookmarkCountOverride(Math.max(0, bookmarkCount + (nextBookmarked ? 1 : -1)));
 
     try {
       const response = await toggleBookmark(postId).unwrap();
       setBookmarkedOverride(response.bookmarked);
-      setBookmarkCountOverride(response.bookmarkCount);
     } catch {
       setBookmarkedOverride(null);
-      setBookmarkCountOverride(null);
     }
   }
 
@@ -111,7 +106,7 @@ export function PostActions({
         title={isAuthenticated ? "Save this post" : "Login to save posts"}
       >
         <Bookmark size={compact ? 13 : 15} className={bookmarked ? "fill-current" : ""} />
-        {bookmarkCount}
+        Save
       </button>
     </div>
   );

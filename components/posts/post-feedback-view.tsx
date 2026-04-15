@@ -66,7 +66,14 @@ export function PostFeedbackView({ slug, mode, modal = false }: PostFeedbackView
 
       {mode === "likes" ? <PostLikesPanel postId={post.id} replaceProfileNavigation={modal} /> : null}
       {mode === "comments" ? <PostCommentsPanel postId={post.id} replaceProfileNavigation={modal} /> : null}
-      {mode === "share" ? <PostSharePanel slug={post.slug} title={post.title} /> : null}
+      {mode === "share" ? (
+        <PostSharePanel
+          postId={post.id}
+          slug={post.slug}
+          title={post.title}
+          initialBookmarked={post.bookmarkedByCurrentUser}
+        />
+      ) : null}
     </div>
   );
 }
