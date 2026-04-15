@@ -37,7 +37,26 @@ export function MostRead() {
     );
   }
 
-  if (!post) return null;
+  if (!post) {
+    return (
+      <section className="container mx-auto px-4 py-10">
+        <div className="mb-6 flex items-center gap-4">
+          <TrendingUp size={28} className="shrink-0 text-accent" />
+          <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">
+            TODAY&apos;S MOST READ
+          </h2>
+          <div className="h-1 flex-1 bg-secondary" />
+        </div>
+        <div className="flex min-h-[300px] flex-col items-center justify-center bg-card p-12 text-center comic-border halftone-bg">
+          <div className="mb-4 text-6xl">📚</div>
+          <h3 className="mb-2 font-bangers text-3xl text-primary">No Reader Activity Yet!</h3>
+          <p className="max-w-md font-oswald text-xl text-muted-foreground">
+            Be the first to break the charts! Check out our latest issues and start reading.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="container mx-auto px-4 py-10">
