@@ -1,8 +1,8 @@
-# Comic Tech Blog ⚡️
+# PlixBlog ⚡️
 
 A modern, high-performance blog platform with a unique **comic book aesthetic**. Built with Next.js 16, TypeScript, and Tailwind CSS 4, this project combines a bold visual style with a robust technical foundation.
 
-![Comic Tech Blog](public/talk.jpg)
+![PlixBlog](public/talk.jpg)
 
 ## 🎨 Visual Identity
 The platform features a distinct "Comic Strip" design language:

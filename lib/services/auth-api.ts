@@ -542,7 +542,7 @@ export const authApi = createApi({
         url: `/posts/${postId}/like`,
         method: "POST",
       }),
-      invalidatesTags: ["Posts"],
+      invalidatesTags: (_result, _error, postId) => ["Posts", { type: "Likes", id: postId }],
     }),
     togglePostBookmark: builder.mutation<ToggleBookmarkResponse, string>({
       query: (postId) => ({

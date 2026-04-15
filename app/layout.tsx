@@ -22,14 +22,16 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Comic Tech Blog",
+  title: "PlixBlog",
   description: "Where silicon meets sequels. PlixBlog covers the arc of technology — from the first commit to the final panel.",
 };
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
   return (
     <html lang="en" className="scroll-smooth" data-scroll-behavior="smooth">
@@ -37,6 +39,7 @@ export default function RootLayout({
         <Providers>
           <SiteHeader />
           {children}
+          {modal}
           <SiteFooter />
         </Providers>
       </body>
