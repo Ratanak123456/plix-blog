@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Bookmark,
   CalendarDays,
+  Edit,
   FileText,
   ImagePlus,
   Mail,
@@ -125,6 +127,8 @@ function PostGrid({
   isLoading,
   emptyMessage,
   onPageChange,
+  showEditButton = false,
+  showStatus = false,
 }: {
   heading: string;
   description: string;
@@ -132,7 +136,12 @@ function PostGrid({
   isLoading: boolean;
   emptyMessage: string;
   onPageChange: (page: number) => void;
+  showEditButton?: boolean;
+  showStatus?: boolean;
 }) {
+  const router = useRouter();
+  const [isEditMode, setIsEditMode] = useState(false);
+
   return (
     <section className="bg-card p-6 md:p-8 comic-border">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -140,8 +149,22 @@ function PostGrid({
           <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">{description}</p>
           <h2 className="mt-2 font-bangers text-4xl text-primary">{heading}</h2>
         </div>
-        <div className="bg-background px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground comic-border-secondary">
-          {(page?.totalElements ?? 0)} stories
+        <div className="flex items-center gap-3">
+          {showEditButton && (
+            <button
+              type="button"
+              onClick={() => setIsEditMode(!isEditMode)}
+              className={`inline-flex items-center gap-2 px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] comic-border-secondary transition-colors ${
+                isEditMode ? "bg-primary text-primary-foreground" : "bg-background text-primary hover:bg-muted"
+              }`}
+            >
+              <Edit size={14} />
+              {isEditMode ? "Exit Edit Mode" : "Edit Blogs"}
+            </button>
+          )}
+          <div className="bg-background px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground comic-border-secondary">
+            {(page?.totalElements ?? 0)} stories
+          </div>
         </div>
       </div>
 
@@ -155,7 +178,15 @@ function PostGrid({
         <>
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {page.content.map((post) => (
-              <article key={post.id} className="overflow-hidden bg-background comic-border-secondary">
+              <article 
+                key={post.id} 
+                className={`overflow-hidden bg-background comic-border-secondary transition-transform ${isEditMode ? "hover:scale-[1.02] cursor-pointer ring-2 ring-primary ring-offset-2" : ""}`}
+                onClick={() => {
+                  if (isEditMode) {
+                    router.push(`/write/${post.slug}`);
+                  }
+                }}
+              >
                 <div className="relative aspect-[16/9] overflow-hidden bg-linear-to-br from-orange-800 via-primary/40 to-amber-300">
                   {post.thumbnailUrl ? (
                     <div
@@ -164,6 +195,18 @@ function PostGrid({
                     />
                   ) : null}
                   <div className="absolute inset-0 opacity-20 halftone-bg" />
+                  {showStatus && (
+                    <div className="absolute top-3 right-3 bg-accent px-2 py-1 font-oswald text-[10px] uppercase tracking-wider text-accent-foreground comic-border">
+                      {post.status}
+                    </div>
+                  )}
+                  {isEditMode && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-primary/20 backdrop-blur-[2px]">
+                      <div className="bg-primary px-4 py-2 font-bangers text-2xl text-primary-foreground comic-border shadow-xl">
+                        Click to Edit
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="p-5">
                   <p className="font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
@@ -173,12 +216,14 @@ function PostGrid({
                   <p className="mt-4 font-sans text-sm leading-7 text-muted-foreground">
                     {getPreview(post.content)}
                   </p>
-                  <Link
-                    href={`/posts/${post.slug}`}
-                    className="mt-5 inline-flex items-center gap-2 bg-accent px-4 py-2 font-bangers text-xl text-accent-foreground comic-border"
-                  >
-                    Open story
-                  </Link>
+                  <div className="mt-5 flex items-center gap-2">
+                    <Link
+                      href={isEditMode ? `/write/${post.slug}` : `/posts/${post.slug}`}
+                      className="inline-flex items-center gap-2 bg-accent px-4 py-2 font-bangers text-xl text-accent-foreground comic-border"
+                    >
+                      {isEditMode ? "Edit story" : "Open story"}
+                    </Link>
+                  </div>
                 </div>
               </article>
             ))}
@@ -547,6 +592,8 @@ export function ProfileDashboard() {
                 isLoading={postsLoading}
                 emptyMessage="You do not have any published posts yet."
                 onPageChange={setPostsPageIndex}
+                showEditButton={true}
+                showStatus={true}
               />
             ) : null}
 

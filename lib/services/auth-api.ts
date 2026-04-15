@@ -50,6 +50,7 @@ type BackendPostResponse = {
   slug: string;
   content: string;
   thumbnailUrl: string | null;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   viewCount: number | null;
   likeCount: number | null;
   commentCount: number | null;
@@ -66,6 +67,7 @@ type BackendPostResponse = {
     id: string;
     name: string;
   } | null;
+  tags: Array<{ id: string; name: string; slug: string }>;
   likedByCurrentUser?: boolean;
   bookmarkedByCurrentUser?: boolean;
 };
@@ -105,6 +107,7 @@ export type BlogPost = {
   slug: string;
   content: string;
   thumbnailUrl: string | null;
+  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   viewCount: number;
   likeCount: number;
   commentCount: number;
@@ -121,6 +124,7 @@ export type BlogPost = {
     id: string;
     name: string;
   } | null;
+  tags: Array<{ id: string; name: string; slug: string }>;
   likedByCurrentUser: boolean;
   bookmarkedByCurrentUser: boolean;
 };
@@ -154,6 +158,16 @@ export type BlogComment = {
 };
 
 export type CreatePostRequest = {
+  title: string;
+  content: string;
+  thumbnail?: string | null;
+  categoryId?: string | null;
+  tagIds?: string[];
+  status: "DRAFT" | "PUBLISHED";
+};
+
+export type UpdatePostRequest = {
+  id: string;
   title: string;
   content: string;
   thumbnail?: string | null;
@@ -257,6 +271,7 @@ function normalizePost(post: BackendPostResponse): BlogPost {
     slug: post.slug,
     content: post.content,
     thumbnailUrl: post.thumbnailUrl,
+    status: post.status,
     viewCount: post.viewCount ?? 0,
     likeCount: post.likeCount ?? 0,
     commentCount: post.commentCount ?? 0,
@@ -266,6 +281,7 @@ function normalizePost(post: BackendPostResponse): BlogPost {
     updatedAt: post.updatedAt,
     author: post.author,
     category: post.category,
+    tags: post.tags ?? [],
     likedByCurrentUser: post.likedByCurrentUser ?? false,
     bookmarkedByCurrentUser: post.bookmarkedByCurrentUser ?? false,
   };
@@ -572,6 +588,20 @@ export const authApi = createApi({
       transformResponse: (response: BackendPostResponse) => normalizePost(response),
       invalidatesTags: ["Posts", "Categories"],
     }),
+    updatePost: builder.mutation<BlogPost, UpdatePostRequest>({
+      query: ({ id, ...body }) => ({
+        url: `/posts/${id}`,
+        method: "PUT",
+        body: {
+          ...body,
+          thumbnail: body.thumbnail?.trim() ? body.thumbnail.trim() : null,
+          categoryId: body.categoryId || null,
+          tagIds: body.tagIds ?? [],
+        },
+      }),
+      transformResponse: (response: BackendPostResponse) => normalizePost(response),
+      invalidatesTags: ["Posts", "Categories"],
+    }),
     getPostLikes: builder.query<UserProfile[], { postId: string; page?: number; size?: number }>({
       query: ({ postId, page = 0, size = 50 }) => ({
         url: `/posts/${postId}/likes`,
@@ -631,6 +661,7 @@ export const authApi = createApi({
 export const {
   useCreateCommentMutation,
   useCreatePostMutation,
+  useUpdatePostMutation,
   useCreateTagMutation,
   useGetCategoriesQuery,
   useGetLatestPostsQuery,
