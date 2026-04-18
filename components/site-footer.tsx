@@ -1,4 +1,11 @@
 import Image from "next/image";
+import Link from "next/link";
+
+const FOOTER_LINKS = [
+  { label: "HOME", href: "/" },
+  { label: "BLOG", href: "/blog" },
+  { label: "ABOUT US", href: "/about" },
+];
 
 export function SiteFooter() {
   return (
@@ -18,12 +25,13 @@ export function SiteFooter() {
       <div className="relative z-10 container mx-auto px-4">
         <div className="flex flex-col items-center justify-between gap-8 md:flex-row">
           <div className="flex flex-col items-center gap-1 md:items-start">
-            <span
-              className="font-bangers text-5xl drop-shadow-[2px_2px_0px_rgba(0,0,0,0.3)]"
+            <Link
+              href="/"
+              className="font-bangers text-5xl drop-shadow-[2px_2px_0px_rgba(0,0,0,0.3)] transition-opacity hover:opacity-80"
               style={{ color: "#1a1a1a" }}
             >
               PLIXBLOG
-            </span>
+            </Link>
             <p
               className="font-oswald text-sm uppercase tracking-widest"
               style={{ color: "#3a3a3a" }}
@@ -36,15 +44,15 @@ export function SiteFooter() {
             className="flex flex-wrap justify-center gap-6 font-oswald text-lg uppercase"
             style={{ color: "#1a1a1a" }}
           >
-            {["HOME", "BLOG", "ABOUT US"].map((link) => (
-              <a
-                key={link}
-                href="#"
+            {FOOTER_LINKS.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
                 className="transition-colors hover:opacity-70"
                 style={{ color: "#1a1a1a" }}
               >
-                {link}
-              </a>
+                {link.label}
+              </Link>
             ))}
           </nav>
 

@@ -58,7 +58,7 @@ export function SiteHeader() {
             PLIXBLOG
           </Link>
 
-          <nav className="hidden items-center gap-5 font-oswald text-base uppercase tracking-wide lg:flex">
+          <nav className="hidden items-center gap-5 font-oswald text-base uppercase tracking-wide md:flex">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.label}
