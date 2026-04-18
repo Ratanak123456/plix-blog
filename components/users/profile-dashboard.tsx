@@ -19,6 +19,16 @@ import { skipToken } from "@reduxjs/toolkit/query";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   type BlogPost,
   type PageResponse,
   useDeletePostMutation,
@@ -136,6 +146,7 @@ function PostGrid({
 }) {
   const router = useRouter();
   const [isEditMode, setIsEditMode] = useState(false);
+  const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
   const filteredContent = useMemo(() => {
     if (!page?.content) return [];
@@ -144,6 +155,31 @@ function PostGrid({
 
   return (
     <section className="bg-card p-6 md:p-8 comic-border">
+      <AlertDialog open={!!postToDelete} onOpenChange={(open) => !open && setPostToDelete(null)}>
+        <AlertDialogContent className="comic-border-secondary">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-bangers text-3xl text-primary uppercase">Danger Zone!</AlertDialogTitle>
+            <AlertDialogDescription className="font-oswald text-lg uppercase tracking-wide">
+              This action cannot be undone. This will permanently delete your story and remove its data from our archives.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4">
+            <AlertDialogCancel className="font-bangers text-xl comic-border-secondary">Abort Mission</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (postToDelete && onDelete) {
+                  onDelete(postToDelete);
+                  setPostToDelete(null);
+                }
+              }}
+              className="bg-destructive text-destructive-foreground font-bangers text-xl hover:bg-destructive/90 comic-border"
+            >
+              Confirm Deletion
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">{description}</p>
@@ -237,9 +273,7 @@ function PostGrid({
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (confirm("Are you sure you want to delete this blog? This action cannot be undone.")) {
-                            onDelete(post.id);
-                          }
+                          setPostToDelete(post.id);
                         }}
                         className="inline-flex h-11 w-11 items-center justify-center bg-destructive text-destructive-foreground transition-all hover:scale-105 active:scale-95 comic-border"
                         title="Delete this blog"
