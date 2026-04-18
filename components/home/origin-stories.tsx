@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { PostActions } from "@/components/home/post-actions";
 import { useGetLatestPostsQuery } from "@/lib/services/auth-api";
@@ -32,11 +33,11 @@ function formatDate(input: string | null) {
     return "UNSCHEDULED";
   }
 
-  return new Date(input).toLocaleDateString("en-US", {
+  return new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
     year: "numeric",
-  }).toUpperCase();
+  }).format(new Date(input)).toUpperCase();
 }
 
 function getAuthorInitials(name: string) {
@@ -99,26 +100,37 @@ export function OriginStories() {
                 </div>
               </Link>
               <div className="relative z-10 -mt-10 flex flex-1 flex-col justify-end border-t-4 border-secondary bg-card p-6 transition-colors group-hover:border-primary md:p-8">
-                <Link href={`/posts/${leadPost.slug}`} className="block cursor-pointer">
-                  <div className="mb-3 flex flex-wrap items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary font-bangers text-xs text-white">
-                        {getAuthorInitials(leadPost.author.fullName)}
-                      </div>
-                      <span className="font-oswald text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                        BY {leadPost.author.fullName} • {formatDate(leadPost.publishedAt ?? leadPost.createdAt)}
-                      </span>
+                <div className="mb-3 flex flex-wrap items-center gap-4">
+                  <Link href={`/users/${leadPost.author.username}`} className="group/author flex items-center gap-2">
+                    <div className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover/author:scale-110">
+                      {(leadPost.author as any).profileImage ? (
+                        <Image
+                          src={(leadPost.author as any).profileImage}
+                          alt={leadPost.author.fullName}
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <span className="font-bangers text-[10px] text-background uppercase">
+                          {getAuthorInitials(leadPost.author.fullName)}
+                        </span>
+                      )}
                     </div>
-                    <div className="flex gap-3">
-                      <span className="bg-secondary px-3 py-1 font-oswald text-sm font-bold uppercase text-background comic-border-accent">
-                        {leadPost.category?.name ?? "Latest"}
-                      </span>
-                      <span className="py-1 font-oswald text-sm text-muted-foreground uppercase">
-                        {getReadTime(leadPost.content)}
-                      </span>
-                    </div>
+                    <span className="font-oswald text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors group-hover/author:text-primary">
+                      BY {leadPost.author.fullName} • {formatDate(leadPost.publishedAt ?? leadPost.createdAt)}
+                    </span>
+                  </Link>
+                  <div className="flex gap-3">
+                    <span className="bg-secondary px-3 py-1 font-oswald text-sm font-bold uppercase text-background comic-border-accent">
+                      {leadPost.category?.name ?? "Latest"}
+                    </span>
+                    <span className="py-1 font-oswald text-sm text-muted-foreground uppercase">
+                      {getReadTime(leadPost.content)}
+                    </span>
                   </div>
-                  <h3 className="mb-4 font-bangers text-4xl transition-colors group-hover:text-accent md:text-5xl">
+                </div>
+                <Link href={`/posts/${leadPost.slug}`} className="block cursor-pointer">
+                  <h3 className="mb-4 font-bangers text-4xl transition-colors group-hover:text-accent md:text-5xl line-clamp-2">
                     {leadPost.title}
                   </h3>
                   <p className="line-clamp-3 font-sans text-lg text-muted-foreground">
@@ -149,11 +161,15 @@ export function OriginStories() {
                 className="group"
               >
                 <div className="bg-card p-4 transition-all hover:-translate-y-1 hover:border-primary comic-border-secondary">
-                  <Link href={`/posts/${post.slug}`} className="flex cursor-pointer gap-4">
-                    <div
-                      className="h-24 w-24 shrink-0 overflow-hidden bg-linear-to-br from-orange-700 to-amber-500 comic-border-accent"
-                      style={post.thumbnailUrl ? { backgroundImage: `url(${post.thumbnailUrl})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
-                    />
+                  <div className="flex gap-4">
+                    <Link href={`/posts/${post.slug}`} className="h-24 w-24 shrink-0 overflow-hidden bg-linear-to-br from-orange-700 to-amber-500 comic-border-accent">
+                      {post.thumbnailUrl ? (
+                        <div
+                          className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                          style={{ backgroundImage: `url(${post.thumbnailUrl})` }}
+                        />
+                      ) : null}
+                    </Link>
                     <div className="flex flex-col justify-center">
                       <div className="mb-1 flex gap-2 font-oswald text-xs uppercase">
                         <span className="text-accent">{post.category?.name ?? "Latest"}</span>
@@ -161,14 +177,32 @@ export function OriginStories() {
                           • {getReadTime(post.content)} • {formatDate(post.publishedAt ?? post.createdAt)}
                         </span>
                       </div>
-                      <h4 className="mb-1 font-bangers text-2xl leading-tight transition-colors group-hover:text-primary line-clamp-1">
-                        {post.title}
-                      </h4>
-                      <div className="font-oswald text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                        BY {post.author.fullName}
-                      </div>
+                      <Link href={`/posts/${post.slug}`}>
+                        <h4 className="mb-1 font-bangers text-2xl leading-tight transition-colors group-hover:text-primary line-clamp-2">
+                          {post.title}
+                        </h4>
+                      </Link>
+                      <Link href={`/users/${post.author.username}`} className="group/author flex items-center gap-2">
+                        <div className="relative flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full border border-primary bg-accent shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover/author:scale-110">
+                          {(post.author as any).profileImage ? (
+                            <Image
+                              src={(post.author as any).profileImage}
+                              alt={post.author.fullName}
+                              fill
+                              className="object-cover"
+                            />
+                          ) : (
+                            <span className="font-bangers text-[8px] text-background uppercase">
+                              {getAuthorInitials(post.author.fullName)}
+                            </span>
+                          )}
+                        </div>
+                        <div className="font-oswald text-[10px] font-bold uppercase tracking-widest text-muted-foreground transition-colors group-hover/author:text-primary">
+                          BY {post.author.fullName}
+                        </div>
+                      </Link>
                     </div>
-                  </Link>
+                  </div>
                   <div className="mt-3 ml-28">
                     <PostActions
                       postId={post.id}
