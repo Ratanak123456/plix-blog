@@ -12,6 +12,7 @@ import {
   ImagePlus,
   Mail,
   Save,
+  Trash2,
   User2,
 } from "lucide-react";
 import { skipToken } from "@reduxjs/toolkit/query";
@@ -20,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   type BlogPost,
   type PageResponse,
+  useDeletePostMutation,
   useGetMyBookmarksQuery,
   useGetMyProfileQuery,
   useGetUserPostsPageQuery,
@@ -46,19 +48,6 @@ function getInitials(name: string) {
       .map((part) => part[0]?.toUpperCase() ?? "")
       .join("") || "PB"
   );
-}
-
-function stripHtml(input: string) {
-  return input
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function getPreview(content: string) {
-  const clean = stripHtml(content);
-  return clean.length > 180 ? `${clean.slice(0, 177)}...` : clean;
 }
 
 function PaginationBar({
@@ -129,6 +118,7 @@ function PostGrid({
   onPageChange,
   showEditButton = false,
   showStatus = false,
+  onDelete,
 }: {
   heading: string;
   description: string;
@@ -138,6 +128,7 @@ function PostGrid({
   onPageChange: (page: number) => void;
   showEditButton?: boolean;
   showStatus?: boolean;
+  onDelete?: (id: string) => void;
 }) {
   const router = useRouter();
   const [isEditMode, setIsEditMode] = useState(false);
@@ -212,17 +203,30 @@ function PostGrid({
                   <p className="font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
                     {post.category?.name ?? "Latest"} • {formatDate(post.publishedAt ?? post.createdAt)}
                   </p>
-                  <h3 className="mt-3 font-bangers text-3xl leading-none text-primary">{post.title}</h3>
-                  <p className="mt-4 font-sans text-sm leading-7 text-muted-foreground">
-                    {getPreview(post.content)}
-                  </p>
-                  <div className="mt-5 flex items-center gap-2">
+                  <h3 className="mt-3 font-bangers text-3xl leading-none text-primary line-clamp-2">{post.title}</h3>
+
+                  <div className="mt-6 flex items-center justify-between gap-2">
                     <Link
                       href={isEditMode ? `/write/${post.slug}` : `/posts/${post.slug}`}
                       className="inline-flex items-center gap-2 bg-accent px-4 py-2 font-bangers text-xl text-accent-foreground comic-border"
                     >
                       {isEditMode ? "Edit story" : "Open story"}
                     </Link>
+                    {onDelete && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm("Are you sure you want to delete this blog? This action cannot be undone.")) {
+                            onDelete(post.id);
+                          }
+                        }}
+                        className="inline-flex h-11 w-11 items-center justify-center bg-destructive text-destructive-foreground transition-all hover:scale-105 active:scale-95 comic-border"
+                        title="Delete this blog"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    )}
                   </div>
                 </div>
               </article>
@@ -264,6 +268,7 @@ export function ProfileDashboard() {
     skip: !isAuthenticated,
   });
   const [updateProfile, { isLoading: isSaving }] = useUpdateProfileMutation();
+  const [deletePost] = useDeletePostMutation();
 
   const profileUsername = profile?.username ?? currentUser?.username;
   const postsQueryArg = profileUsername
@@ -390,6 +395,14 @@ export function ProfileDashboard() {
           ? error.data
           : "Unable to update your profile right now.";
       setSaveError(message);
+    }
+  }
+
+  async function handleDeletePost(id: string) {
+    try {
+      await deletePost(id).unwrap();
+    } catch (error) {
+      alert("Unable to delete the blog post. Please try again.");
     }
   }
 
@@ -594,6 +607,7 @@ export function ProfileDashboard() {
                 onPageChange={setPostsPageIndex}
                 showEditButton={true}
                 showStatus={true}
+                onDelete={handleDeletePost}
               />
             ) : null}
 

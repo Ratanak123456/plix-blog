@@ -23,6 +23,7 @@ export {
   useGetUserPostsPageQuery,
   useGetUserPostsQuery,
   useUpdatePostMutation,
+  useDeletePostMutation,
 } from "@/lib/features/posts/posts-api";
 export { useCreateCommentMutation, useGetPostCommentsQuery } from "@/lib/features/comments/comments-api";
 export {

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Clock, Eye, Heart, MessageCircle } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/types";
 
@@ -69,24 +70,31 @@ export function BlogCard({ post, index = 0 }: BlogCardProps) {
       </div>
       
       <Link href={`/posts/${post.slug}`}>
-        <h3 className="mb-2 font-bangers text-2xl leading-tight transition-colors group-hover:text-accent line-clamp-2">
+        <h3 className="mb-4 font-bangers text-2xl leading-tight transition-colors group-hover:text-accent line-clamp-2">
           {post.title}
         </h3>
       </Link>
       
-      <p className="mb-4 font-oswald text-sm text-muted-foreground line-clamp-2">
-        {excerpt}{needsEllipsis ? "..." : ""}
-      </p>
-      
       <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary font-bangers text-xs text-white">
-            {post.author.fullName.charAt(0).toUpperCase()}
+        <Link href={`/users/${post.author.username}`} className="group/author flex items-center gap-3">
+          <div className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover/author:scale-110">
+            {(post.author as any).profileImage ? (
+              <Image
+                src={(post.author as any).profileImage}
+                alt={post.author.fullName}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <span className="font-bangers text-sm text-background">
+                {post.author.fullName.charAt(0).toUpperCase()}
+              </span>
+            )}
           </div>
-          <div className="font-oswald text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          <div className="font-oswald text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors group-hover/author:text-primary">
             BY {post.author.fullName}
           </div>
-        </div>
+        </Link>
         
         <div className="flex items-center gap-3 font-oswald text-xs text-muted-foreground">
           <span className="flex items-center gap-1">

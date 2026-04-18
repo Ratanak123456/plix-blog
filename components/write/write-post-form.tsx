@@ -1,8 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle, BookOpenText, CheckCircle2, LoaderCircle, PenSquare, Sparkles, Tags } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { AlertCircle, CheckCircle2, LoaderCircle, PenSquare, Tags } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { QuillEditor } from "@/components/write/quill-editor";
@@ -22,14 +22,6 @@ type ApiErrorPayload = {
 };
 
 const EMPTY_PARAGRAPH = "<p><br></p>";
-
-function stripHtml(input: string) {
-  return input
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
 
 function getErrorMessage(error: unknown) {
   const payload = (error as { data?: ApiErrorPayload } | undefined)?.data;
@@ -67,9 +59,8 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
 
   const isSaving = isCreating || isUpdating;
 
-  const plainText = useMemo(() => stripHtml(content), [content]);
-  const wordCount = plainText ? plainText.split(" ").length : 0;
-  const canSubmit = isAuthenticated && title.trim() && plainText && !isSaving;
+  // We keep canSubmit but remove wordCount as requested
+  const canSubmit = isAuthenticated && title.trim() && content !== EMPTY_PARAGRAPH && !isSaving;
 
   useEffect(() => {
     if (initialData) {
@@ -142,7 +133,6 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
         setFeedback(status === "PUBLISHED" ? "Post updated and published successfully." : "Draft updated successfully.");
         setCreatedSlug(post.slug);
         
-        // If slug changed, update URL
         if (post.slug !== initialData.slug) {
             router.push(`/write/${post.slug}`);
         }
@@ -201,7 +191,6 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                   <div className="bg-card px-4 py-2 comic-border-secondary">
                     {tagsLoading ? "Loading tags..." : `${tags.length} tags ready`}
                   </div>
-                  <div className="bg-card px-4 py-2 comic-border-accent">{wordCount} words in progress</div>
                 </div>
               </div>
 
@@ -211,15 +200,20 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                     <p className="font-oswald text-xs uppercase tracking-[0.3em] text-muted-foreground">Logged in as</p>
                     <p className="mt-2 font-bangers text-3xl text-primary">{user.username}</p>
                     <p className="mt-2 font-sans text-sm text-muted-foreground">
-                      Posts will be {isEditing ? "updated" : "created"} under your account using the authenticated `{isEditing ? "PUT /posts/{id}" : "POST /posts"}` API.
+                      Posts will be {isEditing ? "updated" : "created"} under your account.
                     </p>
+                    {isSaving && (
+                      <div className="mt-4 flex items-center gap-2 font-oswald text-sm uppercase tracking-wide text-primary">
+                        <LoaderCircle size={16} className="animate-spin" />
+                        {isEditing ? "Updating..." : "Publishing..."}
+                      </div>
+                    )}
                   </>
                 ) : (
                   <>
                     <p className="font-bangers text-3xl text-primary">Sign in to {isEditing ? "edit" : "write"}</p>
                     <p className="mt-3 font-sans text-sm text-muted-foreground">
-                      The backend requires authentication for {isEditing ? "updating" : "creating"} posts, so the editor stays read-only until you
-                      log in.
+                      Sign in to unlock the editor and share your story with the world.
                     </p>
                     <div className="mt-5 flex gap-3">
                       <button
@@ -231,15 +225,6 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                       >
                         Login
                       </button>
-                      <button
-                        onClick={() => {
-                          setModalType("register");
-                          setLoginOpen(true);
-                        }}
-                        className="px-4 py-3 font-bangers text-xl transition-colors hover:text-accent comic-border"
-                      >
-                        Register
-                      </button>
                     </div>
                   </>
                 )}
@@ -249,7 +234,7 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
         </section>
 
         <section className="container mx-auto px-4 py-10">
-          <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_24rem]">
+          <div className="mx-auto max-w-5xl">
             <div className="space-y-6">
               <div className="bg-card p-6 shadow-md comic-border">
                 <div className="grid gap-5 md:grid-cols-2">
@@ -300,7 +285,7 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
 
                   <div>
                     <label className="mb-2 block font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                      Status
+                      Actions
                     </label>
                     <div className="flex h-full items-center gap-3">
                       <button
@@ -409,63 +394,6 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                 </AnimatePresence>
               </div>
             </div>
-
-            <aside className="space-y-6">
-              <div className="bg-card p-6 shadow-md comic-border-accent">
-                <div className="flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                  <BookOpenText size={15} />
-                  Live Preview
-                </div>
-                <h2 className="mt-3 font-bangers text-3xl">{title.trim() || "Your headline will land here"}</h2>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {categoryId && categories.find((category) => category.id === categoryId) && (
-                    <span className="bg-primary px-3 py-1 font-oswald text-xs uppercase tracking-wide text-primary-foreground comic-border">
-                      {categories.find((category) => category.id === categoryId)?.name}
-                    </span>
-                  )}
-                  {tagIds.map((tagId) => {
-                    const tag = tags.find((entry) => entry.id === tagId);
-                    if (!tag) {
-                      return null;
-                    }
-
-                    return (
-                      <span key={tag.id} className="bg-background px-3 py-1 font-oswald text-xs uppercase tracking-wide comic-border-secondary">
-                        {tag.name}
-                      </span>
-                    );
-                  })}
-                </div>
-                {thumbnail.trim() && (
-                  <div className="mt-5 overflow-hidden comic-border">
-                    <img src={thumbnail.trim()} alt="Post thumbnail preview" className="h-48 w-full object-cover" />
-                  </div>
-                )}
-                <div
-                  className="editor-preview mt-5 text-sm leading-7 text-foreground/90"
-                  dangerouslySetInnerHTML={{ __html: plainText ? content : "<p>Start writing to see the preview.</p>" }}
-                />
-              </div>
-
-              <div className="bg-card p-6 shadow-md comic-border-secondary">
-                <div className="flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                  <Sparkles size={15} />
-                  Submission Notes
-                </div>
-                <ul className="mt-4 space-y-3 font-sans text-sm text-muted-foreground">
-                  <li>The backend accepts HTML content from Quill in the `content` field.</li>
-                  <li>`thumbnail` must be a valid `http` or `https` URL.</li>
-                  <li>`categoryId` is optional. You can create a new tag here or select up to 10 existing tags.</li>
-                  <li>Use `Save Draft` for `DRAFT` or `Publish` for `PUBLISHED`.</li>
-                </ul>
-                {isSaving && (
-                  <div className="mt-5 flex items-center gap-2 font-oswald text-sm uppercase tracking-wide text-primary">
-                    <LoaderCircle size={16} className="animate-spin" />
-                    {isEditing ? "Updating on API..." : "Sending to API..."}
-                  </div>
-                )}
-              </div>
-            </aside>
           </div>
         </section>
       </main>

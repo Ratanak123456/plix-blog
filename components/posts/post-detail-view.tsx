@@ -116,7 +116,7 @@ export function PostDetailView({ slug }: { slug: string }) {
         </section>
 
         <section className="container mx-auto px-4 py-10 md:py-12">
-          <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_18rem]">
+          <div className="mx-auto max-w-5xl">
             <div className="space-y-8">
               <article className="overflow-hidden bg-card comic-border">
                 <div className="relative aspect-[16/7] overflow-hidden bg-linear-to-br from-orange-800 via-primary/50 to-amber-300">
@@ -142,31 +142,9 @@ export function PostDetailView({ slug }: { slug: string }) {
                 initialLikeCount={post.likeCount}
                 commentCount={post.commentCount}
                 initialLiked={post.likedByCurrentUser}
+                initialBookmarked={post.bookmarkedByCurrentUser}
               />
             </div>
-
-            <aside className="self-start space-y-6">
-              <div className="bg-card p-6 comic-border-accent">
-                <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Story notes</p>
-                <div className="mt-4 space-y-4 font-sans text-sm text-muted-foreground">
-                  <p>This issue was published on {formatDate(post.publishedAt ?? post.createdAt)}.</p>
-                  <p>The current route is driven by the post slug, so links from the homepage now open the full article view.</p>
-                </div>
-              </div>
-
-              <div className="bg-card p-6 comic-border">
-                <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Author route</p>
-                <p className="mt-3 font-sans text-sm leading-7 text-muted-foreground">
-                  Clicking the author or any commenter now opens a dedicated dynamic profile page for that user.
-                </p>
-                <Link
-                  href={`/users/${post.author.username}`}
-                  className="mt-4 inline-flex items-center gap-2 bg-primary px-4 py-2 font-bangers text-xl text-primary-foreground comic-border-secondary"
-                >
-                  View profile
-                </Link>
-              </div>
-            </aside>
           </div>
         </section>
       </main>

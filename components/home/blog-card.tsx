@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Clock } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/types";
 
@@ -72,12 +73,25 @@ export function BlogCard({ post, index = 0 }: BlogCardProps) {
       </Link>
       
       <div className="mt-auto flex items-center gap-3 border-t border-border pt-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary font-bangers text-xs text-white uppercase">
-          {post.author.fullName.charAt(0)}
-        </div>
-        <div className="font-oswald text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          BY {post.author.fullName}
-        </div>
+        <Link href={`/users/${post.author.username}`} className="group/author flex items-center gap-3">
+          <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover/author:scale-110">
+            {(post.author as any).profileImage ? (
+              <Image
+                src={(post.author as any).profileImage}
+                alt={post.author.fullName}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <span className="font-bangers text-[10px] text-background uppercase">
+                {post.author.fullName.charAt(0)}
+              </span>
+            )}
+          </div>
+          <div className="font-oswald text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors group-hover/author:text-primary">
+            BY {post.author.fullName}
+          </div>
+        </Link>
       </div>
     </motion.article>
   );

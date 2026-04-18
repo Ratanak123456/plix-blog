@@ -1,9 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Heart, MessageCircle, Send } from "lucide-react";
+import { Heart, MessageCircle, Send, Bookmark } from "lucide-react";
 import { useState } from "react";
-import { useGetPostLikeStatusQuery, useTogglePostLikeMutation } from "@/lib/services/auth-api";
+import { 
+  useGetPostLikeStatusQuery, 
+  useTogglePostLikeMutation,
+  useGetPostBookmarkStatusQuery,
+  useTogglePostBookmarkMutation
+} from "@/lib/services/auth-api";
 import { useAppSelector } from "@/lib/store";
 
 type PostEngagementBarProps = {
@@ -12,6 +17,7 @@ type PostEngagementBarProps = {
   initialLikeCount: number;
   commentCount: number;
   initialLiked?: boolean;
+  initialBookmarked?: boolean;
 };
 
 export function PostEngagementBar({
@@ -20,15 +26,24 @@ export function PostEngagementBar({
   initialLikeCount,
   commentCount,
   initialLiked = false,
+  initialBookmarked = false,
 }: PostEngagementBarProps) {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
+  
+  // Like Logic
   const { data: likedStatus } = useGetPostLikeStatusQuery(postId, { skip: !isAuthenticated });
   const [toggleLike, { isLoading: likePending }] = useTogglePostLikeMutation();
   const [likedOverride, setLikedOverride] = useState<boolean | null>(null);
   const [likeCountOverride, setLikeCountOverride] = useState<number | null>(null);
 
+  // Bookmark/Save Logic
+  const { data: bookmarkedStatus } = useGetPostBookmarkStatusQuery(postId, { skip: !isAuthenticated });
+  const [toggleBookmark, { isLoading: bookmarkPending }] = useTogglePostBookmarkMutation();
+  const [bookmarkedOverride, setBookmarkedOverride] = useState<boolean | null>(null);
+
   const liked = likedOverride ?? (isAuthenticated ? (likedStatus ?? initialLiked) : false);
   const likeCount = likeCountOverride ?? initialLikeCount;
+  const bookmarked = bookmarkedOverride ?? (isAuthenticated ? (bookmarkedStatus ?? initialBookmarked) : false);
 
   async function handleLike() {
     if (!isAuthenticated || likePending) {
@@ -49,8 +64,24 @@ export function PostEngagementBar({
     }
   }
 
+  async function handleBookmark() {
+    if (!isAuthenticated || bookmarkPending) {
+      return;
+    }
+
+    const nextBookmarked = !bookmarked;
+    setBookmarkedOverride(nextBookmarked);
+
+    try {
+      const response = await toggleBookmark(postId).unwrap();
+      setBookmarkedOverride(response.bookmarked);
+    } catch {
+      setBookmarkedOverride(null);
+    }
+  }
+
   const actionClassName =
-    "flex flex-1 items-center justify-center gap-2 px-4 py-3 font-oswald text-xs uppercase tracking-[0.28em] transition-colors";
+    "flex flex-1 items-center justify-center gap-2 px-2 py-3 font-oswald text-[10px] uppercase tracking-wider transition-colors sm:text-xs sm:tracking-[0.2em]";
 
   return (
     <section className="bg-card p-5 comic-border-secondary">
@@ -73,7 +104,7 @@ export function PostEngagementBar({
         </Link>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 divide-x-2 divide-dashed divide-primary/30 overflow-hidden bg-background comic-border">
+      <div className="mt-4 grid grid-cols-4 divide-x-2 divide-dashed divide-primary/30 overflow-hidden bg-background comic-border">
         <button
           type="button"
           onClick={handleLike}
@@ -81,16 +112,26 @@ export function PostEngagementBar({
           className={`${actionClassName} ${liked ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted"} disabled:cursor-not-allowed disabled:opacity-60`}
           title={isAuthenticated ? "Like this post" : "Login to like posts"}
         >
-          <Heart size={18} className={liked ? "fill-current" : ""} />
-          Like
+          <Heart size={16} className={liked ? "fill-current" : ""} />
+          <span className="hidden xs:inline">Like</span>
         </button>
         <Link href={`/posts/${slug}/comments`} scroll={false} className={`${actionClassName} text-muted-foreground hover:bg-muted`}>
-          <MessageCircle size={18} />
-          Comment
+          <MessageCircle size={16} />
+          <span className="hidden xs:inline">Comment</span>
         </Link>
+        <button
+          type="button"
+          onClick={handleBookmark}
+          disabled={!isAuthenticated || bookmarkPending}
+          className={`${actionClassName} ${bookmarked ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-muted"} disabled:cursor-not-allowed disabled:opacity-60`}
+          title={isAuthenticated ? "Save this post" : "Login to save posts"}
+        >
+          <Bookmark size={16} className={bookmarked ? "fill-current" : ""} />
+          <span className="hidden xs:inline">{bookmarked ? "Saved" : "Save"}</span>
+        </button>
         <Link href={`/posts/${slug}/share`} scroll={false} className={`${actionClassName} text-muted-foreground hover:bg-muted`}>
-          <Send size={18} />
-          Share
+          <Send size={16} />
+          <span className="hidden xs:inline">Share</span>
         </Link>
       </div>
     </section>

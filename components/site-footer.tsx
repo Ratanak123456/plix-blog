@@ -1,4 +1,4 @@
-import { SiGithub, SiInstagram, SiX } from "react-icons/si";
+import Image from "next/image";
 
 export function SiteFooter() {
   return (
@@ -36,7 +36,7 @@ export function SiteFooter() {
             className="flex flex-wrap justify-center gap-6 font-oswald text-lg uppercase"
             style={{ color: "#1a1a1a" }}
           >
-            {["About", "Privacy", "Advertise", "Contact"].map((link) => (
+            {["HOME", "BLOG", "ABOUT US"].map((link) => (
               <a
                 key={link}
                 href="#"
@@ -48,34 +48,32 @@ export function SiteFooter() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-3">
-            {[SiX, SiGithub, SiInstagram].map((Icon, index) => (
-              <a
-                key={index}
-                href="#"
-                className="flex h-11 w-11 items-center justify-center transition-all hover:-translate-y-1 comic-border"
-                style={{ backgroundColor: "#1a1a1a", color: "#F0B443" }}
-              >
-                <Icon size={20} />
-              </a>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-12 flex flex-col items-center border-t border-black/10 pt-8">
-          <span className="mb-4 font-oswald text-xs font-bold uppercase tracking-widest text-black/50">
-            Official Sponsor
-          </span>
-          <div className="flex items-center justify-center grayscale transition-all hover:grayscale-0">
-            {/* Replace with actual sponsor logo */}
-            <div className="bg-black/5 px-6 py-3 comic-border border-black/20">
-              <span className="font-bangers text-2xl text-black/40">SPONSOR LOGO</span>
+          <div className="flex flex-col items-center gap-4 md:items-end">
+            <span className="font-oswald text-xs font-bold uppercase tracking-widest text-black/60">
+              Official Sponsor
+            </span>
+            <div className="flex items-center transition-transform hover:scale-105">
+              <div className="relative h-20 w-56">
+                <Image
+                  src="/logo.png"
+                  alt="ISTAD Logo"
+                  fill
+                  className="object-contain md:object-right"
+                  priority
+                />
+              </div>
+            </div>
+            <div className="text-center md:text-right uppercase">
+              <p className="font-oswald text-lg font-bold text-[#1a1a1a] leading-tight tracking-[0.1em]">
+                Institute of Science and Technology<br/>
+                <span className="text-xl tracking-[0.12em]">Advanced Development</span>
+              </p>
             </div>
           </div>
         </div>
 
         <div
-          className="mt-10 text-center font-sans text-sm"
+          className="mt-12 border-t border-black/10 pt-8 text-center font-sans text-sm"
           style={{ color: "#3a3a3a" }}
         >
           © {new Date().getFullYear()} PlixBlog Universe. All rights reserved.

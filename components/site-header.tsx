@@ -1,19 +1,14 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Globe, LogIn, LogOut, Menu, Moon, PenSquare, Sun, User2, X } from "lucide-react";
+import { LogIn, LogOut, Menu, Moon, PenSquare, Sun, User2, X } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { logout } from "@/lib/features/auth/auth-slice";
 import { useGetMyProfileQuery } from "@/lib/services/auth-api";
 import { useAppDispatch, useAppSelector } from "@/lib/store";
-
-const LANGUAGES = [
-  { code: "EN", label: "English", flag: "🇺🇸" },
-  { code: "ES", label: "Español", flag: "🇪🇸" },
-  { code: "FR", label: "Français", flag: "🇫🇷" },
-];
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
@@ -37,11 +32,8 @@ export function SiteHeader() {
     }
   }, []);
 
-  const [langOpen, setLangOpen] = useState(false);
-  const [currentLang, setCurrentLang] = useState("EN");
   const [loginOpen, setLoginOpen] = useState(false);
   const [modalType, setModalType] = useState<"login" | "register">("login");
-  const langRef = useRef<HTMLDivElement>(null);
 
   useGetMyProfileQuery(undefined, {
     skip: !isAuthenticated,
@@ -52,17 +44,6 @@ export function SiteHeader() {
     document.documentElement.classList.toggle("light", !darkMode);
     window.localStorage.setItem("plixblog-theme", darkMode ? "dark" : "light");
   }, [darkMode]);
-
-  useEffect(() => {
-    function handleClick(event: MouseEvent) {
-      if (langRef.current && !langRef.current.contains(event.target as Node)) {
-        setLangOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
 
   return (
     <>
@@ -91,42 +72,6 @@ export function SiteHeader() {
           </nav>
 
           <div className="hidden shrink-0 items-center gap-2 md:flex">
-            <div ref={langRef} className="relative">
-              <button
-                onClick={() => setLangOpen((open) => !open)}
-                className="flex items-center gap-1 px-3 py-2 font-oswald text-sm uppercase transition-all hover:border-accent hover:text-accent comic-border"
-              >
-                <Globe size={15} /> {currentLang}
-                <ChevronDown size={13} className={`transition-transform ${langOpen ? "rotate-180" : ""}`} />
-              </button>
-              <AnimatePresence>
-                {langOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -8, scale: 0.95 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 top-full z-50 mt-1 w-36 bg-card shadow-lg comic-border"
-                  >
-                    {LANGUAGES.map((language) => (
-                      <button
-                        key={language.code}
-                        onClick={() => {
-                          setCurrentLang(language.code);
-                          setLangOpen(false);
-                        }}
-                        className={`flex w-full items-center gap-2 px-4 py-2 text-left font-oswald text-sm uppercase transition-colors hover:bg-primary/20 hover:text-primary ${
-                          currentLang === language.code ? "text-accent" : ""
-                        }`}
-                      >
-                        <span>{language.flag}</span>
-                        {language.label}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
             <button
               onClick={() => setDarkMode((mode) => !mode)}
               className="p-2 transition-all hover:border-accent hover:text-accent comic-border"
@@ -144,10 +89,23 @@ export function SiteHeader() {
               <>
                 <Link
                   href="/profile"
-                  className="flex items-center gap-2 px-4 py-2 font-oswald text-sm uppercase tracking-wide transition-all hover:border-accent hover:text-accent comic-border"
+                  className="flex items-center gap-2 p-1 transition-all hover:border-accent comic-border"
+                  title={user.username}
                 >
-                  <User2 size={16} />
-                  <span>{user.username}</span>
+                  <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                    {user.profileImage ? (
+                      <Image
+                        src={user.profileImage}
+                        alt={user.fullName}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <span className="font-bangers text-[10px] text-background uppercase">
+                        {user.fullName.charAt(0)}
+                      </span>
+                    )}
+                  </div>
                 </Link>
                 <button
                   onClick={() => dispatch(logout())}
@@ -199,19 +157,6 @@ export function SiteHeader() {
                     {item.label}
                   </Link>
                 ))}
-                <div className="mt-2 flex gap-3">
-                  {LANGUAGES.map((language) => (
-                    <button
-                      key={language.code}
-                      onClick={() => setCurrentLang(language.code)}
-                      className={`px-3 py-1 font-oswald text-sm transition-all comic-border ${
-                        currentLang === language.code ? "bg-primary text-background" : "hover:text-primary"
-                      }`}
-                    >
-                      {language.code}
-                    </button>
-                  ))}
-                </div>
                 <Link
                   href="/write"
                   onClick={() => setMobileMenuOpen(false)}
@@ -224,9 +169,23 @@ export function SiteHeader() {
                     <Link
                       href="/profile"
                       onClick={() => setMobileMenuOpen(false)}
-                      className="mt-2 flex items-center gap-2 px-4 py-2 font-oswald text-base uppercase transition-colors hover:text-primary comic-border"
+                      className="mt-2 flex items-center gap-3 px-4 py-2 font-oswald text-base uppercase transition-colors hover:text-primary comic-border"
                     >
-                      <User2 size={18} /> {user.username}
+                      <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                        {user.profileImage ? (
+                          <Image
+                            src={user.profileImage}
+                            alt={user.fullName}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <span className="font-bangers text-[10px] text-background uppercase">
+                            {user.fullName.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                      <span>{user.username}</span>
                     </Link>
                     <button
                       onClick={() => {

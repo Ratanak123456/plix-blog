@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { type UserProfile, type BlogPost } from "@/lib/types";
 import { getAuthorInitials } from "@/lib/utils/format";
 
-type ProfileLinkUser = Pick<UserProfile, "id" | "username" | "fullName"> | BlogPost["author"];
+type ProfileLinkUser = (Pick<UserProfile, "id" | "username" | "fullName"> & { profileImage?: string | null }) | BlogPost["author"];
 
 export function UserProfileLink({
   user,
@@ -15,14 +16,27 @@ export function UserProfileLink({
   labelClassName?: string;
   replace?: boolean;
 }) {
+  const profileImage = (user as any).profileImage;
+
   return (
     <Link
       href={`/users/${user.username}`}
       replace={replace}
       className="group inline-flex items-center gap-3 transition-transform hover:-translate-y-0.5"
     >
-      <div className="flex h-11 w-11 items-center justify-center rounded-full bg-primary font-bangers text-base text-primary-foreground">
-        {getAuthorInitials(user.fullName)}
+      <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+        {profileImage ? (
+          <Image
+            src={profileImage}
+            alt={user.fullName}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <span className="font-bangers text-base text-background">
+            {getAuthorInitials(user.fullName)}
+          </span>
+        )}
       </div>
       <div>
         <p className={`font-bangers text-2xl text-primary transition-colors group-hover:text-accent ${labelClassName ?? ""}`}>

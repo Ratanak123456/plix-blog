@@ -146,6 +146,13 @@ const extendedPostsApi = authApi.injectEndpoints({
       transformResponse: (response: BackendPostResponse) => normalizePost(response),
       invalidatesTags: ["Posts", "Categories"],
     }),
+    deletePost: builder.mutation<void, string>({
+      query: (id) => ({
+        url: `/posts/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Posts", "Categories"],
+    }),
   }),
 });
 
@@ -162,5 +169,6 @@ export const {
   useGetUserPostsPageQuery,
   useGetUserPostsQuery,
   useUpdatePostMutation,
+  useDeletePostMutation,
 } = extendedPostsApi;
 
