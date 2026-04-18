@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Code2, Cpu, Film, ShieldCheck, Smartphone } from "lucide-react";
+import { ArrowRight, Code2, Coffee, Cpu, Film, ShieldCheck, Smartphone } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useGetCategoriesQuery } from "@/lib/services/auth-api";
 
@@ -16,6 +16,7 @@ const categoryIcons: Record<string, LucideIcon> = {
   movie: Film,
   cyber: ShieldCheck,
   security: ShieldCheck,
+  lifestyle: Coffee,
 };
 
 function getCategoryIcon(slug: string, name: string) {
