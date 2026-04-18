@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Eye, EyeOff } from "lucide-react";
 import { useLoginMutation } from "@/lib/services/auth-api";
 import { 
   loginSchema, 
@@ -25,6 +26,7 @@ const defaultLoginValues: LoginFormValues = {
 
 export function LoginForm({ onSuccess, onModeChange }: LoginFormProps) {
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [login, { isLoading: isLoggingIn }] = useLoginMutation();
 
   const loginForm = useForm<LoginFormValues>({
@@ -79,12 +81,22 @@ export function LoginForm({ onSuccess, onModeChange }: LoginFormProps) {
         <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
           Password
         </label>
-        <input
-          type="password"
-          placeholder="••••••••"
-          className="w-full bg-background px-4 py-3 font-oswald text-lg text-foreground transition-colors placeholder:text-muted-foreground/60 focus:border-accent focus:outline-none comic-border"
-          {...loginForm.register("password")}
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="••••••••"
+            className="w-full bg-background px-4 py-3 pr-12 font-oswald text-lg text-foreground transition-colors placeholder:text-muted-foreground/60 focus:border-accent focus:outline-none comic-border"
+            {...loginForm.register("password")}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-accent focus:outline-none"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          </button>
+        </div>
         {activeLoginErrors.password && (
           <p className="mt-1 font-oswald text-sm text-red-500">{activeLoginErrors.password.message}</p>
         )}

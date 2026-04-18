@@ -30,7 +30,7 @@ export function Hero() {
         <div className="relative z-10 flex flex-col items-center gap-8 md:flex-row">
           <div className="flex-1 space-y-5">
             <div className="inline-block -rotate-2 bg-primary px-4 py-1 font-bangers text-xl text-background comic-border-secondary">
-              {featuredPost ? `DAILY ISSUE #${formatIssueNumber(featuredPost.createdAt)}` : "DAILY ISSUE"}
+              DAILY ISSUE 
             </div>
             {isLoading ? (
               <>
