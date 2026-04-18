@@ -21,9 +21,17 @@ The platform features a distinct "Comic Strip" design language:
 - **Origin Stories:** A dedicated feed for the latest published blog posts.
 - **Rich Text Editor:** Fully integrated [Quill.js](https://quilljs.com/) for a seamless writing experience.
 - **User Profiles:** Personalized dashboards with author stats and content.
+- **Smart Filtering:** Search and filter posts by status (Draft/Published) directly in your dashboard.
 - **Interactive Engagement:** Like, bookmark, and share functionalities.
-- **Dynamic Routing:** Slug-based SEO-friendly post delivery and username-based profiles.
-- **Fully Responsive:** Optimized layouts from mobile "strips" to desktop "spreads."
+- **Thematic Modals:** Custom comic-style `AlertDialog` for sensitive actions like post deletion.
+- **Fully Responsive:** Optimized layouts from mobile "strips" to desktop "spreads," with tablet-optimized navigation.
+
+## ✨ Recent Enhancements
+
+- **Content Integrity:** Implemented mandatory category validation for all new blog posts.
+- **Expanded Adventures:** New icon support for diverse categories including AI, Cybersecurity, and Lifestyle.
+- **Performance Optimization:** Production-ready build with strict TypeScript type safety and optimized asset delivery.
+- **Security & Stability:** Configured remote patterns for external image domains (Facebook/Google) and upgraded database fields to handle long URL strings.
 
 ## 🛠 Tech Stack
 
@@ -31,7 +39,7 @@ The platform features a distinct "Comic Strip" design language:
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
 - **State Management:** [Redux Toolkit](https://redux-toolkit.js.org/) & [RTK Query](https://redux-toolkit.js.org/rtk-query/overview)
 - **Styling:** [Tailwind CSS 4](https://tailwindcss.com/)
-- **UI Components:** [Base UI](https://base-ui.com/), [Radix UI](https://www.radix-ui.com/), [Lucide Icons](https://lucide.dev/), [Shadcn UI](https://ui.shadcn.com/)
+- **UI Components:** [Radix UI](https://www.radix-ui.com/), [Lucide Icons](https://lucide.dev/), [Shadcn UI](https://ui.shadcn.com/)
 - **Forms:** [React Hook Form](https://react-hook-form.com/) with [Zod](https://zod.dev/) validation
 - **Animation:** [Framer Motion](https://www.framer.com/motion/)
 
