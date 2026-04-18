@@ -59,8 +59,8 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
 
   const isSaving = isCreating || isUpdating;
 
-  // We keep canSubmit but remove wordCount as requested
-  const canSubmit = isAuthenticated && title.trim() && content !== EMPTY_PARAGRAPH && !isSaving;
+  // Added categoryId requirement to canSubmit
+  const canSubmit = isAuthenticated && title.trim() && categoryId && content !== EMPTY_PARAGRAPH && !isSaving;
 
   useEffect(() => {
     if (initialData) {
@@ -111,6 +111,26 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
   }
 
   async function handleSubmit(status: "DRAFT" | "PUBLISHED") {
+    if (!isAuthenticated) {
+      setFeedback("Please sign in to save your story.");
+      return;
+    }
+    
+    if (!title.trim()) {
+      setFeedback("Story title is required.");
+      return;
+    }
+
+    if (!categoryId) {
+      setFeedback("Please select a category for your story.");
+      return;
+    }
+
+    if (content === EMPTY_PARAGRAPH) {
+      setFeedback("Story content cannot be empty.");
+      return;
+    }
+
     if (!canSubmit) {
       return;
     }
@@ -272,9 +292,11 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                       value={categoryId}
                       onChange={(event) => setCategoryId(event.target.value)}
                       disabled={!isAuthenticated || categoriesLoading}
-                      className="w-full bg-background px-4 py-3 font-oswald text-sm uppercase tracking-wide text-foreground disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none comic-border"
+                      className={`w-full bg-background px-4 py-3 font-oswald text-sm uppercase tracking-wide text-foreground disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none comic-border ${
+                        !categoryId && title.trim() ? "border-destructive/50" : ""
+                      }`}
                     >
-                      <option value="">No category</option>
+                      <option value="" disabled>Select category *</option>
                       {categories.map((category) => (
                         <option key={category.id} value={category.id}>
                           {category.name}
