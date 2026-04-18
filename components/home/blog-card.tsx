@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Clock } from "lucide-react";
 import Link from "next/link";
-import type { BlogPost } from "@/lib/services/auth-api";
+import type { BlogPost } from "@/lib/types";
 
 interface BlogCardProps {
   post: BlogPost;

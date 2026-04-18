@@ -1,22 +1,6 @@
-export type AuthUser = {
-  id: string;
-  username: string;
-  fullName: string;
-  email: string;
-  bio: string | null;
-  profileImage: string | null;
-  coverImage: string | null;
-  verified: boolean;
-  role: string;
-  createdAt: string;
-};
+import { type AuthUser, type PersistedAuthState } from "@/lib/types";
 
-export type PersistedAuthState = {
-  accessToken: string | null;
-  refreshToken: string | null;
-  user: AuthUser | null;
-  isAuthenticated: boolean;
-};
+export type { AuthUser, PersistedAuthState };
 
 const AUTH_USER_STORAGE_KEY = "plixblog-auth-user";
 const ACCESS_TOKEN_COOKIE = "plixblog-access-token";

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { useGetPostBySlugQuery } from "@/lib/services/auth-api";
-import { PostCommentsPanel, PostLikesPanel } from "@/components/posts/post-detail-shared";
+import { PostCommentsPanel } from "./post-comments-panel";
+import { PostLikesPanel } from "./post-likes-panel";
 import { PostSharePanel } from "@/components/posts/post-share-panel";
 
 type PostFeedbackViewProps = {

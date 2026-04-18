@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { ArrowLeft, Eye, Heart, MessageCircle } from "lucide-react";
 import { PostEngagementBar } from "@/components/posts/post-engagement-bar";
-import { formatDate, getReadTime, UserProfileLink } from "@/components/posts/post-detail-shared";
+import { formatDate, getReadTime } from "@/lib/utils/format";
+import { UserProfileLink } from "./user-profile-link";
 import { useGetPostBySlugQuery } from "@/lib/services/auth-api";
 
 export function PostDetailView({ slug }: { slug: string }) {

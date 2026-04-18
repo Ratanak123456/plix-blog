@@ -8,222 +8,33 @@ import {
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
 import { logout, setCredentials, updateCurrentUser } from "@/lib/features/auth/auth-slice";
-import type { AuthUser, PersistedAuthState } from "@/lib/auth-storage";
+import {
+  AuthUser,
+  PersistedAuthState,
+  BackendAuthResponse,
+  BackendUserResponse,
+  BackendPostResponse,
+  BackendCommentResponse,
+  BackendTagResponse,
+  PageResponse,
+  BlogPost,
+  BlogCategory,
+  BlogTag,
+  UserProfile,
+  BlogComment,
+  CreatePostRequest,
+  UpdatePostRequest,
+  CreateTagRequest,
+  CreateCommentRequest,
+  UpdateProfileRequest,
+  ToggleLikeResponse,
+  ToggleBookmarkResponse,
+  LikeStatusResponse,
+  BookmarkStatusResponse,
+  LoginRequest,
+  RegisterRequest,
+} from "@/lib/types";
 import type { RootState } from "@/lib/store";
-
-type BackendAuthResponse = {
-  accessToken?: string;
-  refreshToken?: string;
-  tokenType?: string;
-  user: {
-    id: string;
-    username: string;
-    fullName: string;
-    email: string;
-    bio: string | null;
-    profileImage: string | null;
-    coverImage: string | null;
-    verified?: boolean;
-    isVerified?: boolean;
-    role: string;
-    createdAt: string;
-  };
-};
-
-type BackendUserResponse = {
-  id: string;
-  username: string;
-  fullName: string;
-  email: string;
-  bio: string | null;
-  profileImage: string | null;
-  coverImage: string | null;
-  verified?: boolean;
-  isVerified?: boolean;
-  role: string;
-  createdAt: string;
-};
-
-type BackendPostResponse = {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  thumbnailUrl: string | null;
-  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
-  viewCount: number | null;
-  likeCount: number | null;
-  commentCount: number | null;
-  bookmarkCount: number | null;
-  publishedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  author: {
-    id: string;
-    username: string;
-    fullName: string;
-  };
-  category: {
-    id: string;
-    name: string;
-  } | null;
-  tags: Array<{ id: string; name: string; slug: string }>;
-  likedByCurrentUser?: boolean;
-  bookmarkedByCurrentUser?: boolean;
-};
-
-type BackendCommentResponse = {
-  id: string;
-  content: string;
-  createdAt: string;
-  user: BackendUserResponse;
-  parentId: string | null;
-  replies: BackendCommentResponse[];
-  likeCount: number | null;
-  likedByCurrentUser?: boolean;
-};
-
-type BackendTagResponse = {
-  id: string;
-  name: string;
-  slug: string;
-  postCount: number | null;
-};
-
-export type PageResponse<T> = {
-  content: T[];
-  totalPages: number;
-  totalElements: number;
-  size: number;
-  number: number;
-  first: boolean;
-  last: boolean;
-  empty: boolean;
-};
-
-export type BlogPost = {
-  id: string;
-  title: string;
-  slug: string;
-  content: string;
-  thumbnailUrl: string | null;
-  status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
-  viewCount: number;
-  likeCount: number;
-  commentCount: number;
-  bookmarkCount: number;
-  publishedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  author: {
-    id: string;
-    username: string;
-    fullName: string;
-  };
-  category: {
-    id: string;
-    name: string;
-  } | null;
-  tags: Array<{ id: string; name: string; slug: string }>;
-  likedByCurrentUser: boolean;
-  bookmarkedByCurrentUser: boolean;
-};
-
-export type BlogCategory = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  postCount: number;
-};
-
-export type BlogTag = {
-  id: string;
-  name: string;
-  slug: string;
-  postCount: number;
-};
-
-export type UserProfile = AuthUser;
-
-export type BlogComment = {
-  id: string;
-  content: string;
-  createdAt: string;
-  user: UserProfile;
-  parentId: string | null;
-  replies: BlogComment[];
-  likeCount: number;
-  likedByCurrentUser: boolean;
-};
-
-export type CreatePostRequest = {
-  title: string;
-  content: string;
-  thumbnail?: string | null;
-  categoryId?: string | null;
-  tagIds?: string[];
-  status: "DRAFT" | "PUBLISHED";
-};
-
-export type UpdatePostRequest = {
-  id: string;
-  title: string;
-  content: string;
-  thumbnail?: string | null;
-  categoryId?: string | null;
-  tagIds?: string[];
-  status: "DRAFT" | "PUBLISHED";
-};
-
-export type CreateTagRequest = {
-  name: string;
-};
-
-export type CreateCommentRequest = {
-  postId: string;
-  content: string;
-  parentId?: string | null;
-};
-
-export type UpdateProfileRequest = {
-  username: string;
-  fullName: string;
-  email: string;
-  bio: string | null;
-  profileImage: string | null;
-  coverImage: string | null;
-};
-
-type ToggleLikeResponse = {
-  liked: boolean;
-  likeCount: number;
-};
-
-type ToggleBookmarkResponse = {
-  bookmarked: boolean;
-  bookmarkCount: number;
-};
-
-type LikeStatusResponse = {
-  liked: boolean;
-};
-
-type BookmarkStatusResponse = {
-  bookmarked: boolean;
-};
-
-type LoginRequest = {
-  identifier: string;
-  password: string;
-};
-
-type RegisterRequest = {
-  username: string;
-  fullName: string;
-  email: string;
-  password: string;
-};
 
 function normalizeUser(user: BackendAuthResponse["user"]): AuthUser {
   return {
@@ -687,3 +498,12 @@ export const {
   useTogglePostLikeMutation,
   useUpdateProfileMutation,
 } = authApi;
+
+export type {
+  BlogComment,
+  BlogCategory,
+  BlogPost,
+  BlogTag,
+  PageResponse,
+  UserProfile,
+} from "@/lib/types";

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Search, Filter, ChevronLeft, ChevronRight, Calendar, Heart, Eye, Loader2 } from "lucide-react";
 import { BlogCard } from "@/components/blog/blog-card";
 import { useGetLatestPostsQuery, useGetMostLikedPostsQuery, useGetMostViewedPostsQuery, useGetCategoriesQuery } from "@/lib/services/auth-api";
-import type { BlogCategory, BlogPost } from "@/lib/services/auth-api";
+import type { BlogCategory, BlogPost } from "@/lib/types";
 
 type SortOption = "latest" | "oldest" | "most-liked" | "most-viewed";
 

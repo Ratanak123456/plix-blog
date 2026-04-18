@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Globe, LogIn, LogOut, Menu, Moon, PenSquare, Sun, User2, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { AuthModal } from "@/components/auth-modal";
+import { AuthModal } from "@/components/auth/auth-modal";
 import { logout } from "@/lib/features/auth/auth-slice";
 import { useGetMyProfileQuery } from "@/lib/services/auth-api";
 import { useAppDispatch, useAppSelector } from "@/lib/store";

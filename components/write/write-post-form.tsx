@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, BookOpenText, CheckCircle2, LoaderCircle, PenSquare, Sparkles, Tags } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AuthModal } from "@/components/auth-modal";
+import { AuthModal } from "@/components/auth/auth-modal";
 import { QuillEditor } from "@/components/write/quill-editor";
 import {
   useCreatePostMutation,
