@@ -93,3 +93,4 @@ export function saveAuthState(state: PersistedAuthState) {
     window.localStorage.removeItem(AUTH_USER_STORAGE_KEY);
   }
 }
+

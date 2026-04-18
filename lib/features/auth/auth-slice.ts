@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { emptyAuthState, type PersistedAuthState } from "@/lib/auth-storage";
+import { emptyAuthState, type PersistedAuthState } from "@/lib/features/auth/auth-storage";
 
 const authSlice = createSlice({
   name: "auth",

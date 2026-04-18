@@ -2,7 +2,7 @@
 
 import { configureStore, type Middleware } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import { emptyAuthState, saveAuthState } from "@/lib/auth-storage";
+import { emptyAuthState, saveAuthState } from "@/lib/features/auth/auth-storage";
 import { authReducer } from "@/lib/features/auth/auth-slice";
 import { authApi } from "@/lib/services/auth-api";
 

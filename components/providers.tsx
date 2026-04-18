@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Provider } from "react-redux";
-import { loadAuthState } from "@/lib/auth-storage";
+import { loadAuthState } from "@/lib/features/auth/auth-storage";
 import { hydrateAuthState } from "@/lib/features/auth/auth-slice";
 import { store } from "@/lib/store";
 
