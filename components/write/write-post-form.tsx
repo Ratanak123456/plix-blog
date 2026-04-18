@@ -4,7 +4,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, CheckCircle2, LoaderCircle, PenSquare, Tags } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AuthModal } from "@/components/auth/auth-modal";
 import { QuillEditor } from "@/components/write/quill-editor";
 import {
   useCreatePostMutation,
@@ -48,8 +47,6 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
   const [content, setContent] = useState(initialData?.content ?? EMPTY_PARAGRAPH);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [modalType, setModalType] = useState<"login" | "register">("login");
 
   const { data: categories = [], isLoading: categoriesLoading } = useGetCategoriesQuery();
   const { data: tags = [], isLoading: tagsLoading } = useGetTagsQuery();
@@ -182,8 +179,6 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-background text-foreground">
-      <AuthModal open={loginOpen} mode={modalType} onClose={() => setLoginOpen(false)} onModeChange={setModalType} />
-
       <main className="relative">
         <section className="relative overflow-hidden border-b-4 border-primary bg-muted/40">
           <div className="pointer-events-none absolute inset-0 opacity-20 halftone-bg" />
@@ -215,7 +210,7 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
               </div>
 
               <div className="self-start bg-card p-6 shadow-lg comic-border-secondary">
-                {isAuthenticated && user ? (
+                {user ? (
                   <>
                     <p className="font-oswald text-xs uppercase tracking-[0.3em] text-muted-foreground">Logged in as</p>
                     <p className="mt-2 font-bangers text-3xl text-primary">{user.username}</p>
@@ -229,25 +224,7 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                       </div>
                     )}
                   </>
-                ) : (
-                  <>
-                    <p className="font-bangers text-3xl text-primary">Sign in to {isEditing ? "edit" : "write"}</p>
-                    <p className="mt-3 font-sans text-sm text-muted-foreground">
-                      Sign in to unlock the editor and share your story with the world.
-                    </p>
-                    <div className="mt-5 flex gap-3">
-                      <button
-                        onClick={() => {
-                          setModalType("login");
-                          setLoginOpen(true);
-                        }}
-                        className="bg-accent px-4 py-3 font-bangers text-xl text-background transition-colors hover:bg-primary comic-border"
-                      >
-                        Login
-                      </button>
-                    </div>
-                  </>
-                )}
+                ) : null}
               </div>
             </div>
           </div>

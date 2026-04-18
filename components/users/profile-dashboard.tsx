@@ -405,27 +405,6 @@ export function ProfileDashboard() {
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <main className="container mx-auto px-4 py-16">
-        <div className="mx-auto max-w-3xl bg-card p-8 text-center comic-border-secondary">
-          <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Private profile</p>
-          <h1 className="mt-3 font-bangers text-5xl text-primary md:text-6xl">Login required</h1>
-          <p className="mt-4 font-sans text-base text-muted-foreground">
-            Sign in first to manage your profile, blogs, and saved bookmarks.
-          </p>
-          <Link
-            href="/"
-            className="mt-8 inline-flex items-center gap-2 bg-accent px-6 py-3 font-bangers text-xl text-accent-foreground comic-border"
-          >
-            <ArrowLeft size={18} />
-            Back to home
-          </Link>
-        </div>
-      </main>
-    );
-  }
-
   if (isLoading) {
     return (
       <main className="container mx-auto px-4 py-12">

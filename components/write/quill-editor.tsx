@@ -82,5 +82,5 @@ export function QuillEditor({ value, onChange, placeholder }: QuillEditorProps) 
     selection?.removeAllRanges();
   }, [value]);
 
-  return <div ref={containerRef} className="quill-shell min-h-[22rem]" />;
+  return <div ref={containerRef} className="quill-shell ql-snow min-h-[22rem]" />;
 }

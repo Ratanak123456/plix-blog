@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { WritePostForm } from "@/components/write/write-post-form";
 import { useGetPostBySlugQuery } from "@/lib/services/auth-api";
 import { LoaderCircle } from "lucide-react";
+import { ProtectedRoute } from "@/components/auth/protected-route";
 
 export default function EditPostPage() {
   const { slug } = useParams();
@@ -35,5 +36,9 @@ export default function EditPostPage() {
     );
   }
 
-  return <WritePostForm initialData={post} isEditing={true} />;
+  return (
+    <ProtectedRoute>
+      <WritePostForm initialData={post} isEditing={true} />
+    </ProtectedRoute>
+  );
 }
