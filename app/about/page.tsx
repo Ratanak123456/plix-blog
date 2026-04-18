@@ -182,9 +182,7 @@ export default function AboutPage() {
                 <span className="block text-accent">OUR CREW</span>
               </h1>
               <p className="max-w-2xl text-lg leading-8 text-muted-foreground md:text-xl">
-                PlixBlog tells tech stories with comic-book energy. This page now carries the
-                mentor and team lineup from your `skillshow` project, reshaped to fit the
-                PlixBlog comic theme.
+                PlixBlog tells tech stories with comic-book energy.
               </p>
             </div>
 
@@ -247,7 +245,7 @@ export default function AboutPage() {
           <SectionHeading
             eyebrow="Origin Story"
             title="WHY THIS TEAM"
-            description="The About page keeps the same comic voice as the rest of PlixBlog while bringing over the mentor and member lineup from Skillshow. The result is a fuller page with a clear story section and dedicated crew spotlights."
+            description="PlixBlog is built by a passionate team of creators dedicated to bringing tech stories to life through a unique comic-inspired lens. Our mission is to make technical knowledge engaging and accessible for everyone."
           />
 
           <div className="mt-10 grid gap-6 lg:grid-cols-3">
@@ -258,17 +256,17 @@ export default function AboutPage() {
               <h3 className="mt-3 font-bangers text-3xl text-primary">Comic Identity</h3>
               <p className="mt-3 text-sm leading-7 text-muted-foreground">
                 Bold type, thick borders, halftone texture, and punchy labels keep the page tied
-                to the existing PlixBlog look instead of feeling pasted in from another project.
+                to the unique PlixBlog aesthetic, ensuring a cohesive and immersive experience.
               </p>
             </div>
             <div className="comic-border-secondary bg-muted/30 p-6 shadow-md">
               <p className="font-oswald text-xs uppercase tracking-[0.2em] text-secondary">
                 Section 02
               </p>
-              <h3 className="mt-3 font-bangers text-3xl text-primary">Mentor Spotlight</h3>
+              <h3 className="mt-3 font-bangers text-3xl text-primary">Core Values</h3>
               <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                The mentor names and images come directly from the `skillshow` About page and now
-                sit in a cleaner card layout that matches this frontend.
+                We believe in the power of visual storytelling to simplify complex topics. Our team
+                focuses on high-quality content, clean code, and immersive design.
               </p>
             </div>
             <div className="comic-border-accent bg-card p-6 shadow-md">
@@ -277,8 +275,8 @@ export default function AboutPage() {
               </p>
               <h3 className="mt-3 font-bangers text-3xl text-primary">Team Roster</h3>
               <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                The member section keeps the original team list and turns it into a responsive
-                roster for desktop and mobile.
+                Our responsive roster brings together diverse talents from leadership to core
+                contributors, all working in sync to deliver the best "issues" to our readers.
               </p>
             </div>
           </div>
