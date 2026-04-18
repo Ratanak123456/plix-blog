@@ -41,7 +41,6 @@ export function UserProfileView({ username }: { username: string }) {
   const { data: user, isLoading: isUserLoading, isError: isUserError } = useGetPublicProfileQuery(username);
   const { data: posts = [], isLoading: arePostsLoading } = useGetUserPostsQuery({ 
     username, 
-    status: "PUBLISHED",
     size: 12 
   });
 
@@ -163,8 +162,10 @@ export function UserProfileView({ username }: { username: string }) {
           </div>
         ) : posts.length ? (
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {posts.map((post) => (
-              <article key={post.id} className="overflow-hidden bg-card comic-border">
+            {posts
+              .filter((post) => post.status === "PUBLISHED")
+              .map((post) => (
+                <article key={post.id} className="overflow-hidden bg-card comic-border">
                 <div className="aspect-[16/9] bg-linear-to-br from-orange-800 via-primary/50 to-amber-300">
                   {post.thumbnailUrl ? (
                     <div

@@ -306,7 +306,6 @@ export function ProfileDashboard() {
   const postsQueryArg = profileUsername
     ? { 
         username: profileUsername, 
-        status: statusFilter || undefined,
         page: postsPageIndex, 
         size: 9 
       }
