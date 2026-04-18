@@ -118,6 +118,8 @@ function PostGrid({
   onPageChange,
   showEditButton = false,
   showStatus = false,
+  statusFilter,
+  onStatusChange,
   onDelete,
 }: {
   heading: string;
@@ -128,10 +130,17 @@ function PostGrid({
   onPageChange: (page: number) => void;
   showEditButton?: boolean;
   showStatus?: boolean;
+  statusFilter?: string;
+  onStatusChange?: (status: string) => void;
   onDelete?: (id: string) => void;
 }) {
   const router = useRouter();
   const [isEditMode, setIsEditMode] = useState(false);
+
+  const filteredContent = useMemo(() => {
+    if (!page?.content) return [];
+    return page.content.filter((post) => !statusFilter || post.status === statusFilter);
+  }, [page?.content, statusFilter]);
 
   return (
     <section className="bg-card p-6 md:p-8 comic-border">
@@ -140,7 +149,18 @@ function PostGrid({
           <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">{description}</p>
           <h2 className="mt-2 font-bangers text-4xl text-primary">{heading}</h2>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          {onStatusChange && (
+            <select
+              value={statusFilter}
+              onChange={(e) => onStatusChange(e.target.value)}
+              className="bg-background px-3 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-primary comic-border-secondary focus:outline-none"
+            >
+              <option value="">All Status</option>
+              <option value="PUBLISHED">Published</option>
+              <option value="DRAFT">Draft</option>
+            </select>
+          )}
           {showEditButton && (
             <button
               type="button"
@@ -165,10 +185,10 @@ function PostGrid({
             <div key={index} className="h-64 animate-pulse bg-background comic-border" />
           ))}
         </div>
-      ) : page?.content.length ? (
+      ) : filteredContent.length ? (
         <>
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {page.content.map((post) => (
+            {filteredContent.map((post) => (
               <article 
                 key={post.id} 
                 className={`overflow-hidden bg-background comic-border-secondary transition-transform ${isEditMode ? "hover:scale-[1.02] cursor-pointer ring-2 ring-primary ring-offset-2" : ""}`}
@@ -233,14 +253,25 @@ function PostGrid({
             ))}
           </div>
           <PaginationBar
-            page={page.number}
-            totalPages={page.totalPages}
+            page={page!.number}
+            totalPages={page!.totalPages}
             onChange={onPageChange}
           />
         </>
       ) : (
-        <div className="mt-6 bg-background p-6 font-sans text-sm text-muted-foreground comic-border-secondary">
-          {emptyMessage}
+        <div className="mt-6 flex flex-col items-center justify-center bg-background p-12 text-center comic-border-secondary">
+          <div className="mb-4 h-16 w-16 opacity-20 halftone-bg" />
+          <p className="max-w-xs font-oswald text-lg uppercase tracking-wider text-muted-foreground">
+            {emptyMessage}
+          </p>
+          {!statusFilter && (
+            <Link
+              href="/write"
+              className="mt-6 bg-accent px-6 py-2 font-bangers text-xl text-accent-foreground comic-border"
+            >
+              Start Writing
+            </Link>
+          )}
         </div>
       )}
     </section>
@@ -251,6 +282,7 @@ export function ProfileDashboard() {
   const { isAuthenticated, user: currentUser } = useAppSelector((state) => state.auth);
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>("info");
+  const [statusFilter, setStatusFilter] = useState<string>("");
   const [postsPageIndex, setPostsPageIndex] = useState(0);
   const [bookmarksPageIndex, setBookmarksPageIndex] = useState(0);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
@@ -272,7 +304,12 @@ export function ProfileDashboard() {
 
   const profileUsername = profile?.username ?? currentUser?.username;
   const postsQueryArg = profileUsername
-    ? { username: profileUsername, page: postsPageIndex, size: 9 }
+    ? { 
+        username: profileUsername, 
+        status: statusFilter || undefined,
+        page: postsPageIndex, 
+        size: 9 
+      }
     : skipToken;
 
   const { data: postsPage, isLoading: postsLoading } = useGetUserPostsPageQuery(postsQueryArg);
@@ -306,6 +343,13 @@ export function ProfileDashboard() {
     setSaveMessage(null);
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSaveError(null);
+
+    if (activeTab !== "posts") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setStatusFilter("");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setPostsPageIndex(0);
+    }
   }, [activeTab]);
 
   const tabs = useMemo(
@@ -600,13 +644,28 @@ export function ProfileDashboard() {
             {activeTab === "posts" ? (
               <PostGrid
                 heading="My blogs"
-                description={`Stories published by @${profile.username}`}
+                description={
+                  statusFilter 
+                    ? `Showing ${statusFilter.toLowerCase()} stories` 
+                    : `Stories published by @${profile.username}`
+                }
                 page={postsPage}
                 isLoading={postsLoading}
-                emptyMessage="You do not have any published posts yet."
+                emptyMessage={
+                  statusFilter === "DRAFT"
+                    ? "No draft issues found in your secret archives."
+                    : statusFilter === "PUBLISHED"
+                    ? "No published issues found. Time to hit the press!"
+                    : "Your story arc hasn't started yet. Create your first post!"
+                }
                 onPageChange={setPostsPageIndex}
                 showEditButton={true}
                 showStatus={true}
+                statusFilter={statusFilter}
+                onStatusChange={(status) => {
+                  setStatusFilter(status);
+                  setPostsPageIndex(0);
+                }}
                 onDelete={handleDeletePost}
               />
             ) : null}

@@ -16,23 +16,23 @@ import type {
   UpdatePostRequest,
 } from "@/lib/types";
 
-type UserPostsArg = { username: string; page?: number; size?: number };
+type UserPostsArg = { username: string; status?: string; page?: number; size?: number };
 type PaginationArg = { page?: number; size?: number } | void;
 
 const extendedPostsApi = authApi.injectEndpoints({
   endpoints: (builder) => ({
     getUserPosts: builder.query<BlogPost[], UserPostsArg>({
-      query: ({ username, page = 0, size = 12 }) => ({
+      query: ({ username, status, page = 0, size = 12 }) => ({
         url: `/profiles/${username}/posts`,
-        params: { page, size },
+        params: { status, page, size },
       }),
       transformResponse: (response: PageResponse<BackendPostResponse>) => response.content.map(normalizePost),
       providesTags: (_result, _error, { username }) => [{ type: "Posts", id: `user-${username}` }],
     }),
     getUserPostsPage: builder.query<PageResponse<BlogPost>, UserPostsArg>({
-      query: ({ username, page = 0, size = 9 }) => ({
+      query: ({ username, status, page = 0, size = 9 }) => ({
         url: `/profiles/${username}/posts`,
-        params: { page, size },
+        params: { status, page, size },
       }),
       transformResponse: (response: PageResponse<BackendPostResponse>) => ({
         ...response,

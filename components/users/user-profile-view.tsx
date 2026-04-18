@@ -39,7 +39,11 @@ function getPreview(content: string) {
 
 export function UserProfileView({ username }: { username: string }) {
   const { data: user, isLoading: isUserLoading, isError: isUserError } = useGetPublicProfileQuery(username);
-  const { data: posts = [], isLoading: arePostsLoading } = useGetUserPostsQuery({ username, size: 12 });
+  const { data: posts = [], isLoading: arePostsLoading } = useGetUserPostsQuery({ 
+    username, 
+    status: "PUBLISHED",
+    size: 12 
+  });
 
   if (isUserLoading) {
     return (
@@ -159,36 +163,34 @@ export function UserProfileView({ username }: { username: string }) {
           </div>
         ) : posts.length ? (
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {posts
-              .filter((post) => post.status === "PUBLISHED")
-              .map((post) => (
-                <article key={post.id} className="overflow-hidden bg-card comic-border">
-                  <div className="aspect-[16/9] bg-linear-to-br from-orange-800 via-primary/50 to-amber-300">
-                    {post.thumbnailUrl ? (
-                      <div
-                        className="h-full w-full bg-cover bg-center"
-                        style={{ backgroundImage: `url(${post.thumbnailUrl})` }}
-                      />
-                    ) : null}
-                  </div>
-                  <div className="p-5">
-                    <p className="font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                      {post.category?.name ?? "Latest"} • {formatDate(post.publishedAt ?? post.createdAt)}
-                    </p>
-                    <Link href={`/posts/${post.slug}`}>
-                      <h3 className="mt-3 font-bangers text-3xl leading-none text-primary transition-colors hover:text-accent">
-                        {post.title}
-                      </h3>
-                    </Link>
-                    <Link
-                      href={`/posts/${post.slug}`}
-                      className="mt-6 inline-flex items-center gap-2 bg-accent px-4 py-2 font-bangers text-xl text-accent-foreground comic-border-secondary"
-                    >
-                      Read story
-                    </Link>
-                  </div>
-                </article>
-              ))}
+            {posts.map((post) => (
+              <article key={post.id} className="overflow-hidden bg-card comic-border">
+                <div className="aspect-[16/9] bg-linear-to-br from-orange-800 via-primary/50 to-amber-300">
+                  {post.thumbnailUrl ? (
+                    <div
+                      className="h-full w-full bg-cover bg-center"
+                      style={{ backgroundImage: `url(${post.thumbnailUrl})` }}
+                    />
+                  ) : null}
+                </div>
+                <div className="p-5">
+                  <p className="font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                    {post.category?.name ?? "Latest"} • {formatDate(post.publishedAt ?? post.createdAt)}
+                  </p>
+                  <Link href={`/posts/${post.slug}`}>
+                    <h3 className="mt-3 font-bangers text-3xl leading-none text-primary transition-colors hover:text-accent">
+                      {post.title}
+                    </h3>
+                  </Link>
+                  <Link
+                    href={`/posts/${post.slug}`}
+                    className="mt-6 inline-flex items-center gap-2 bg-accent px-4 py-2 font-bangers text-xl text-accent-foreground comic-border-secondary"
+                  >
+                    Read story
+                  </Link>
+                </div>
+              </article>
+            ))}
           </div>
         ) : (
           <div className="mt-6 bg-card p-6 font-sans text-sm text-muted-foreground comic-border">
