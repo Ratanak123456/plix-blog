@@ -129,7 +129,7 @@ export function PostDetailView({ slug }: { slug: string }) {
                   ) : null}
                   <div className="absolute inset-0 bg-linear-to-t from-background/70 via-transparent to-transparent" />
                 </div>
-                <div className="prose prose-neutral max-w-none p-6 md:p-10 dark:prose-invert">
+                <div className="max-w-none p-6 md:p-10">
                   <div
                     className="post-content font-sans text-base leading-8 text-foreground"
                     dangerouslySetInnerHTML={{ __html: post.content }}

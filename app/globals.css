@@ -401,13 +401,15 @@
 
   .editor-preview ul,
   .ql-editor ul,
-  .post-content ul {
+  .post-content ul,
+  .ql-editor li[data-list="bullet"] {
     list-style: disc !important;
   }
 
   .editor-preview ol,
   .ql-editor ol,
-  .post-content ol {
+  .post-content ol,
+  .ql-editor li[data-list="ordered"] {
     list-style: decimal !important;
   }
 
