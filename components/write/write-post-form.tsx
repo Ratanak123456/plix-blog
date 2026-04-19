@@ -1,10 +1,11 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle, CheckCircle2, LoaderCircle, PenSquare, Tags } from "lucide-react";
+import { AlertCircle, CheckCircle2, ChevronDown, LoaderCircle, PenSquare, Search, Tags, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { QuillEditor } from "@/components/write/quill-editor";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   useCreatePostMutation,
   useUpdatePostMutation,
@@ -36,6 +37,8 @@ interface WritePostFormProps {
   isEditing?: boolean;
 }
 
+type FeedbackTone = "success" | "error";
+
 export function WritePostForm({ initialData, isEditing = false }: WritePostFormProps) {
   const router = useRouter();
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
@@ -43,9 +46,12 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
   const [thumbnail, setThumbnail] = useState(initialData?.thumbnailUrl ?? "");
   const [categoryId, setCategoryId] = useState(initialData?.category?.id ?? "");
   const [tagIds, setTagIds] = useState<string[]>(initialData?.tags?.map(t => t.id) ?? []);
+  const [tagQuery, setTagQuery] = useState("");
+  const [isTagPickerOpen, setIsTagPickerOpen] = useState(false);
   const [newTagName, setNewTagName] = useState("");
   const [content, setContent] = useState(initialData?.content ?? EMPTY_PARAGRAPH);
   const [feedback, setFeedback] = useState<string | null>(null);
+  const [feedbackTone, setFeedbackTone] = useState<FeedbackTone>("error");
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
 
   const { data: categories = [], isLoading: categoriesLoading } = useGetCategoriesQuery();
@@ -55,6 +61,12 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
   const [createTag, { isLoading: isCreatingTag }] = useCreateTagMutation();
 
   const isSaving = isCreating || isUpdating;
+  const normalizedTagQuery = tagQuery.trim().toLowerCase();
+  const selectedTags = tags.filter((tag) => tagIds.includes(tag.id));
+  const filteredTags = tags
+    .filter((tag) => tag.name.toLowerCase().includes(normalizedTagQuery))
+    .sort((left, right) => left.name.localeCompare(right.name))
+    .slice(0, 20);
 
   // Added categoryId requirement to canSubmit
   const canSubmit = isAuthenticated && title.trim() && categoryId && content !== EMPTY_PARAGRAPH && !isSaving;
@@ -84,21 +96,24 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
 
     const existingTag = tags.find((tag) => tag.name.toLowerCase() === trimmedName.toLowerCase());
     if (existingTag) {
-      setTagIds((current) => (current.includes(existingTag.id) ? current : [...current, existingTag.id].slice(0, 10)));
       setNewTagName("");
-      setFeedback(`Tag "${existingTag.name}" already exists, so it was selected for this post.`);
+      setTagQuery(existingTag.name);
+      setFeedback(`Tag "${existingTag.name}" already exists. Search and select it from the tag picker.`);
+      setFeedbackTone("success");
       setCreatedSlug(null);
       return;
     }
 
     try {
       const createdTag = await createTag({ name: trimmedName }).unwrap();
-      setTagIds((current) => (current.includes(createdTag.id) ? current : [...current, createdTag.id].slice(0, 10)));
       setNewTagName("");
-      setFeedback(`Tag "${createdTag.name}" created and selected.`);
+      setTagQuery(createdTag.name);
+      setFeedback(`Tag "${createdTag.name}" created. Select it from the tag picker if you want to use it.`);
+      setFeedbackTone("success");
       setCreatedSlug(null);
     } catch (error) {
       setFeedback(getErrorMessage(error));
+      setFeedbackTone("error");
       setCreatedSlug(null);
     }
   }
@@ -106,21 +121,25 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
   async function handleSubmit(status: "DRAFT" | "PUBLISHED") {
     if (!isAuthenticated) {
       setFeedback("Please sign in to save your story.");
+      setFeedbackTone("error");
       return;
     }
     
     if (!title.trim()) {
       setFeedback("Story title is required.");
+      setFeedbackTone("error");
       return;
     }
 
     if (!categoryId) {
       setFeedback("Please select a category for your story.");
+      setFeedbackTone("error");
       return;
     }
 
     if (content === EMPTY_PARAGRAPH) {
       setFeedback("Story content cannot be empty.");
+      setFeedbackTone("error");
       return;
     }
 
@@ -129,6 +148,7 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
     }
 
     setFeedback(null);
+    setFeedbackTone("error");
     setCreatedSlug(null);
 
     try {
@@ -144,6 +164,7 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
         }).unwrap();
 
         setFeedback(status === "PUBLISHED" ? "Post updated and published successfully." : "Draft updated successfully.");
+        setFeedbackTone("success");
         setCreatedSlug(post.slug);
         
         if (post.slug !== initialData.slug) {
@@ -160,6 +181,7 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
         }).unwrap();
 
         setFeedback(status === "PUBLISHED" ? "Post published successfully." : "Draft saved successfully.");
+        setFeedbackTone("success");
         setCreatedSlug(post.slug);
         setTitle("");
         setThumbnail("");
@@ -170,6 +192,7 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
       }
     } catch (error) {
       setFeedback(getErrorMessage(error));
+      setFeedbackTone("error");
     }
   }
 
@@ -321,6 +344,102 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                     <Tags size={14} />
                     Pick up to 10 tags
                   </div>
+                  <div className="rounded-md bg-background/70 p-4 comic-border-secondary">
+                    <label className="mb-2 block font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                      Selected Tags
+                    </label>
+                    {selectedTags.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {selectedTags.map((tag) => (
+                          <button
+                            key={tag.id}
+                            type="button"
+                            onClick={() => toggleTag(tag.id)}
+                            disabled={!isAuthenticated}
+                            className="inline-flex items-center gap-2 bg-primary px-3 py-2 font-oswald text-xs uppercase tracking-wide text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60 comic-border"
+                          >
+                            <span>{tag.name}</span>
+                            <X size={12} />
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="font-sans text-sm text-muted-foreground">
+                        No tags selected yet. Search below to add the ones you need.
+                      </p>
+                    )}
+                  </div>
+                  <div className="mt-4">
+                    <label className="mb-2 block font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                      Select Tags
+                    </label>
+                    <Popover open={isTagPickerOpen} onOpenChange={setIsTagPickerOpen}>
+                      <PopoverTrigger asChild>
+                        <button
+                          type="button"
+                          disabled={!isAuthenticated || tagsLoading || tagIds.length >= 10}
+                          className="flex w-full items-center justify-between gap-3 bg-background px-4 py-3 text-left disabled:cursor-not-allowed disabled:opacity-70 comic-border"
+                        >
+                          <div>
+                            <p className="font-oswald text-sm uppercase tracking-wide text-foreground">
+                              {tagsLoading
+                                ? "Loading tags..."
+                                : normalizedTagQuery
+                                  ? `Showing ${filteredTags.length} matching tags`
+                                  : `Browse ${tags.length} available tags`}
+                            </p>
+                            <p className="mt-1 font-sans text-sm text-muted-foreground">
+                              {tagIds.length >= 10
+                                ? "Tag limit reached. Remove one to add another."
+                                : "Open the picker to browse or search the tag library."}
+                            </p>
+                          </div>
+                          <ChevronDown size={18} className="shrink-0 text-muted-foreground" />
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent align="start" className="w-[min(32rem,calc(100vw-2rem))] bg-card p-0 comic-border-secondary">
+                        <div className="border-b-2 border-border p-3">
+                          <div className="flex items-center gap-3 bg-background px-4 py-3 comic-border">
+                            <Search size={16} className="text-muted-foreground" />
+                            <input
+                              value={tagQuery}
+                              onChange={(event) => setTagQuery(event.target.value)}
+                              placeholder="Search existing tags"
+                              className="w-full bg-transparent font-sans text-base text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                        <div className="max-h-72 overflow-y-auto p-3">
+                          {filteredTags.length > 0 ? (
+                            <div className="space-y-2">
+                              {filteredTags.map((tag) => {
+                                const active = tagIds.includes(tag.id);
+                                return (
+                                  <button
+                                    key={tag.id}
+                                    type="button"
+                                    onClick={() => toggleTag(tag.id)}
+                                    className={`flex w-full items-center justify-between px-4 py-3 text-left font-oswald text-sm uppercase tracking-wide transition-colors ${
+                                      active ? "bg-primary text-primary-foreground" : "bg-background hover:text-accent"
+                                    } comic-border`}
+                                  >
+                                    <span>{tag.name}</span>
+                                    <span className="text-[10px] tracking-[0.2em]">
+                                      {active ? "Selected" : "Add"}
+                                    </span>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <p className="px-1 py-2 font-sans text-sm text-muted-foreground">
+                              No matching tags found. Create a new one below if needed.
+                            </p>
+                          )}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
                   <div className="mb-4 flex gap-3">
                     <input
                       value={newTagName}
@@ -332,35 +451,17 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                         }
                       }}
                       placeholder="Create a new tag"
-                      disabled={!isAuthenticated || isCreatingTag || tagIds.length >= 10}
+                      disabled={!isAuthenticated || isCreatingTag}
                       className="flex-1 bg-background px-4 py-3 font-sans text-base text-foreground placeholder:text-muted-foreground/50 disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none comic-border-secondary"
                     />
                     <button
                       type="button"
                       onClick={() => void handleCreateTag()}
-                      disabled={!isAuthenticated || !newTagName.trim() || isCreatingTag || tagIds.length >= 10}
+                      disabled={!isAuthenticated || !newTagName.trim() || isCreatingTag}
                       className="px-4 py-3 font-bangers text-xl transition-colors hover:text-accent disabled:cursor-not-allowed disabled:opacity-50 comic-border-secondary"
                     >
                       {isCreatingTag ? "Adding..." : "Add Tag"}
                     </button>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {tags.map((tag) => {
-                      const active = tagIds.includes(tag.id);
-                      return (
-                        <button
-                          key={tag.id}
-                          type="button"
-                          onClick={() => toggleTag(tag.id)}
-                          disabled={!isAuthenticated}
-                          className={`px-4 py-2 font-oswald text-sm uppercase tracking-wide transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
-                            active ? "bg-primary text-primary-foreground" : "bg-background hover:text-accent"
-                          } comic-border`}
-                        >
-                          {tag.name}
-                        </button>
-                      );
-                    })}
                   </div>
                 </div>
 
@@ -372,10 +473,14 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -8 }}
                       className={`mt-6 flex items-start gap-3 p-4 ${
-                        createdSlug ? "bg-primary/15" : "bg-destructive/10"
+                        feedbackTone === "success" ? "bg-primary/15" : "bg-destructive/10"
                       } comic-border`}
                     >
-                      {createdSlug ? <CheckCircle2 className="mt-0.5 text-primary" size={18} /> : <AlertCircle className="mt-0.5 text-destructive" size={18} />}
+                      {feedbackTone === "success" ? (
+                        <CheckCircle2 className="mt-0.5 text-primary" size={18} />
+                      ) : (
+                        <AlertCircle className="mt-0.5 text-destructive" size={18} />
+                      )}
                       <div>
                         <p className="font-oswald text-sm uppercase tracking-wide">{feedback}</p>
                         {createdSlug && (
