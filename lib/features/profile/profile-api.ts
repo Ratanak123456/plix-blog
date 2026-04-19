@@ -40,7 +40,7 @@ const extendedProfileApi = authApi.injectEndpoints({
         } catch {}
       },
     }),
-    changePassword: builder.mutation<void, PasswordRequest>({
+    changePassword: builder.mutation<{message: string}, PasswordRequest>({
       query: (body) => ({
         url: "/profile/change-password",
         method: "PATCH",
