@@ -356,6 +356,7 @@ export function ProfileDashboard() {
   const [postsPageIndex, setPostsPageIndex] = useState(0);
   const [bookmarksPageIndex, setBookmarksPageIndex] = useState(0);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [saveError, setSaveError] = useState<string | null>(null);
   const [deletionResult, setDeletionResult] = useState<{ success: boolean; message: string } | null>(null);
   const [form, setForm] = useState({
@@ -476,11 +477,52 @@ export function ProfileDashboard() {
     );
   }
 
+  function validateProfileForm() {
+    const errors: Record<string, string> = {};
+
+    if (!form.username.trim()) {
+      errors.username = "Username is required";
+    } else if (form.username.length < 3 || form.username.length > 30) {
+      errors.username = "Username must be 3-30 characters";
+    } else if (!/^[A-Za-z0-9_]+$/.test(form.username)) {
+      errors.username = "Username can only contain letters, numbers, and underscores";
+    }
+
+    if (!form.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      errors.email = "Invalid email format";
+    }
+
+    if (form.fullName.length > 100) {
+      errors.fullName = "Full name must be at most 100 characters";
+    }
+
+    if (form.bio.length > 500) {
+      errors.bio = "Bio must be at most 500 characters";
+    }
+
+    if (form.profileImage && !/^https?:\/\/.+$/i.test(form.profileImage)) {
+      errors.profileImage = "Profile image must be a valid URL (http/https)";
+    }
+
+    if (form.coverImage && !/^https?:\/\/.+$/i.test(form.coverImage)) {
+      errors.coverImage = "Cover image must be a valid URL (http/https)";
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  }
+
   async function handleSaveProfile(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSaveMessage(null);
     setSaveError(null);
 
+
+    if (!validateProfileForm()) {
+      return;
+    }
     try {
       await updateProfile({
         username: form.username,
@@ -680,6 +722,7 @@ export function ProfileDashboard() {
                         onChange={(event) => setForm((current) => ({ ...current, fullName: event.target.value }))}
                         className="h-11 bg-background comic-border-secondary"
                       />
+                      {fieldErrors.fullName && <p className="text-sm text-red-500 mt-1">{fieldErrors.fullName}</p>}
                     </label>
 
                     <label className="space-y-2">
@@ -692,8 +735,9 @@ export function ProfileDashboard() {
                         onChange={(event) => setForm((current) => ({ ...current, username: event.target.value }))}
                         className="h-11 bg-background comic-border-secondary"
                       />
-                    </label>
+                      {fieldErrors.username && <p className="text-sm text-red-500 mt-1">{fieldErrors.username}</p>}
 
+                    </label>
                     <label className="space-y-2 md:col-span-2">
                       <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
                         <Mail size={14} />
@@ -705,8 +749,9 @@ export function ProfileDashboard() {
                         onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
                         className="h-11 bg-background comic-border-secondary"
                       />
-                    </label>
+                      {fieldErrors.email && <p className="text-sm text-red-500 mt-1">{fieldErrors.email}</p>}
 
+                    </label>
                     <label className="space-y-2">
                       <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
                         <ImagePlus size={14} />
@@ -717,6 +762,7 @@ export function ProfileDashboard() {
                         onChange={(event) => setForm((current) => ({ ...current, profileImage: event.target.value }))}
                         className="h-11 bg-background comic-border-secondary"
                       />
+                      {fieldErrors.profileImage && <p className="text-sm text-red-500 mt-1">{fieldErrors.profileImage}</p>}
                     </label>
 
                     <label className="space-y-2">
@@ -729,6 +775,7 @@ export function ProfileDashboard() {
                         onChange={(event) => setForm((current) => ({ ...current, coverImage: event.target.value }))}
                         className="h-11 bg-background comic-border-secondary"
                       />
+                      {fieldErrors.coverImage && <p className="text-sm text-red-500 mt-1">{fieldErrors.coverImage}</p>}
                     </label>
                   </div>
 
@@ -740,6 +787,7 @@ export function ProfileDashboard() {
                       className="min-h-36 resize-y bg-background comic-border-secondary"
                     />
                   </label>
+                    {fieldErrors.bio && <p className="text-sm text-red-500 mt-1">{fieldErrors.bio}</p>}
 
                   {saveMessage ? <p className="font-sans text-sm text-green-600">{saveMessage}</p> : null}
                   {saveError ? <p className="font-sans text-sm text-red-500">{saveError}</p> : null}

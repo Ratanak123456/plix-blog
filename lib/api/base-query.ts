@@ -33,6 +33,7 @@ function toPersistedAuthState(response: BackendAuthResponse) {
 const endpointsRequiringAuth = new Set([
   "getMyProfile",
   "updateProfile",
+  "changePassword",
   "getMyBookmarks",
   "getPostLikeStatus",
   "getPostBookmarkStatus",
@@ -51,6 +52,7 @@ const endpointsWithJsonBody = new Set([
   "login",
   "refresh",
   "updateProfile",
+  "changePassword",
   "createTag",
   "createPost",
   "updatePost",
