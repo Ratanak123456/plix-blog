@@ -236,7 +236,7 @@ function PostGrid({
             {filteredContent.map((post, index) => {
               // Use standard BlogCard for published posts when not editing
               if (post.status === "PUBLISHED" && !isEditMode) {
-                return <BlogCard key={post.id} post={post} index={index} />;
+                return <BlogCard key={post.id} post={post} index={index} onDelete={onDelete} />;
               }
 
               // Use manual rendering for Drafts or when Edit Mode is active
@@ -357,6 +357,7 @@ export function ProfileDashboard() {
   const [bookmarksPageIndex, setBookmarksPageIndex] = useState(0);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [deletionResult, setDeletionResult] = useState<{ success: boolean; message: string } | null>(null);
   const [form, setForm] = useState({
     username: "",
     fullName: "",
@@ -393,8 +394,8 @@ export function ProfileDashboard() {
       }
     : skipToken;
 
-  const { data: postsPage, isLoading: postsLoading } = useGetUserPostsPageQuery(postsQueryArg);
-  const { data: bookmarksPage, isLoading: bookmarksLoading } = useGetMyBookmarksQuery(
+  const { data: postsPage, isLoading: postsLoading, refetch: refetchPosts } = useGetUserPostsPageQuery(postsQueryArg);
+  const { data: bookmarksPage, isLoading: bookmarksLoading, refetch: refetchBookmarks } = useGetMyBookmarksQuery(
     isAuthenticated ? { page: bookmarksPageIndex, size: 9 } : skipToken,
   );
 
@@ -532,13 +533,37 @@ export function ProfileDashboard() {
   async function handleDeletePost(id: string) {
     try {
       await deletePost(id).unwrap();
+      setDeletionResult({ success: true, message: "Your story has been permanently removed from the archives." });
+      refetchPosts();
+      refetchBookmarks();
     } catch (error) {
-      alert("Unable to delete the blog post. Please try again.");
+      setDeletionResult({ success: false, message: getGeneralErrorMessage(error) });
     }
   }
 
   return (
     <main className="min-h-screen bg-background text-foreground">
+      <AlertDialog open={!!deletionResult} onOpenChange={(open) => !open && setDeletionResult(null)}>
+        <AlertDialogContent className="comic-border-secondary">
+          <AlertDialogHeader>
+            <AlertDialogTitle className={`font-bangers text-3xl uppercase ${deletionResult?.success ? "text-primary" : "text-destructive"}`}>
+              {deletionResult?.success ? "Mission Accomplished!" : "System Error!"}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="font-oswald text-lg uppercase tracking-wide">
+              {deletionResult?.message}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4">
+            <AlertDialogAction
+              onClick={() => setDeletionResult(null)}
+              className="bg-primary text-primary-foreground font-bangers text-xl hover:bg-primary/90 comic-border"
+            >
+              Acknowledged
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <section className="container mx-auto px-4 py-10 md:py-12">
         <Link
           href="/"
@@ -875,6 +900,7 @@ export function ProfileDashboard() {
                 isLoading={bookmarksLoading}
                 emptyMessage="You have not bookmarked any stories yet."
                 onPageChange={setBookmarksPageIndex}
+                onDelete={handleDeletePost}
               />
             ) : null}
           </div>

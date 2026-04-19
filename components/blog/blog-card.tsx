@@ -1,15 +1,17 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Clock, Eye, MessageCircle } from "lucide-react";
+import { Clock, Eye, MessageCircle, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/types";
 import { PostActions } from "@/components/home/post-actions";
+import { useAppSelector } from "@/lib/store";
 
 interface BlogCardProps {
   post: BlogPost;
   index?: number;
+  onDelete?: (id: string) => void;
 }
 
 function stripHtml(value: string) {
@@ -30,7 +32,10 @@ function estimateReadMinutes(content: string) {
   return Math.max(1, Math.ceil(words / 200));
 }
 
-export function BlogCard({ post, index = 0 }: BlogCardProps) {
+export function BlogCard({ post, index = 0, onDelete }: BlogCardProps) {
+  const { user: currentUser } = useAppSelector((state) => state.auth);
+  const isAuthor = currentUser?.id === post.author.id;
+
   return (
     <motion.article
       initial={{ opacity: 0, y: 40 }}
@@ -95,14 +100,30 @@ export function BlogCard({ post, index = 0 }: BlogCardProps) {
         </Link>
         
         <div className="flex items-center justify-between">
-          <PostActions
-            postId={post.id}
-            initialLikeCount={post.likeCount}
-            initialBookmarkCount={post.bookmarkCount}
-            initialLiked={post.likedByCurrentUser}
-            initialBookmarked={post.bookmarkedByCurrentUser}
-            compact
-          />
+          <div className="flex items-center gap-2">
+            <PostActions
+              postId={post.id}
+              initialLikeCount={post.likeCount}
+              initialBookmarkCount={post.bookmarkCount}
+              initialLiked={post.likedByCurrentUser}
+              initialBookmarked={post.bookmarkedByCurrentUser}
+              compact
+            />
+            {onDelete && isAuthor && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onDelete(post.id);
+                }}
+                className="inline-flex h-8 w-8 items-center justify-center bg-destructive/10 text-destructive transition-all hover:bg-destructive hover:text-destructive-foreground comic-border"
+                title="Delete this blog"
+              >
+                <Trash2 size={14} />
+              </button>
+            )}
+          </div>
           
           <div className="flex items-center gap-3 font-oswald text-[10px] text-muted-foreground uppercase tracking-tighter">
             <span className="flex items-center gap-1">

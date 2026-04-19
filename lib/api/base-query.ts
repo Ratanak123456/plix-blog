@@ -42,6 +42,8 @@ const endpointsRequiringAuth = new Set([
   "createComment",
   "togglePostLike",
   "togglePostBookmark",
+  "deletePost",
+  "deleteComment",
 ]);
 
 const endpointsWithJsonBody = new Set([

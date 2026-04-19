@@ -27,7 +27,11 @@ const extendedPostsApi = authApi.injectEndpoints({
         params: { page, size },
       }),
       transformResponse: (response: PageResponse<BackendPostResponse>) => response.content.map(normalizePost),
-      providesTags: (_result, _error, { username }) => [{ type: "Posts", id: `user-${username}` }],
+      providesTags: (_result, _error, { username }) => [
+        { type: "Posts", id: `user-${username}` },
+        { type: "Posts", id: "LIST" },
+        "Posts",
+      ],
     }),
     getUserPostsPage: builder.query<PageResponse<BlogPost>, UserPostsArg>({
       query: ({ username, page = 0, size = 9 }) => ({
@@ -38,7 +42,11 @@ const extendedPostsApi = authApi.injectEndpoints({
         ...response,
         content: response.content.map(normalizePost),
       }),
-      providesTags: (_result, _error, { username }) => [{ type: "Posts", id: `user-${username}` }],
+      providesTags: (_result, _error, { username }) => [
+        { type: "Posts", id: `user-${username}` },
+        { type: "Posts", id: "LIST" },
+        "Posts",
+      ],
     }),
     getMyBookmarks: builder.query<PageResponse<BlogPost>, PaginationArg>({
       query: (params) => ({
