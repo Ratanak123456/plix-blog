@@ -1,10 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Clock, Eye, Heart, MessageCircle } from "lucide-react";
+import { Clock, Eye, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/types";
+import { PostActions } from "@/components/home/post-actions";
 
 interface BlogCardProps {
   post: BlogPost;
@@ -30,9 +31,6 @@ function estimateReadMinutes(content: string) {
 }
 
 export function BlogCard({ post, index = 0 }: BlogCardProps) {
-  const excerpt = post.content ? stripHtml(post.content).slice(0, 120) : "";
-  const needsEllipsis = post.content && stripHtml(post.content).length > 120;
-
   return (
     <motion.article
       initial={{ opacity: 0, y: 40 }}
@@ -70,12 +68,12 @@ export function BlogCard({ post, index = 0 }: BlogCardProps) {
       </div>
       
       <Link href={`/posts/${post.slug}`}>
-        <h3 className="mb-4 font-bangers text-2xl leading-tight transition-colors group-hover:text-accent line-clamp-2">
+        <h3 className="mb-4 font-bangers text-2xl leading-tight transition-colors group-hover:text-accent line-clamp-2 min-h-[3.5rem]">
           {post.title}
         </h3>
       </Link>
       
-      <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
+      <div className="mt-auto flex flex-col gap-4 border-t border-border pt-4">
         <Link href={`/users/${post.author.username}`} className="group/author flex items-center gap-3">
           <div className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover/author:scale-110">
             {post.author.profileImage ? (
@@ -96,16 +94,24 @@ export function BlogCard({ post, index = 0 }: BlogCardProps) {
           </div>
         </Link>
         
-        <div className="flex items-center gap-3 font-oswald text-xs text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Heart size={14} className="text-accent" /> {post.likeCount}
-          </span>
-          <span className="flex items-center gap-1">
-            <MessageCircle size={14} className="text-primary" /> {post.commentCount}
-          </span>
-          <span className="flex items-center gap-1">
-            <Eye size={14} className="text-secondary" /> {post.viewCount}
-          </span>
+        <div className="flex items-center justify-between">
+          <PostActions
+            postId={post.id}
+            initialLikeCount={post.likeCount}
+            initialBookmarkCount={post.bookmarkCount}
+            initialLiked={post.likedByCurrentUser}
+            initialBookmarked={post.bookmarkedByCurrentUser}
+            compact
+          />
+          
+          <div className="flex items-center gap-3 font-oswald text-[10px] text-muted-foreground uppercase tracking-tighter">
+            <span className="flex items-center gap-1">
+              <MessageCircle size={12} className="text-primary" /> {post.commentCount}
+            </span>
+            <span className="flex items-center gap-1">
+              <Eye size={12} className="text-secondary" /> {post.viewCount}
+            </span>
+          </div>
         </div>
       </div>
     </motion.article>

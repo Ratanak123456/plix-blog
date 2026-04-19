@@ -77,7 +77,7 @@ export default function BlogPage() {
   const isLoading = latestLoading || likedLoading || viewedLoading || categoriesLoading;
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section with Search */}
       <section className="container mx-auto px-4 py-12">
         <motion.div
@@ -130,7 +130,7 @@ export default function BlogPage() {
       <section className="container mx-auto px-4 pb-8">
         <div className="flex flex-col gap-6 lg:flex-row">
           {/* Categories Sidebar */}
-          <div className="w-full lg:w-1/4">
+          <aside className="sticky top-28 self-start w-full lg:w-1/4 z-30">
             <div className="bg-card p-6 comic-border">
               <div className="mb-4 flex items-center gap-2">
                 <Filter size={20} className="text-primary" />
@@ -177,7 +177,7 @@ export default function BlogPage() {
                 </div>
               )}
             </div>
-          </div>
+          </aside>
 
           {/* Main Content */}
           <div className="flex-1">

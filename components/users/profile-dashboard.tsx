@@ -44,6 +44,8 @@ import {
   useGetUserPostsPageQuery,
   useUpdateProfileMutation,
 } from "@/lib/services/auth-api";
+import { BlogCard } from "@/components/blog/blog-card";
+import { PostActions } from "@/components/home/post-actions";
 import { useAppDispatch, useAppSelector } from "@/lib/store";
 
 type ProfileTab = "info" | "posts" | "bookmarks";
@@ -231,67 +233,92 @@ function PostGrid({
       ) : filteredContent.length ? (
         <>
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {filteredContent.map((post) => (
-              <article 
-                key={post.id} 
-                className={`overflow-hidden bg-background comic-border-secondary transition-transform ${isEditMode ? "hover:scale-[1.02] cursor-pointer ring-2 ring-primary ring-offset-2" : ""}`}
-                onClick={() => {
-                  if (isEditMode) {
-                    router.push(`/write/${post.slug}`);
-                  }
-                }}
-              >
-                <div className="relative aspect-[16/9] overflow-hidden bg-linear-to-br from-orange-800 via-primary/40 to-amber-300">
-                  {post.thumbnailUrl ? (
-                    <div
-                      className="absolute inset-0 bg-cover bg-center"
-                      style={{ backgroundImage: `url(${post.thumbnailUrl})` }}
-                    />
-                  ) : null}
-                  <div className="absolute inset-0 opacity-20 halftone-bg" />
-                  {showStatus && (
-                    <div className="absolute top-3 right-3 bg-accent px-2 py-1 font-oswald text-[10px] uppercase tracking-wider text-accent-foreground comic-border">
-                      {post.status}
-                    </div>
-                  )}
-                  {isEditMode && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-primary/20 backdrop-blur-[2px]">
-                      <div className="bg-primary px-4 py-2 font-bangers text-2xl text-primary-foreground comic-border shadow-xl">
-                        Click to Edit
-                      </div>
-                    </div>
-                  )}
-                </div>
-                <div className="p-5">
-                  <p className="font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                    {post.category?.name ?? "Latest"} • {formatDate(post.publishedAt ?? post.createdAt)}
-                  </p>
-                  <h3 className="mt-3 font-bangers text-3xl leading-none text-primary line-clamp-2">{post.title}</h3>
+            {filteredContent.map((post, index) => {
+              // Use standard BlogCard for published posts when not editing
+              if (post.status === "PUBLISHED" && !isEditMode) {
+                return <BlogCard key={post.id} post={post} index={index} />;
+              }
 
-                  <div className="mt-6 flex items-center justify-between gap-2">
-                    <Link
-                      href={isEditMode ? `/write/${post.slug}` : `/posts/${post.slug}`}
-                      className="inline-flex items-center gap-2 bg-accent px-4 py-2 font-bangers text-xl text-accent-foreground comic-border"
-                    >
-                      {isEditMode ? "Edit story" : "Open story"}
-                    </Link>
-                    {onDelete && (
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setPostToDelete(post.id);
-                        }}
-                        className="inline-flex h-11 w-11 items-center justify-center bg-destructive text-destructive-foreground transition-all hover:scale-105 active:scale-95 comic-border"
-                        title="Delete this blog"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+              // Use manual rendering for Drafts or when Edit Mode is active
+              return (
+                <article
+                  key={post.id}
+                  className={`overflow-hidden bg-background comic-border-secondary transition-transform ${
+                    isEditMode
+                      ? "hover:scale-[1.02] cursor-pointer ring-2 ring-primary ring-offset-2"
+                      : ""
+                  }`}
+                  onClick={() => {
+                    if (isEditMode) {
+                      router.push(`/write/${post.slug}`);
+                    }
+                  }}
+                >
+                  <div className="relative aspect-[16/9] overflow-hidden bg-linear-to-br from-orange-800 via-primary/40 to-amber-300">
+                    {post.thumbnailUrl ? (
+                      <div
+                        className="absolute inset-0 bg-cover bg-center"
+                        style={{ backgroundImage: `url(${post.thumbnailUrl})` }}
+                      />
+                    ) : null}
+                    <div className="absolute inset-0 opacity-20 halftone-bg" />
+                    {showStatus && (
+                      <div className="absolute top-3 right-3 bg-accent px-2 py-1 font-oswald text-[10px] uppercase tracking-wider text-accent-foreground comic-border">
+                        {post.status}
+                      </div>
+                    )}
+                    {isEditMode && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-primary/20 backdrop-blur-[2px]">
+                        <div className="bg-primary px-4 py-2 font-bangers text-2xl text-primary-foreground comic-border shadow-xl">
+                          Click to Edit
+                        </div>
+                      </div>
                     )}
                   </div>
-                </div>
-              </article>
-            ))}
+                  <div className="p-5">
+                    <p className="font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                      {post.category?.name ?? "Latest"} • {formatDate(post.publishedAt ?? post.createdAt)}
+                    </p>
+                    <h3 className="mt-3 font-bangers text-3xl leading-none text-primary line-clamp-2 min-h-[3.5rem]">
+                      {post.title}
+                    </h3>
+
+                    <div className="mt-4 border-t border-border pt-4">
+                      <PostActions
+                        postId={post.id}
+                        initialLikeCount={post.likeCount}
+                        initialBookmarkCount={post.bookmarkCount}
+                        initialLiked={post.likedByCurrentUser}
+                        initialBookmarked={post.bookmarkedByCurrentUser}
+                        compact
+                      />
+                    </div>
+
+                    <div className="mt-6 flex items-center justify-between gap-2">
+                      <Link
+                        href={isEditMode ? `/write/${post.slug}` : `/posts/${post.slug}`}
+                        className="inline-flex items-center gap-2 bg-accent px-4 py-2 font-bangers text-xl text-accent-foreground comic-border"
+                      >
+                        {isEditMode ? "Edit story" : "Open story"}
+                      </Link>
+                      {onDelete && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPostToDelete(post.id);
+                          }}
+                          className="inline-flex h-11 w-11 items-center justify-center bg-destructive text-destructive-foreground transition-all hover:scale-105 active:scale-95 comic-border"
+                          title="Delete this blog"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
           <PaginationBar
             page={page!.number}

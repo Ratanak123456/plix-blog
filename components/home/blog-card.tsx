@@ -5,6 +5,7 @@ import { Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/types";
+import { PostActions } from "@/components/home/post-actions";
 
 interface BlogCardProps {
   post: BlogPost;
@@ -67,7 +68,7 @@ export function BlogCard({ post, index = 0 }: BlogCardProps) {
       </div>
       
       <Link href={`/posts/${post.slug}`}>
-        <h3 className="mb-4 font-bangers text-2xl leading-tight transition-colors group-hover:text-accent line-clamp-2">
+        <h3 className="mb-4 font-bangers text-2xl leading-tight transition-colors group-hover:text-accent line-clamp-2 min-h-[3.5rem]">
           {post.title}
         </h3>
       </Link>
@@ -92,6 +93,16 @@ export function BlogCard({ post, index = 0 }: BlogCardProps) {
             BY {post.author.fullName}
           </div>
         </Link>
+        <div className="ml-auto">
+          <PostActions
+            postId={post.id}
+            initialLikeCount={post.likeCount}
+            initialBookmarkCount={post.bookmarkCount}
+            initialLiked={post.likedByCurrentUser}
+            initialBookmarked={post.bookmarkedByCurrentUser}
+            compact
+          />
+        </div>
       </div>
     </motion.article>
   );

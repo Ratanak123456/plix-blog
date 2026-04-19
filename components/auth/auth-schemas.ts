@@ -9,7 +9,7 @@ export const loginSchema = z.object({
     .trim()
     .min(1, "Username is required")
     .regex(usernamePattern, "Username must be 3-30 characters and contain no spaces")
-    .refine((val) => !val.includes("@"), "Emails are not allowed for login. Please use your username."),
+    .refine((val) => !val.includes("@"), "Use your username, not your email, to login."),
   password: z
     .string()
     .min(1, "Password is required"),
