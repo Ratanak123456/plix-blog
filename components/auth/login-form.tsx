@@ -64,11 +64,11 @@ export function LoginForm({ onSuccess, onModeChange }: LoginFormProps) {
     <form className="flex flex-col gap-4" onSubmit={loginForm.handleSubmit(submitLogin)}>
       <div>
         <label className="mb-1 block font-oswald text-xs uppercase tracking-wider text-muted-foreground">
-          Username or Email
+          Username
         </label>
         <input
           type="text"
-          placeholder="hero@plixblog.com or SuperReader99"
+          placeholder="SuperReader99"
           className="w-full bg-background px-4 py-3 font-oswald text-lg text-foreground transition-colors placeholder:text-muted-foreground/60 focus:border-accent focus:outline-none comic-border"
           {...loginForm.register("identifier")}
         />

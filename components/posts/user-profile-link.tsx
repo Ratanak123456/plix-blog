@@ -5,7 +5,7 @@ import Image from "next/image";
 import { type UserProfile, type BlogPost } from "@/lib/types";
 import { getAuthorInitials } from "@/lib/utils/format";
 
-type ProfileLinkUser = (Pick<UserProfile, "id" | "username" | "fullName"> & { profileImage?: string | null }) | BlogPost["author"];
+type ProfileLinkUser = (Pick<UserProfile, "id" | "username" | "fullName" | "profileImage">) | BlogPost["author"];
 
 export function UserProfileLink({
   user,
@@ -16,7 +16,7 @@ export function UserProfileLink({
   labelClassName?: string;
   replace?: boolean;
 }) {
-  const profileImage = (user as any).profileImage;
+  const profileImage = user.profileImage;
 
   return (
     <Link

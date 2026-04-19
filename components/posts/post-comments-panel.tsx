@@ -93,7 +93,12 @@ export function PostCommentsPanel({
       <div className="mt-8 space-y-4">
         {comments.length ? (
           comments.map((comment) => (
-            <CommentCard key={comment.id} comment={comment} replaceProfileNavigation={replaceProfileNavigation} />
+            <CommentCard 
+              key={comment.id} 
+              comment={comment} 
+              postId={postId}
+              replaceProfileNavigation={replaceProfileNavigation} 
+            />
           ))
         ) : (
           <div className="bg-background p-5 font-sans text-sm text-muted-foreground comic-border">

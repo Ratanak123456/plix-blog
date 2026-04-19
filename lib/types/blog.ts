@@ -18,6 +18,7 @@ export type BlogPost = {
     id: string;
     username: string;
     fullName: string;
+    profileImage: string | null;
   };
   category: {
     id: string;

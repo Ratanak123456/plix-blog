@@ -10,3 +10,8 @@ export type UpdateProfileRequest = {
   profileImage: string | null;
   coverImage: string | null;
 };
+
+export type PasswordRequest = {
+  currentPassword: string;
+  newPassword: string;
+};

@@ -60,6 +60,7 @@ export type BackendPostResponse = {
     id: string;
     username: string;
     fullName: string;
+    profileImage: string | null;
   };
   category: {
     id: string;

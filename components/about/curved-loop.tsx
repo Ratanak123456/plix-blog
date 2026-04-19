@@ -35,7 +35,7 @@ const CurvedLoop = ({
   const pathId = `curve-${uid.replace(/:/g, "")}`;
   const pathD = `M-100,40 Q500,${40 + curveAmount} 1540,40`;
 
-  const dragRef = useRef(false);
+  const [isDragging, setIsDragging] = useState(false);
   const lastXRef = useRef(0);
   const dirRef = useRef(direction);
   const velRef = useRef(0);
@@ -49,24 +49,22 @@ const CurvedLoop = ({
   const ready = spacing > 0;
 
   useEffect(() => {
-    if (measureRef.current)
-      setSpacing(measureRef.current.getComputedTextLength());
-  }, [text, className]);
-
-  useEffect(() => {
-    if (!spacing) return;
-    if (textPathRef.current) {
-      const initial = -spacing;
-      textPathRef.current.setAttribute("startOffset", initial + "px");
+    if (measureRef.current) {
+      const currentSpacing = measureRef.current.getComputedTextLength();
+      setSpacing(currentSpacing);
+      const initial = -currentSpacing;
       setOffset(initial);
+      if (textPathRef.current) {
+        textPathRef.current.setAttribute("startOffset", initial + "px");
+      }
     }
-  }, [spacing]);
+  }, [text, className]);
 
   useEffect(() => {
     if (!spacing || !ready) return;
     let frame = 0;
     const step = () => {
-      if (!dragRef.current && textPathRef.current) {
+      if (!isDragging && textPathRef.current) {
         const delta = dirRef.current === "right" ? speed : -speed;
         const currentOffset = parseFloat(
           textPathRef.current.getAttribute("startOffset") || "0",
@@ -82,18 +80,18 @@ const CurvedLoop = ({
     };
     frame = requestAnimationFrame(step);
     return () => cancelAnimationFrame(frame);
-  }, [spacing, speed, ready]);
+  }, [spacing, speed, ready, isDragging]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (!interactive) return;
-    dragRef.current = true;
+    setIsDragging(true);
     lastXRef.current = e.clientX;
     velRef.current = 0;
     (e.target as Element).setPointerCapture(e.pointerId);
   };
 
   const onPointerMove = (e: React.PointerEvent) => {
-    if (!interactive || !dragRef.current || !textPathRef.current) return;
+    if (!interactive || !isDragging || !textPathRef.current) return;
     const dx = e.clientX - lastXRef.current;
     lastXRef.current = e.clientX;
     velRef.current = dx;
@@ -110,12 +108,12 @@ const CurvedLoop = ({
 
   const endDrag = () => {
     if (!interactive) return;
-    dragRef.current = false;
+    setIsDragging(false);
     dirRef.current = velRef.current > 0 ? "right" : "left";
   };
 
   const cursorStyle = interactive
-    ? dragRef.current
+    ? isDragging
       ? "grabbing"
       : "grab"
     : "auto";

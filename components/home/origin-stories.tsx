@@ -103,9 +103,9 @@ export function OriginStories() {
                 <div className="mb-3 flex flex-wrap items-center gap-4">
                   <Link href={`/users/${leadPost.author.username}`} className="group/author flex items-center gap-2">
                     <div className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover/author:scale-110">
-                      {(leadPost.author as any).profileImage ? (
+                      {leadPost.author.profileImage ? (
                         <Image
-                          src={(leadPost.author as any).profileImage}
+                          src={leadPost.author.profileImage}
                           alt={leadPost.author.fullName}
                           fill
                           className="object-cover"
@@ -184,9 +184,9 @@ export function OriginStories() {
                       </Link>
                       <Link href={`/users/${post.author.username}`} className="group/author flex items-center gap-2">
                         <div className="relative flex h-6 w-6 shrink-0 items-center justify-center overflow-hidden rounded-full border border-primary bg-accent shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover/author:scale-110">
-                          {(post.author as any).profileImage ? (
+                          {post.author.profileImage ? (
                             <Image
-                              src={(post.author as any).profileImage}
+                              src={post.author.profileImage}
                               alt={post.author.fullName}
                               fill
                               className="object-cover"

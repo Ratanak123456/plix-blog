@@ -26,8 +26,15 @@ const extendedCommentsApi = authApi.injectEndpoints({
       transformResponse: (response: BackendCommentResponse) => normalizeComment(response),
       invalidatesTags: (_result, _error, { postId }) => [{ type: "Comments", id: postId }, "Posts"],
     }),
+    deleteComment: builder.mutation<void, { commentId: string; postId: string }>({
+      query: ({ commentId }) => ({
+        url: `/comments/${commentId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: (_result, _error, { postId }) => [{ type: "Comments", id: postId }, "Posts"],
+    }),
   }),
 });
 
-export const { useCreateCommentMutation, useGetPostCommentsQuery } = extendedCommentsApi;
+export const { useCreateCommentMutation, useGetPostCommentsQuery, useDeleteCommentMutation } = extendedCommentsApi;
 

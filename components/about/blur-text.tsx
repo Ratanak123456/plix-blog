@@ -1,15 +1,17 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, Transition } from "framer-motion";
 import { useEffect, useRef, useState, useMemo } from "react";
 
-const buildKeyframes = (from: any, steps: any[]) => {
+type AnimationStep = Record<string, string | number>;
+
+const buildKeyframes = (from: AnimationStep, steps: AnimationStep[]) => {
   const keys = new Set([
     ...Object.keys(from),
     ...steps.flatMap((s) => Object.keys(s)),
   ]);
 
-  const keyframes: Record<string, any[]> = {};
+  const keyframes: Record<string, (string | number)[]> = {};
   keys.forEach((k) => {
     keyframes[k] = [from[k], ...steps.map((s) => s[k])];
   });
@@ -24,8 +26,8 @@ interface BlurTextProps {
   direction?: "top" | "bottom";
   threshold?: number;
   rootMargin?: string;
-  animationFrom?: any;
-  animationTo?: any[];
+  animationFrom?: AnimationStep;
+  animationTo?: AnimationStep[];
   easing?: (t: number) => number;
   onAnimationComplete?: () => void;
   stepDuration?: number;
@@ -100,12 +102,12 @@ const BlurText = ({
       {elements.map((segment, index) => {
         const animateKeyframes = buildKeyframes(fromSnapshot, toSnapshots);
 
-        const spanTransition: any = {
+        const spanTransition: Transition = {
           duration: totalDuration,
           times,
           delay: (index * delay) / 1000,
+          ease: easing,
         };
-        spanTransition.ease = easing;
 
         return (
           <motion.span

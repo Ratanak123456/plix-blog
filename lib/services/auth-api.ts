@@ -9,6 +9,7 @@ export {
   useGetMyProfileQuery,
   useGetPublicProfileQuery,
   useUpdateProfileMutation,
+  useChangePasswordMutation,
 } from "@/lib/features/profile/profile-api";
 export {
   useCreatePostMutation,
@@ -25,7 +26,7 @@ export {
   useUpdatePostMutation,
   useDeletePostMutation,
 } from "@/lib/features/posts/posts-api";
-export { useCreateCommentMutation, useGetPostCommentsQuery } from "@/lib/features/comments/comments-api";
+export { useCreateCommentMutation, useGetPostCommentsQuery, useDeleteCommentMutation } from "@/lib/features/comments/comments-api";
 export {
   useGetPostBookmarkStatusQuery,
   useGetPostLikesQuery,

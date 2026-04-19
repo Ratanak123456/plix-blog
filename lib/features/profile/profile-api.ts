@@ -3,7 +3,7 @@
 import { authApi } from "@/lib/api/base-api";
 import { updateCurrentUser } from "@/lib/features/auth/auth-slice";
 import { normalizePublicUser, normalizeUser } from "@/lib/features/profile/profile-mappers";
-import type { AuthUser, BackendAuthResponse, BackendUserResponse, UpdateProfileRequest, UserProfile } from "@/lib/types";
+import type { AuthUser, BackendAuthResponse, BackendUserResponse, PasswordRequest, UpdateProfileRequest, UserProfile } from "@/lib/types";
 
 const extendedProfileApi = authApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -40,6 +40,13 @@ const extendedProfileApi = authApi.injectEndpoints({
         } catch {}
       },
     }),
+    changePassword: builder.mutation<void, PasswordRequest>({
+      query: (body) => ({
+        url: "/profile/change-password",
+        method: "PATCH",
+        body,
+      }),
+    }),
     getPublicProfile: builder.query<UserProfile, string>({
       query: (username) => `/profiles/${username}`,
       transformResponse: (response: BackendUserResponse) => normalizePublicUser(response),
@@ -52,5 +59,6 @@ export const {
   useGetMyProfileQuery,
   useGetPublicProfileQuery,
   useUpdateProfileMutation,
+  useChangePasswordMutation,
 } = extendedProfileApi;
 

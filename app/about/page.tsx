@@ -276,7 +276,7 @@ export default function AboutPage() {
               <h3 className="mt-3 font-bangers text-3xl text-primary">Team Roster</h3>
               <p className="mt-3 text-sm leading-7 text-muted-foreground">
                 Our responsive roster brings together diverse talents from leadership to core
-                contributors, all working in sync to deliver the best "issues" to our readers.
+                contributors, all working in sync to deliver the best &quot;issues&quot; to our readers.
               </p>
             </div>
           </div>

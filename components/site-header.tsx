@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { LogIn, LogOut, Menu, Moon, PenSquare, Sun, User2, X } from "lucide-react";
+import { LogIn, Menu, Moon, PenSquare, Sun, User2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -107,12 +107,6 @@ export function SiteHeader() {
                     )}
                   </div>
                 </Link>
-                <button
-                  onClick={() => dispatch(logout())}
-                  className="flex items-center gap-2 px-4 py-2 font-bangers text-lg transition-all hover:border-accent hover:text-accent comic-border"
-                >
-                  <LogOut size={16} /> LOGOUT
-                </button>
               </>
             ) : (
               <button
@@ -187,15 +181,6 @@ export function SiteHeader() {
                       </div>
                       <span>{user.username}</span>
                     </Link>
-                    <button
-                      onClick={() => {
-                        dispatch(logout());
-                        setMobileMenuOpen(false);
-                      }}
-                      className="mt-1 flex items-center gap-2 px-4 py-2 font-bangers text-2xl transition-colors hover:text-accent comic-border-secondary"
-                    >
-                      <LogOut size={20} /> LOGOUT
-                    </button>
                   </>
                 ) : (
                   <button

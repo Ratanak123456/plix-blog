@@ -8,14 +8,20 @@ import {
   Bookmark,
   CalendarDays,
   Edit,
+  Eye,
+  EyeOff,
   FileText,
   ImagePlus,
+  Lock,
+  LogOut,
   Mail,
   Save,
   Trash2,
   User2,
 } from "lucide-react";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { logout } from "@/lib/features/auth/auth-slice";
+import { getGeneralErrorMessage } from "@/lib/utils/auth-utils";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -31,13 +37,14 @@ import {
 import {
   type BlogPost,
   type PageResponse,
+  useChangePasswordMutation,
   useDeletePostMutation,
   useGetMyBookmarksQuery,
   useGetMyProfileQuery,
   useGetUserPostsPageQuery,
   useUpdateProfileMutation,
 } from "@/lib/services/auth-api";
-import { useAppSelector } from "@/lib/store";
+import { useAppDispatch, useAppSelector } from "@/lib/store";
 
 type ProfileTab = "info" | "posts" | "bookmarks";
 
@@ -151,7 +158,7 @@ function PostGrid({
   const filteredContent = useMemo(() => {
     if (!page?.content) return [];
     return page.content.filter((post) => !statusFilter || post.status === statusFilter);
-  }, [page?.content, statusFilter]);
+  }, [page, statusFilter]);
 
   return (
     <section className="bg-card p-6 md:p-8 comic-border">
@@ -313,6 +320,8 @@ function PostGrid({
 }
 
 export function ProfileDashboard() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const { isAuthenticated, user: currentUser } = useAppSelector((state) => state.auth);
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>("info");
@@ -334,7 +343,19 @@ export function ProfileDashboard() {
     skip: !isAuthenticated,
   });
   const [updateProfile, { isLoading: isSaving }] = useUpdateProfileMutation();
+  const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
   const [deletePost] = useDeletePostMutation();
+
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const profileUsername = profile?.username ?? currentUser?.username;
   const postsQueryArg = profileUsername
@@ -446,11 +467,38 @@ export function ProfileDashboard() {
       }).unwrap();
       setSaveMessage("Profile updated successfully.");
     } catch (error) {
-      const message =
-        typeof error === "object" && error !== null && "data" in error && typeof error.data === "string"
-          ? error.data
-          : "Unable to update your profile right now.";
-      setSaveError(message);
+      setSaveError(getGeneralErrorMessage(error));
+    }
+  }
+
+  async function handlePasswordChange(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setPasswordMessage(null);
+    setPasswordError(null);
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError("New passwords do not match.");
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 8) {
+      setPasswordError("Password must be at least 8 characters.");
+      return;
+    }
+
+    try {
+      await changePassword({
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword,
+      }).unwrap();
+      setPasswordMessage("Password changed successfully.");
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (error) {
+      setPasswordError(getGeneralErrorMessage(error));
     }
   }
 
@@ -543,6 +591,17 @@ export function ProfileDashboard() {
                     {tab.label}
                   </button>
                 ))}
+                
+                <button
+                  type="button"
+                  onClick={() => {
+                    dispatch(logout());
+                    router.push("/");
+                  }}
+                  className="mt-4 flex w-full items-center justify-center gap-2 bg-destructive/10 px-4 py-3 font-bangers text-2xl text-destructive transition-all hover:bg-destructive hover:text-destructive-foreground comic-border-secondary"
+                >
+                  <LogOut size={20} /> LOGOUT
+                </button>
               </div>
             </div>
           </aside>
@@ -648,6 +707,105 @@ export function ProfileDashboard() {
                     <p className="font-sans text-sm text-muted-foreground">
                       Your join date stays fixed and cannot be edited.
                     </p>
+                  </div>
+                </form>
+
+                <div className="my-10 h-px bg-muted" />
+
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Security core</p>
+                    <h2 className="mt-2 font-bangers text-4xl text-primary">Change password</h2>
+                  </div>
+                </div>
+
+                <form onSubmit={handlePasswordChange} className="mt-6 space-y-5">
+                  <div className="grid gap-5 md:grid-cols-2">
+                    <div className="space-y-2 md:col-span-2">
+                      <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                        <Lock size={14} />
+                        Current password
+                      </span>
+                      <div className="relative">
+                        <Input
+                          type={showCurrentPassword ? "text" : "password"}
+                          value={passwordForm.currentPassword}
+                          onChange={(e) => setPasswordForm((p) => ({ ...p, currentPassword: e.target.value }))}
+                          className="h-11 bg-background pr-10 comic-border-secondary"
+                          placeholder="••••••••"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
+                        >
+                          {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                        <Lock size={14} />
+                        New password
+                      </span>
+                      <div className="relative">
+                        <Input
+                          type={showNewPassword ? "text" : "password"}
+                          value={passwordForm.newPassword}
+                          onChange={(e) => setPasswordForm((p) => ({ ...p, newPassword: e.target.value }))}
+                          className="h-11 bg-background pr-10 comic-border-secondary"
+                          placeholder="••••••••"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
+                        >
+                          {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                        <Lock size={14} />
+                        Confirm new password
+                      </span>
+                      <div className="relative">
+                        <Input
+                          type={showConfirmPassword ? "text" : "password"}
+                          value={passwordForm.confirmPassword}
+                          onChange={(e) => setPasswordForm((p) => ({ ...p, confirmPassword: e.target.value }))}
+                          className="h-11 bg-background pr-10 comic-border-secondary"
+                          placeholder="••••••••"
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
+                        >
+                          {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {passwordMessage ? <p className="font-sans text-sm text-green-600">{passwordMessage}</p> : null}
+                  {passwordError ? <p className="font-sans text-sm text-red-500">{passwordError}</p> : null}
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <button
+                      type="submit"
+                      disabled={isChangingPassword}
+                      className="inline-flex items-center gap-2 bg-accent px-5 py-3 font-bangers text-xl text-accent-foreground disabled:cursor-not-allowed disabled:opacity-60 comic-border"
+                    >
+                      <Lock size={16} />
+                      {isChangingPassword ? "Updating..." : "Update password"}
+                    </button>
                   </div>
                 </form>
               </section>

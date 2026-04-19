@@ -78,9 +78,9 @@ export function BlogCard({ post, index = 0 }: BlogCardProps) {
       <div className="mt-auto flex items-center justify-between border-t border-border pt-4">
         <Link href={`/users/${post.author.username}`} className="group/author flex items-center gap-3">
           <div className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover/author:scale-110">
-            {(post.author as any).profileImage ? (
+            {post.author.profileImage ? (
               <Image
-                src={(post.author as any).profileImage}
+                src={post.author.profileImage}
                 alt={post.author.fullName}
                 fill
                 className="object-cover"

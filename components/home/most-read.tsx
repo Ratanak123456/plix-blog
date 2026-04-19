@@ -108,9 +108,9 @@ export function MostRead() {
             <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-3">
               <Link href={`/users/${post.author.username}`} className="group/author flex items-center gap-3">
                 <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover/author:scale-110">
-                  {(post.author as any).profileImage ? (
+                  {post.author.profileImage ? (
                     <Image
-                      src={(post.author as any).profileImage}
+                      src={post.author.profileImage}
                       alt={post.author.fullName}
                       fill
                       className="object-cover"
