@@ -22,7 +22,6 @@ type PostActionsProps = {
 export function PostActions({
   postId,
   initialLikeCount,
-  initialBookmarkCount: _initialBookmarkCount,
   initialLiked = false,
   initialBookmarked = false,
   compact = false,

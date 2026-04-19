@@ -26,7 +26,7 @@ export function AuthModal({ open, mode, onClose, onModeChange }: AuthModalProps)
     onModeChange(nextMode);
   }
 
-  function handleRegisterSuccess(_email: string) {
+  function handleRegisterSuccess() {
     setRegistrationFeedback("Registration completed. Sign in with your new account.");
     onModeChange("login");
   }

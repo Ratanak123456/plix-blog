@@ -1,14 +1,13 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { LogIn, Menu, Moon, PenSquare, Sun, User2, X } from "lucide-react";
+import { LogIn, Menu, Moon, PenSquare, Sun, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AuthModal } from "@/components/auth/auth-modal";
-import { logout } from "@/lib/features/auth/auth-slice";
 import { useGetMyProfileQuery } from "@/lib/services/auth-api";
-import { useAppDispatch, useAppSelector } from "@/lib/store";
+import { useAppSelector } from "@/lib/store";
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
@@ -17,7 +16,6 @@ const NAV_ITEMS = [
 ];
 
 export function SiteHeader() {
-  const dispatch = useAppDispatch();
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);

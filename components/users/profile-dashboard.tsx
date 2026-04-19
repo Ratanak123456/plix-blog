@@ -423,13 +423,10 @@ export function ProfileDashboard() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSaveMessage(null);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSaveError(null);
 
     if (activeTab !== "posts") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatusFilter("");
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPostsPageIndex(0);
     }
   }, [activeTab]);

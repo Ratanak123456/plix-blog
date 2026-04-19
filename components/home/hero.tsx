@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useGetMostLikedPostsQuery } from "@/lib/services/auth-api";
 import { 
   stripHtml, 
-  formatIssueNumber, 
   formatPublishedDate, 
   estimateReadMinutes 
 } from "@/lib/utils/blog";

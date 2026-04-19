@@ -52,7 +52,7 @@ export async function generateMetadata(props: { params: Promise<{ username: stri
         images: user.avatarUrl ? [user.avatarUrl] : ["https://plix-blog.vercel.app/talk.jpg"],
       },
     };
-  } catch (error) {
+  } catch {
     return {
       title: "User Profile | PlixBlog",
     };

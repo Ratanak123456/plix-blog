@@ -63,13 +63,9 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
     if (initialData) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setTitle(initialData.title);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setThumbnail(initialData.thumbnailUrl ?? "");
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCategoryId(initialData.category?.id ?? "");
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTagIds(initialData.tags?.map(t => t.id) ?? []);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setContent(initialData.content);
     }
   }, [initialData]);

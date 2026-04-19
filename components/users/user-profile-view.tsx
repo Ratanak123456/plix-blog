@@ -25,19 +25,6 @@ function getInitials(name: string) {
     .join("") || "PB";
 }
 
-function stripHtml(input: string) {
-  return input
-    .replace(/<[^>]*>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function getPreview(content: string) {
-  const clean = stripHtml(content);
-  return clean.length > 180 ? `${clean.slice(0, 177)}...` : clean;
-}
-
 export function UserProfileView({ username }: { username: string }) {
   const { data: user, isLoading: isUserLoading, isError: isUserError } = useGetPublicProfileQuery(username);
   const { data: posts = [], isLoading: arePostsLoading } = useGetUserPostsQuery({ 
