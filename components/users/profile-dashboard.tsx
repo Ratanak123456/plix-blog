@@ -551,6 +551,15 @@ export function ProfileDashboard() {
     if (passwordForm.newPassword.length < 8) {
       setPasswordError("Password must be at least 8 characters.");
       return;
+    } else if (!/[A-Z]/.test(passwordForm.newPassword)) {
+      setPasswordError("Password must contain at least one uppercase letter.");
+      return;
+    } else if (!/[a-z]/.test(passwordForm.newPassword)) {
+      setPasswordError("Password must contain at least one lowercase letter.");
+      return;
+    } else if (!/\d/.test(passwordForm.newPassword)) {
+      setPasswordError("Password must contain at least one number.");
+      return;
     }
 
     try {
@@ -570,7 +579,7 @@ export function ProfileDashboard() {
   }
 
   async function handleDeletePost(id: string) {
-    try {
+        try {
       await deletePost(id).unwrap();
       setDeletionResult({ success: true, message: "Your story has been permanently removed from the archives." });
       refetchPosts();
