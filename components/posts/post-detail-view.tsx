@@ -32,9 +32,9 @@ export function PostDetailView({ slug }: { slug: string }) {
     return (
       <div className="min-h-screen bg-background text-foreground">
         <main className="container mx-auto px-4 py-16">
-          <div className="mx-auto max-w-3xl bg-card p-8 text-center comic-border-secondary">
+            <div className="mx-auto max-w-3xl bg-card p-6 text-center comic-border-secondary sm:p-8">
             <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">404 issue</p>
-            <h1 className="mt-3 font-bangers text-5xl text-primary md:text-6xl">Post not found</h1>
+              <h1 className="mt-3 font-bangers text-4xl text-primary sm:text-5xl md:text-6xl">Post not found</h1>
             <p className="mt-4 font-sans text-base text-muted-foreground">
               This story arc could not be loaded from the current post feed.
             </p>
@@ -74,7 +74,7 @@ export function PostDetailView({ slug }: { slug: string }) {
                   <span>{formatDate(post.publishedAt ?? post.createdAt)}</span>
                   <span>{getReadTime(post.content)}</span>
                 </div>
-                <h1 className="mt-5 max-w-5xl font-bangers text-5xl leading-none text-foreground drop-shadow-[3px_3px_0px_hsl(var(--primary))] md:text-7xl">
+                <h1 className="mt-5 max-w-5xl font-bangers text-4xl leading-none text-foreground drop-shadow-[3px_3px_0px_hsl(var(--primary))] sm:text-5xl md:text-7xl">
                   {post.title}
                 </h1>
                 <div className="mt-6 flex flex-wrap items-center gap-4">
@@ -85,9 +85,9 @@ export function PostDetailView({ slug }: { slug: string }) {
                 </div>
               </div>
 
-              <aside className="self-start bg-card p-6 comic-border-secondary">
+              <aside className="self-start bg-card p-5 sm:p-6 comic-border-secondary">
                 <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Panel stats</p>
-                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="mt-4 grid gap-3 md:grid-cols-3">
                   <div className="bg-background p-4 comic-border">
                     <div className="flex items-center gap-2 font-oswald text-xs uppercase tracking-wider text-muted-foreground">
                       <Eye size={14} />

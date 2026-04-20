@@ -79,12 +79,12 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Hero Section with Search */}
-      <section className="container mx-auto px-4 py-12">
+      <section className="container mx-auto px-4 py-10 md:py-12">
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="relative overflow-hidden bg-card p-8 comic-border halftone-bg"
+          className="relative overflow-hidden bg-card p-5 md:p-8 comic-border halftone-bg"
         >
           <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-primary/20 via-transparent to-accent/20" />
           <div className="relative z-10 text-center">
@@ -92,16 +92,16 @@ export default function BlogPage() {
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring" }}
-              className="mb-4 inline-block -rotate-2 bg-primary px-6 py-2 font-bangers text-3xl text-background comic-border-secondary"
+              className="mb-4 inline-block -rotate-2 bg-primary px-4 py-2 font-bangers text-2xl text-background comic-border-secondary md:px-6 md:text-3xl"
             >
               WELCOME TO THE ARCHIVE!
             </motion.div>
             
-            <h1 className="mb-6 font-bangers text-5xl leading-none uppercase md:text-7xl">
+            <h1 className="mb-6 font-bangers text-4xl leading-none uppercase sm:text-5xl md:text-7xl">
               Explore Our <span className="text-accent">Story Collection</span>
             </h1>
             
-            <p className="mx-auto mb-8 max-w-2xl font-oswald text-xl text-muted-foreground">
+            <p className="mx-auto mb-8 max-w-2xl font-oswald text-base text-muted-foreground sm:text-lg md:text-xl">
               Dive into a universe of comics, tech tales, and creative adventures. 
               Search for your next favorite issue or browse by category!
             </p>
@@ -118,7 +118,7 @@ export default function BlogPage() {
                     setSearchQuery(e.target.value);
                     setCurrentPage(0);
                   }}
-                  className="w-full rounded-full border-2 border-primary bg-background py-4 pl-12 pr-4 font-oswald text-lg outline-none transition-all focus:border-accent focus:shadow-lg focus:shadow-accent/20 comic-border"
+                  className="w-full rounded-full border-2 border-primary bg-background py-3 pl-11 pr-4 font-oswald text-base outline-none transition-all focus:border-accent focus:shadow-lg focus:shadow-accent/20 md:py-4 md:pl-12 md:text-lg comic-border"
                 />
               </div>
             </div>
@@ -130,11 +130,11 @@ export default function BlogPage() {
       <section className="container mx-auto px-4 pb-8">
         <div className="flex flex-col gap-6 lg:flex-row">
           {/* Categories Sidebar */}
-          <aside className="sticky top-28 self-start w-full lg:w-1/4 z-30">
+          <aside className="z-30 w-full self-start lg:sticky lg:top-28 lg:w-1/4">
             <div className="bg-card p-6 comic-border">
               <div className="mb-4 flex items-center gap-2">
                 <Filter size={20} className="text-primary" />
-                <h2 className="font-bangers text-2xl">Categories</h2>
+                <h2 className="font-bangers text-xl sm:text-2xl">Categories</h2>
               </div>
               
               {categoriesLoading ? (
@@ -221,7 +221,7 @@ export default function BlogPage() {
                 ))}
               </div>
             ) : (
-              <div className="flex min-h-[300px] flex-col items-center justify-center bg-card p-12 text-center comic-border">
+              <div className="flex min-h-[300px] flex-col items-center justify-center bg-card p-6 text-center comic-border sm:p-12">
                 <div className="mb-4 text-6xl">📚</div>
                 <h3 className="mb-2 font-bangers text-3xl">No Stories Found</h3>
                 <p className="font-oswald text-muted-foreground">
@@ -232,16 +232,16 @@ export default function BlogPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="mt-12 flex items-center justify-center gap-4">
+              <div className="mt-12 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
                 <button
                   onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
                   disabled={currentPage === 0}
-                  className="flex items-center gap-2 rounded-full bg-card px-6 py-3 font-oswald uppercase tracking-wider transition-all hover:bg-primary hover:text-background disabled:cursor-not-allowed disabled:opacity-50 comic-border"
+                  className="flex items-center gap-2 rounded-full bg-card px-4 py-3 font-oswald text-sm uppercase tracking-wider transition-all hover:bg-primary hover:text-background disabled:cursor-not-allowed disabled:opacity-50 sm:px-6 comic-border"
                 >
                   <ChevronLeft size={20} /> Prev
                 </button>
                 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center justify-center gap-2">
                   {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                     let pageNum: number;
                     if (totalPages <= 5) {
@@ -258,7 +258,7 @@ export default function BlogPage() {
                       <button
                         key={pageNum}
                         onClick={() => setCurrentPage(pageNum)}
-                        className={`flex h-10 w-10 items-center justify-center rounded-full font-bangers text-lg transition-all ${
+                        className={`flex h-10 w-10 items-center justify-center rounded-full font-bangers text-base transition-all sm:text-lg ${
                           currentPage === pageNum
                             ? "bg-primary text-background"
                             : "bg-card hover:bg-primary/10"
@@ -273,7 +273,7 @@ export default function BlogPage() {
                 <button
                   onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
                   disabled={currentPage === totalPages - 1}
-                  className="flex items-center gap-2 rounded-full bg-card px-6 py-3 font-oswald uppercase tracking-wider transition-all hover:bg-primary hover:text-background disabled:cursor-not-allowed disabled:opacity-50 comic-border"
+                  className="flex items-center gap-2 rounded-full bg-card px-4 py-3 font-oswald text-sm uppercase tracking-wider transition-all hover:bg-primary hover:text-background disabled:cursor-not-allowed disabled:opacity-50 sm:px-6 comic-border"
                 >
                   Next <ChevronRight size={20} />
                 </button>

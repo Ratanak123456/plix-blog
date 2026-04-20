@@ -466,9 +466,9 @@ export function ProfileDashboard() {
   if (isError || !profile) {
     return (
       <main className="container mx-auto px-4 py-16">
-        <div className="mx-auto max-w-3xl bg-card p-8 text-center comic-border-secondary">
+        <div className="mx-auto max-w-3xl bg-card p-6 text-center comic-border-secondary sm:p-8">
           <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Profile unavailable</p>
-          <h1 className="mt-3 font-bangers text-5xl text-primary md:text-6xl">Unable to load profile</h1>
+          <h1 className="mt-3 font-bangers text-4xl text-primary sm:text-5xl md:text-6xl">Unable to load profile</h1>
           <p className="mt-4 font-sans text-base text-muted-foreground">
             The current user profile could not be loaded from the API.
           </p>
@@ -645,7 +645,7 @@ export function ProfileDashboard() {
 
               <div className="mt-4">
                 <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Profile HQ</p>
-                <h1 className="mt-2 font-bangers text-5xl leading-none text-primary">{profile.fullName}</h1>
+                <h1 className="mt-2 font-bangers text-4xl leading-none text-primary sm:text-5xl">{profile.fullName}</h1>
                 <p className="mt-2 font-sans text-base text-muted-foreground">@{profile.username}</p>
                 <p className="mt-5 font-sans text-sm leading-7 text-foreground">
                   {profile.bio?.trim() || "Add a bio so readers know what kind of stories you publish."}

@@ -33,7 +33,7 @@ export function Reviews() {
     <section className="border-y-4 border-secondary bg-muted/20 py-14">
       <div className="container mx-auto px-4">
         <div className="mb-10 flex items-center gap-4">
-          <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">
+          <h2 className="font-bangers text-3xl text-primary sm:text-4xl md:text-5xl">
             READER REVIEWS
           </h2>
           <div className="h-1 flex-1 bg-secondary" />

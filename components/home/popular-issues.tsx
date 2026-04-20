@@ -10,7 +10,7 @@ export function PopularIssues() {
   return (
     <section id="blog" className="container mx-auto px-4 py-10 ">
       <div className="mb-8 flex items-center gap-4">
-        <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">
+        <h2 className="font-bangers text-3xl text-primary sm:text-4xl md:text-5xl">
           POPULAR ISSUES
         </h2>
         <div className="h-1 flex-1 bg-secondary" />

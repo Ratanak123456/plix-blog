@@ -44,9 +44,9 @@ export function UserProfileView({ username }: { username: string }) {
   if (isUserError || !user) {
     return (
       <main className="container mx-auto px-4 py-16">
-        <div className="mx-auto max-w-3xl bg-card p-8 text-center comic-border-secondary">
+        <div className="mx-auto max-w-3xl bg-card p-6 text-center comic-border-secondary sm:p-8">
           <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">404 profile</p>
-          <h1 className="mt-3 font-bangers text-5xl text-primary md:text-6xl">User not found</h1>
+          <h1 className="mt-3 font-bangers text-4xl text-primary sm:text-5xl md:text-6xl">User not found</h1>
           <p className="mt-4 font-sans text-base text-muted-foreground">
             This creator profile could not be loaded.
           </p>
@@ -102,7 +102,7 @@ export function UserProfileView({ username }: { username: string }) {
                 </div>
                 <div className="flex-1">
                   <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">User profile</p>
-                  <h1 className="mt-2 font-bangers text-5xl leading-none text-primary md:text-6xl">{user.fullName}</h1>
+                  <h1 className="mt-2 font-bangers text-4xl leading-none text-primary sm:text-5xl md:text-6xl">{user.fullName}</h1>
                   <p className="mt-2 font-sans text-base text-muted-foreground">@{user.username}</p>
                   <p className="mt-5 max-w-3xl font-sans text-sm leading-7 text-foreground">
                     {user.bio?.trim() || "This user has not added a bio yet."}
@@ -138,7 +138,7 @@ export function UserProfileView({ username }: { username: string }) {
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Latest from @{user.username}</p>
-            <h2 className="mt-2 font-bangers text-4xl text-primary">Published stories</h2>
+            <h2 className="mt-2 font-bangers text-3xl text-primary sm:text-4xl">Published stories</h2>
           </div>
         </div>
 

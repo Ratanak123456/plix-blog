@@ -56,7 +56,7 @@ export function OriginStories() {
   return (
     <section className="container mx-auto px-4 py-10">
       <div className="mb-6 flex items-center gap-4">
-        <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">
+        <h2 className="font-bangers text-3xl text-primary sm:text-4xl md:text-5xl">
           ORIGIN STORIES
         </h2>
         <div className="h-1 flex-1 bg-secondary" />
@@ -130,10 +130,10 @@ export function OriginStories() {
                   </div>
                 </div>
                 <Link href={`/posts/${leadPost.slug}`} className="block cursor-pointer">
-                  <h3 className="mb-4 font-bangers text-4xl transition-colors group-hover:text-accent md:text-5xl line-clamp-2">
+                  <h3 className="mb-4 font-bangers text-3xl transition-colors group-hover:text-accent sm:text-4xl md:text-5xl line-clamp-2">
                     {leadPost.title}
                   </h3>
-                  <p className="line-clamp-3 font-sans text-lg text-muted-foreground">
+                  <p className="line-clamp-3 font-sans text-base text-muted-foreground sm:text-lg">
                     {getExcerpt(leadPost.content)}
                   </p>
                 </Link>
@@ -161,7 +161,7 @@ export function OriginStories() {
                 className="group"
               >
                 <div className="bg-card p-4 transition-all hover:-translate-y-1 hover:border-primary comic-border-secondary">
-                  <div className="flex gap-4">
+                  <div className="flex flex-col gap-4 sm:flex-row">
                     <Link href={`/posts/${post.slug}`} className="h-24 w-24 shrink-0 overflow-hidden bg-linear-to-br from-orange-700 to-amber-500 comic-border-accent">
                       {post.thumbnailUrl ? (
                         <div
@@ -170,7 +170,7 @@ export function OriginStories() {
                         />
                       ) : null}
                     </Link>
-                    <div className="flex flex-col justify-center">
+                    <div className="flex flex-1 flex-col justify-center">
                       <div className="mb-1 flex gap-2 font-oswald text-xs uppercase">
                         <span className="text-accent">{post.category?.name ?? "Latest"}</span>
                         <span className="text-muted-foreground">
@@ -203,7 +203,7 @@ export function OriginStories() {
                       </Link>
                     </div>
                   </div>
-                  <div className="mt-3 ml-28">
+                  <div className="mt-3 sm:ml-28">
                     <PostActions
                       postId={post.id}
                       initialLikeCount={post.likeCount}

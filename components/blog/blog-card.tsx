@@ -65,7 +65,7 @@ export function BlogCard({ post, index = 0, onDelete }: BlogCardProps) {
         </div>
       </Link>
       
-      <div className="mb-2 flex items-center justify-between font-oswald text-xs font-bold uppercase text-primary">
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2 font-oswald text-xs font-bold uppercase text-primary">
         <div className="flex items-center gap-2">
           <Clock size={12} /> {estimateReadMinutes(post.content)} MIN READ
         </div>
@@ -99,8 +99,8 @@ export function BlogCard({ post, index = 0, onDelete }: BlogCardProps) {
           </div>
         </Link>
         
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             <PostActions
               postId={post.id}
               initialLikeCount={post.likeCount}

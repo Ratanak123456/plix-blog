@@ -66,7 +66,7 @@ const [openFaq, setOpenFaq] = useState<number | null>(null);
           <span className="inline-block bg-primary px-4 py-1 font-oswald text-xs font-bold uppercase tracking-[0.2em] text-background comic-border-secondary shadow-sm">
             Support Center
           </span>
-          <h2 className="mt-4 font-bangers text-5xl text-primary md:text-6xl tracking-wide">
+          <h2 className="mt-4 font-bangers text-4xl text-primary sm:text-5xl md:text-6xl tracking-wide">
             FREQUENTLY ASKED
           </h2>
           <div className="flex items-center justify-center mt-4 gap-2 opacity-30">
@@ -89,7 +89,7 @@ const [openFaq, setOpenFaq] = useState<number | null>(null);
                 <button
                   onClick={() => setOpenFaq(isOpen ? null : index)}
                   className={`
-                    relative flex w-full items-center gap-4 px-6 py-5 text-left
+                    relative flex w-full items-center gap-3 px-4 py-4 text-left sm:gap-4 sm:px-6 sm:py-5
                     comic-border transition-all duration-200
                     ${
                       isOpen
@@ -99,12 +99,12 @@ const [openFaq, setOpenFaq] = useState<number | null>(null);
                   `}
                 >
                   {/* Number */}
-                  <span className={`font-bangers text-xl ${isOpen ? "text-background/80" : "text-muted-foreground"}`}>
+                  <span className={`font-bangers text-lg sm:text-xl ${isOpen ? "text-background/80" : "text-muted-foreground"}`}>
                     {String(index + 1).padStart(2, "0")}
                   </span>
 
                   {/* Question text */}
-                  <span className="flex-1 font-bangers text-xl tracking-wide md:text-2xl">
+                  <span className="flex-1 font-bangers text-lg tracking-wide sm:text-xl md:text-2xl">
                     {faq.q}
                   </span>
 
@@ -131,7 +131,7 @@ const [openFaq, setOpenFaq] = useState<number | null>(null);
                             size={16}
                             className="absolute -left-[10px] top-0 text-accent bg-card"
                           />
-                          <p className="font-sans text-lg leading-relaxed text-muted-foreground">
+                          <p className="font-sans text-base leading-relaxed text-muted-foreground sm:text-lg">
                             {faq.a}
                           </p>
                         </div>

@@ -16,7 +16,7 @@ export function FeedbackForm() {
   return (
     <section className="container mx-auto max-w-2xl px-4 py-14">
       <div className="mb-8 flex items-center gap-4">
-        <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">
+        <h2 className="font-bangers text-3xl text-primary sm:text-4xl md:text-5xl">
           SEND FEEDBACK
         </h2>
         <div className="h-1 flex-1 bg-secondary" />
@@ -31,10 +31,10 @@ export function FeedbackForm() {
               exit={{ opacity: 0 }}
               className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 bg-card/95 p-8 text-center"
             >
-              <div className="font-bangers text-5xl text-accent">
+              <div className="font-bangers text-4xl text-accent sm:text-5xl">
                 THANKS!
               </div>
-              <p className="font-oswald text-xl uppercase text-muted-foreground">
+              <p className="font-oswald text-base uppercase text-muted-foreground sm:text-xl">
                 Thanks for your feedback! We read every message.
               </p>
             </motion.div>
@@ -78,7 +78,7 @@ export function FeedbackForm() {
           </div>
           <button
             type="submit"
-            className="group flex w-full items-center justify-center gap-3 bg-accent py-4 font-bangers text-2xl text-background transition-colors hover:bg-primary comic-border"
+            className="group flex w-full items-center justify-center gap-3 bg-accent py-4 font-bangers text-xl text-background transition-colors hover:bg-primary sm:text-2xl comic-border"
           >
             SUBMIT FEEDBACK{" "}
             <Send

@@ -43,15 +43,15 @@ export function MostRead() {
       <section className="container mx-auto px-4 py-10">
         <div className="mb-6 flex items-center gap-4">
           <TrendingUp size={28} className="shrink-0 text-accent" />
-          <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">
+          <h2 className="font-bangers text-3xl text-primary sm:text-4xl md:text-5xl">
             TODAY&apos;S MOST READ
           </h2>
           <div className="h-1 flex-1 bg-secondary" />
         </div>
-        <div className="flex min-h-[300px] flex-col items-center justify-center bg-card p-12 text-center comic-border halftone-bg">
+        <div className="flex min-h-[300px] flex-col items-center justify-center bg-card p-6 text-center comic-border halftone-bg sm:p-12">
           <div className="mb-4 text-6xl">📚</div>
           <h3 className="mb-2 font-bangers text-3xl text-primary">No Reader Activity Yet!</h3>
-          <p className="max-w-md font-oswald text-xl text-muted-foreground">
+          <p className="max-w-md font-oswald text-base text-muted-foreground sm:text-xl">
             Be the first to break the charts! Check out our latest issues and start reading.
           </p>
         </div>
@@ -63,7 +63,7 @@ export function MostRead() {
     <section className="container mx-auto px-4 py-10">
       <div className="mb-6 flex items-center gap-4">
         <TrendingUp size={28} className="shrink-0 text-accent" />
-        <h2 className="whitespace-nowrap font-bangers text-4xl text-primary md:text-5xl">
+        <h2 className="font-bangers text-3xl text-primary sm:text-4xl md:text-5xl">
           TODAY&apos;S MOST READ
         </h2>
         <div className="h-1 flex-1 bg-secondary" />
@@ -100,7 +100,7 @@ export function MostRead() {
                 </motion.div>
               </div>
             )}
-            <div className="absolute top-4 left-4 bg-accent px-3 py-1 font-bangers text-lg text-background comic-border-secondary">
+            <div className="absolute left-3 top-3 bg-accent px-3 py-1 font-bangers text-base text-background comic-border-secondary sm:left-4 sm:top-4 sm:text-lg">
               #1 TODAY
             </div>
           </Link>
@@ -144,11 +144,11 @@ export function MostRead() {
               </div>
             </div>
             <Link href={`/posts/${post.slug}`}>
-              <h3 className="mb-4 font-bangers text-4xl leading-tight transition-colors hover:text-accent md:text-6xl line-clamp-2">
+              <h3 className="mb-4 font-bangers text-3xl leading-tight transition-colors hover:text-accent sm:text-4xl md:text-6xl line-clamp-2">
                 {post.title}
               </h3>
             </Link>
-            <p className="mb-6 max-w-2xl font-sans text-lg text-muted-foreground line-clamp-3">
+            <p className="mb-6 max-w-2xl font-sans text-base text-muted-foreground sm:text-lg line-clamp-3">
               {stripHtml(post.content).slice(0, 180)}...
             </p>
             <Link href={`/posts/${post.slug}`} className="inline-flex items-center gap-2 font-bangers text-xl text-accent transition-colors hover:text-primary">

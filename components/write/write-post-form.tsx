@@ -209,10 +209,10 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                   {isEditing ? "Edit Your Story Arc" : "Create Your Story Arc"}
                 </div>
                 <div>
-                  <h1 className="max-w-3xl font-bangers text-5xl leading-none drop-shadow-[3px_3px_0px_hsl(var(--primary))] md:text-7xl">
+                  <h1 className="max-w-3xl font-bangers text-4xl leading-none drop-shadow-[3px_3px_0px_hsl(var(--primary))] sm:text-5xl md:text-7xl">
                     {isEditing ? "EDIT YOUR ISSUE" : "WRITE YOUR OWN ISSUE"}
                   </h1>
-                  <p className="mt-4 max-w-2xl font-oswald text-lg uppercase tracking-wide text-muted-foreground">
+                  <p className="mt-4 max-w-2xl font-oswald text-base uppercase tracking-wide text-muted-foreground sm:text-lg">
                     {isEditing 
                       ? "Refine your story, update the visuals, and keep your readers engaged with the latest version."
                       : "Draft fast, polish with Quill, and publish straight to the API your frontend already uses."}

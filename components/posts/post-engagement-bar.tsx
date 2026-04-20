@@ -104,7 +104,7 @@ export function PostEngagementBar({
         </Link>
       </div>
 
-      <div className="mt-4 grid grid-cols-4 divide-x-2 divide-dashed divide-primary/30 overflow-hidden bg-background comic-border">
+      <div className="mt-4 grid grid-cols-2 overflow-hidden divide-y-2 divide-dashed divide-primary/30 bg-background sm:grid-cols-4 sm:divide-x-2 sm:divide-y-0 comic-border">
         <button
           type="button"
           onClick={handleLike}

@@ -28,7 +28,7 @@ export function Hero() {
         <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-primary/20 via-transparent to-accent/20" />
         <div className="relative z-10 flex flex-col items-center gap-8 md:flex-row">
           <div className="flex-1 space-y-5">
-            <div className="inline-block -rotate-2 bg-primary px-4 py-1 font-bangers text-xl text-background comic-border-secondary">
+            <div className="inline-block -rotate-2 bg-primary px-3 py-1 font-bangers text-lg text-background comic-border-secondary sm:px-4 sm:text-xl">
               DAILY ISSUE 
             </div>
             {isLoading ? (
@@ -38,17 +38,17 @@ export function Hero() {
               </>
             ) : isError || !featuredPost ? (
               <>
-                <h1 className="font-bangers text-5xl leading-none uppercase drop-shadow-[4px_4px_0px_hsl(var(--secondary))] md:text-7xl">
+                <h1 className="font-bangers text-4xl leading-none uppercase drop-shadow-[4px_4px_0px_hsl(var(--secondary))] sm:text-5xl md:text-7xl">
                   Most Liked <br />
                   <span className="text-accent">Story Offline</span>
                 </h1>
-                <div className="inline-block max-w-lg p-4 font-oswald text-xl text-foreground md:p-5 speech-bubble">
+                <div className="inline-block max-w-lg p-4 font-oswald text-base text-foreground sm:text-lg md:p-5 md:text-xl speech-bubble">
                   We couldn&apos;t load the top story right now. Check the API connection and try again.
                 </div>
               </>
             ) : (
               <>
-                <h1 className="font-bangers line-clamp-2 text-6xl leading-none uppercase drop-shadow-[4px_4px_0px_hsl(var(--secondary))] md:text-8xl">
+                <h1 className="font-bangers line-clamp-3 text-4xl leading-none uppercase drop-shadow-[4px_4px_0px_hsl(var(--secondary))] sm:text-5xl md:line-clamp-2 md:text-8xl">
                   {featuredPost.title}
                 </h1>
                 <div className="flex flex-wrap items-center gap-3 font-oswald text-sm uppercase tracking-wider text-muted-foreground">
@@ -59,14 +59,14 @@ export function Hero() {
                     <Heart size={14} /> {featuredPost.likeCount} likes
                   </span>
                 </div>
-                <div className="inline-block max-w-lg p-4 font-oswald text-xl text-foreground md:p-5 speech-bubble">
+                <div className="inline-block max-w-lg p-4 font-oswald text-base text-foreground sm:text-lg md:p-5 md:text-xl speech-bubble">
                   &quot;{excerpt}
                   {needsEllipsis ? "..." : ""}&quot;
                 </div>
                 <div className="pt-4">
                   <Link
                     href={`/posts/${featuredPost.slug}`}
-                    className="inline-flex items-center gap-3 bg-accent px-8 py-4 font-bangers text-2xl text-background transition-all hover:-translate-y-2 hover:rotate-1 hover:shadow-lg comic-border"
+                    className="inline-flex items-center gap-3 bg-accent px-5 py-3 font-bangers text-lg text-background transition-all hover:-translate-y-2 hover:rotate-1 hover:shadow-lg sm:px-6 sm:text-xl md:px-8 md:py-4 md:text-2xl comic-border"
                   >
                     READ THE FULL STRIP <ArrowRight size={22} />
                   </Link>
@@ -98,7 +98,7 @@ export function Hero() {
                 </motion.div>
               )}
               {featuredPost?.category && (
-                <div className="absolute top-4 left-4 z-20 -rotate-2 bg-accent px-3 py-1 font-bangers text-lg text-background comic-border-secondary">
+                <div className="absolute left-3 top-3 z-20 -rotate-2 bg-accent px-3 py-1 font-bangers text-base text-background comic-border-secondary sm:left-4 sm:top-4 sm:text-lg">
                   {featuredPost.category.name}
                 </div>
               )}
