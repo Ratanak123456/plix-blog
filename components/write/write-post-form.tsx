@@ -440,7 +440,7 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                       </PopoverContent>
                     </Popover>
                   </div>
-                  <div className="mb-4 flex gap-3">
+                  <div className="mb-4 flex flex-col gap-3 sm:flex-row">
                     <input
                       value={newTagName}
                       onChange={(event) => setNewTagName(event.target.value)}
@@ -458,7 +458,7 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                       type="button"
                       onClick={() => void handleCreateTag()}
                       disabled={!isAuthenticated || !newTagName.trim() || isCreatingTag}
-                      className="px-4 py-3 font-bangers text-xl transition-colors hover:text-accent disabled:cursor-not-allowed disabled:opacity-50 comic-border-secondary"
+                      className="w-full px-4 py-3 font-bangers text-xl transition-colors hover:text-accent disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto comic-border-secondary"
                     >
                       {isCreatingTag ? "Adding..." : "Add Tag"}
                     </button>

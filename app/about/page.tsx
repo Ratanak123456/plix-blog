@@ -294,16 +294,17 @@ export default function AboutPage() {
 
           <div className="mx-auto mt-16 max-w-5xl">
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {mentors.map((mentor) => (
-                <PersonCard
-                  key={mentor.name}
-                  name={mentor.name}
-                  role={mentor.role}
-                  image={mentor.image}
-                  accent={mentor.accent}
-                  facebook={mentor.facebook}
-                  github={mentor.github}
-                />
+              {mentors.map((mentor, index) => (
+                <div key={mentor.name} className={index === 0 ? "sm:col-span-2 lg:col-span-1" : ""}>
+                  <PersonCard
+                    name={mentor.name}
+                    role={mentor.role}
+                    image={mentor.image}
+                    accent={mentor.accent}
+                    facebook={mentor.facebook}
+                    github={mentor.github}
+                  />
+                </div>
               ))}
             </div>
           </div>
@@ -318,17 +319,24 @@ export default function AboutPage() {
             description="The passionate people driving the project forward, from leadership to core contributors."
           />
 
-          <div className="mt-12 grid gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="mt-12 grid grid-cols-1 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {teamMembers.map((member, index) => (
-              <PersonCard
-                key={member.name}
-                name={member.name}
-                role={member.role}
-                image={member.image}
-                accent={index % 2 === 0 ? "bg-primary" : "bg-accent"}
-                facebook={member.facebook}
-                github={member.github}
-              />
+              <div 
+                key={member.name} 
+                className={`flex justify-center ${
+                  // On Large screens (3 columns): Index 0 spans 3 to be alone on top row
+                  index === 0 ? "lg:col-span-3 xl:col-span-1" : ""
+                }`}
+              >
+                <PersonCard
+                  name={member.name}
+                  role={member.role}
+                  image={member.image}
+                  accent={index % 2 === 0 ? "bg-primary" : "bg-accent"}
+                  facebook={member.facebook}
+                  github={member.github}
+                />
+              </div>
             ))}
           </div>
         </div>

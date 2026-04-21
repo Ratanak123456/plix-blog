@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   Bookmark,
   CalendarDays,
+  ChevronDown,
   Edit,
   Eye,
   EyeOff,
@@ -386,6 +387,8 @@ export function ProfileDashboard() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const [isTabMenuOpen, setIsTabMenuOpen] = useState(false);
+
   const profileUsername = profile?.username ?? currentUser?.username;
   const postsQueryArg = profileUsername
     ? { 
@@ -676,21 +679,56 @@ export function ProfileDashboard() {
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-2">
-                {tabs.map((tab) => (
+              <div className="mt-6">
+                {/* Mobile/Tablet Toggle Box */}
+                <div className="lg:hidden">
                   <button
-                    key={tab.id}
                     type="button"
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`px-4 py-3 text-left font-oswald text-xs uppercase tracking-[0.28em] transition-colors comic-border-secondary ${
-                      activeTab === tab.id
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-background text-muted-foreground hover:text-primary"
-                    }`}
+                    onClick={() => setIsTabMenuOpen(!isTabMenuOpen)}
+                    className="flex w-full items-center justify-between bg-background px-4 py-3 font-oswald text-xs uppercase tracking-[0.28em] text-primary comic-border-secondary"
                   >
-                    {tab.label}
+                    <span>{tabs.find((t) => t.id === activeTab)?.label}</span>
+                    <ChevronDown className={`transition-transform duration-300 ${isTabMenuOpen ? "rotate-180" : ""}`} size={16} />
                   </button>
-                ))}
+                  
+                  <div className={`mt-2 grid gap-2 overflow-hidden transition-all duration-300 ${isTabMenuOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"}`}>
+                    {tabs.map((tab) => (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => {
+                          setActiveTab(tab.id);
+                          setIsTabMenuOpen(false);
+                        }}
+                        className={`px-4 py-3 text-left font-oswald text-xs uppercase tracking-[0.28em] transition-colors comic-border-secondary ${
+                          activeTab === tab.id
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-background text-muted-foreground hover:text-primary"
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Desktop Buttons */}
+                <div className="hidden lg:grid lg:gap-2">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`px-4 py-3 text-left font-oswald text-xs uppercase tracking-[0.28em] transition-colors comic-border-secondary ${
+                        activeTab === tab.id
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-background text-muted-foreground hover:text-primary"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
                 
                 <button
                   type="button"

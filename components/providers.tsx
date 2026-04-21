@@ -6,6 +6,7 @@ import { useAppSelector } from "@/lib/store";
 import { loadAuthState } from "@/lib/features/auth/auth-storage";
 import { hydrateAuthState } from "@/lib/features/auth/auth-slice";
 import { useRefreshMutation } from "@/lib/services/auth-api";
+import { ThemeProvider } from "next-themes";
 import { store } from "@/lib/store";
 
 const REFRESH_LEEWAY_MS = 60_000;
@@ -130,8 +131,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <Provider store={store}>
-      <SessionRefreshManager />
-      {children}
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <SessionRefreshManager />
+        {children}
+      </ThemeProvider>
     </Provider>
   );
 }

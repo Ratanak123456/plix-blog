@@ -11,8 +11,7 @@ export function SiteFooter() {
   return (
     <footer
       id="about"
-      className="relative mt-4 overflow-hidden py-12"
-      style={{ backgroundColor: "#F0B443" }}
+      className="relative mt-4 overflow-hidden py-12 bg-primary"
     >
       <div
         className="pointer-events-none absolute inset-0"

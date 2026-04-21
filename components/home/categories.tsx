@@ -35,7 +35,12 @@ export function Categories() {
     >
       <div className="pointer-events-none absolute inset-0 opacity-15 halftone-bg" />
       <div className="relative z-10 container mx-auto px-4">
-        <h2 className="mb-10 text-center font-bangers text-4xl drop-shadow-[2px_2px_0px_hsl(var(--primary))]">
+        <h2 
+          className="mb-10 text-center font-bangers text-4xl"
+          style={{
+            textShadow: "2px 2px 0px hsl(var(--primary)), 4px 4px 0px hsl(var(--accent))",
+          }}
+        >
           CHOOSE YOUR ADVENTURE
         </h2>
         {isLoading ? (
@@ -70,8 +75,10 @@ export function Categories() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="group relative flex flex-col items-center overflow-hidden bg-card p-6 text-center transition-all duration-300 hover:scale-105 hover:border-accent hover:shadow-coral comic-border"
+                  transition={{ delay: index * 0.12 }}
+                  className={`group relative flex flex-col items-center overflow-hidden bg-card p-6 text-center transition-all duration-300 hover:scale-105 hover:border-accent hover:shadow-coral comic-border ${
+                    index === 0 ? "sm:col-span-2 lg:col-span-1" : ""
+                  }`}
                 >
                   <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-10 halftone-bg" />
                   <Icon

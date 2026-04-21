@@ -58,7 +58,7 @@ export default function RootLayout({
   modal: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth" data-scroll-behavior="smooth">
+    <html lang="en" className="scroll-smooth" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className={`${bangers.variable} ${oswald.variable} ${inter.variable} antialiased`}>
         <Providers>
           <SiteHeader />

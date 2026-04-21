@@ -5,6 +5,7 @@ import { LogIn, Menu, Moon, PenSquare, Sun, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { useGetMyProfileQuery } from "@/lib/services/auth-api";
 import { useAppSelector } from "@/lib/store";
@@ -16,18 +17,13 @@ const NAV_ITEMS = [
 ];
 
 export function SiteHeader() {
+  const { theme, setTheme } = useTheme();
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [darkMode, setDarkMode] = useState(true);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
-    const theme = window.localStorage.getItem("plixblog-theme");
-    if (theme) {
-      setDarkMode(theme !== "light");
-    }
   }, []);
 
   const [loginOpen, setLoginOpen] = useState(false);
@@ -37,11 +33,9 @@ export function SiteHeader() {
     skip: !isAuthenticated,
   });
 
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-    document.documentElement.classList.toggle("light", !darkMode);
-    window.localStorage.setItem("plixblog-theme", darkMode ? "dark" : "light");
-  }, [darkMode]);
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   return (
     <>
@@ -71,11 +65,11 @@ export function SiteHeader() {
 
           <div className="hidden shrink-0 items-center gap-2 md:flex">
             <button
-              onClick={() => setDarkMode((mode) => !mode)}
+              onClick={toggleTheme}
               className="p-2 transition-all hover:border-accent hover:text-accent comic-border"
               aria-label="Toggle theme"
             >
-              {mounted ? !darkMode ? <Moon size={18} /> : <Sun size={18} /> : <div className="h-[18px] w-[18px]" />}
+              {mounted ? (theme === "light" ? <Moon size={18} /> : <Sun size={18} />) : <div className="h-[18px] w-[18px]" />}
             </button>
             <Link
               href="/write"
@@ -90,7 +84,7 @@ export function SiteHeader() {
                   className="flex items-center gap-2 p-1 transition-all hover:border-accent comic-border"
                   title={user.username}
                 >
-                  <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[1px_1px_0px_0px_hsl(var(--foreground))]">
                     {user.profileImage ? (
                       <Image
                         src={user.profileImage}
@@ -120,8 +114,12 @@ export function SiteHeader() {
           </div>
 
           <div className="flex items-center gap-2 md:hidden">
-            <button onClick={() => setDarkMode((mode) => !mode)} className="p-2 text-primary" aria-label="Toggle theme">
-              {mounted ? !darkMode ? <Moon size={20} /> : <Sun size={20} /> : <div className="h-[20px] w-[20px]" />}
+            <button
+              onClick={toggleTheme}
+              className="p-2 text-primary"
+              aria-label="Toggle theme"
+            >
+              {mounted ? (theme === "light" ? <Moon size={20} /> : <Sun size={20} />) : <div className="h-[20px] w-[20px]" />}
             </button>
             <button className="text-primary" onClick={() => setMobileMenuOpen((open) => !open)}>
               {mobileMenuOpen ? <X size={30} /> : <Menu size={30} />}
@@ -163,7 +161,7 @@ export function SiteHeader() {
                       onClick={() => setMobileMenuOpen(false)}
                       className="mt-2 flex items-center gap-3 px-4 py-2 font-oswald text-base uppercase transition-colors hover:text-primary comic-border"
                     >
-                      <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]">
+                      <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[1px_1px_0px_0px_hsl(var(--foreground))]">
                         {user.profileImage ? (
                           <Image
                             src={user.profileImage}
