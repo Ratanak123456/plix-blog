@@ -100,23 +100,6 @@ function SoundFX({ text, className = "" }: { text: string; className?: string })
   );
 }
 
-function StripedBg() {
-  return (
-    <div 
-      className="pointer-events-none absolute inset-0 opacity-[0.08]"
-      style={{
-        backgroundImage: `repeating-linear-gradient(
-          45deg,
-          hsl(var(--foreground)),
-          hsl(var(--foreground)) 2px,
-          transparent 2px,
-          transparent 12px
-        )`,
-      }}
-    />
-  );
-}
-
 // ─── Main Hero ─────────────────────────────────────────────────
 
 export function Hero() {

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Star, Zap } from "lucide-react";
+import { Zap } from "lucide-react";
 import Image from "next/image";
 
 const REVIEWS = [

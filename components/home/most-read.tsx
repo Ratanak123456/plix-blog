@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Clock, Eye, TrendingUp, Loader2, Zap, Star } from "lucide-react";
+import { ArrowRight, Clock, Eye, TrendingUp, Loader2, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useGetMostViewedPostsQuery } from "@/lib/services/auth-api";

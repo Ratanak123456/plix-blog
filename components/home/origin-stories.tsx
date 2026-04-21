@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PostActions } from "@/components/home/post-actions";
 import { useGetLatestPostsQuery } from "@/lib/services/auth-api";
-import { BookOpen, Clock, Calendar, Loader2 } from "lucide-react";
+import { BookOpen, Clock, Calendar } from "lucide-react";
 
 function stripHtml(input: string) {
   return input

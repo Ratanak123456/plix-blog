@@ -1,7 +1,7 @@
 "use client";
 
 import { useGetMostLikedPostsQuery } from "@/lib/services/auth-api";
-import { BlogCard } from "./blog-card";
+import { BlogCard } from "@/components/blog/blog-card";
 import { Loader2, Zap, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";

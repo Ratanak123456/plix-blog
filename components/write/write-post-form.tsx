@@ -1,11 +1,25 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { AlertCircle, CheckCircle2, ChevronDown, LoaderCircle, PenSquare, Search, Tags, X } from "lucide-react";
+import {
+  AlertCircle,
+  BookOpen,
+  CheckCircle2,
+  ChevronDown,
+  LoaderCircle,
+  PenSquare,
+  Search,
+  Tags,
+  X,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { QuillEditor } from "@/components/write/quill-editor";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   useCreatePostMutation,
   useUpdatePostMutation,
@@ -26,7 +40,11 @@ const EMPTY_PARAGRAPH = "<p><br></p>";
 function getErrorMessage(error: unknown) {
   const payload = (error as { data?: ApiErrorPayload } | undefined)?.data;
   if (payload?.validationErrors) {
-    return Object.values(payload.validationErrors)[0] ?? payload.message ?? "Validation failed.";
+    return (
+      Object.values(payload.validationErrors)[0] ??
+      payload.message ??
+      "Validation failed."
+    );
   }
 
   return payload?.message ?? "Unable to save the post right now.";
@@ -39,22 +57,30 @@ interface WritePostFormProps {
 
 type FeedbackTone = "success" | "error";
 
-export function WritePostForm({ initialData, isEditing = false }: WritePostFormProps) {
+export function WritePostForm({
+  initialData,
+  isEditing = false,
+}: WritePostFormProps) {
   const router = useRouter();
   const { isAuthenticated, user } = useAppSelector((state) => state.auth);
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [thumbnail, setThumbnail] = useState(initialData?.thumbnailUrl ?? "");
   const [categoryId, setCategoryId] = useState(initialData?.category?.id ?? "");
-  const [tagIds, setTagIds] = useState<string[]>(initialData?.tags?.map(t => t.id) ?? []);
+  const [tagIds, setTagIds] = useState<string[]>(
+    initialData?.tags?.map((t) => t.id) ?? [],
+  );
   const [tagQuery, setTagQuery] = useState("");
   const [isTagPickerOpen, setIsTagPickerOpen] = useState(false);
   const [newTagName, setNewTagName] = useState("");
-  const [content, setContent] = useState(initialData?.content ?? EMPTY_PARAGRAPH);
+  const [content, setContent] = useState(
+    initialData?.content ?? EMPTY_PARAGRAPH,
+  );
   const [feedback, setFeedback] = useState<string | null>(null);
   const [feedbackTone, setFeedbackTone] = useState<FeedbackTone>("error");
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
 
-  const { data: categories = [], isLoading: categoriesLoading } = useGetCategoriesQuery();
+  const { data: categories = [], isLoading: categoriesLoading } =
+    useGetCategoriesQuery();
   const { data: tags = [], isLoading: tagsLoading } = useGetTagsQuery();
   const [createPost, { isLoading: isCreating }] = useCreatePostMutation();
   const [updatePost, { isLoading: isUpdating }] = useUpdatePostMutation();
@@ -69,7 +95,12 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
     .slice(0, 20);
 
   // Added categoryId requirement to canSubmit
-  const canSubmit = isAuthenticated && title.trim() && categoryId && content !== EMPTY_PARAGRAPH && !isSaving;
+  const canSubmit =
+    isAuthenticated &&
+    title.trim() &&
+    categoryId &&
+    content !== EMPTY_PARAGRAPH &&
+    !isSaving;
 
   useEffect(() => {
     if (initialData) {
@@ -77,14 +108,16 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
       setTitle(initialData.title);
       setThumbnail(initialData.thumbnailUrl ?? "");
       setCategoryId(initialData.category?.id ?? "");
-      setTagIds(initialData.tags?.map(t => t.id) ?? []);
+      setTagIds(initialData.tags?.map((t) => t.id) ?? []);
       setContent(initialData.content);
     }
   }, [initialData]);
 
   function toggleTag(tagId: string) {
     setTagIds((current) =>
-      current.includes(tagId) ? current.filter((value) => value !== tagId) : [...current, tagId].slice(0, 10),
+      current.includes(tagId)
+        ? current.filter((value) => value !== tagId)
+        : [...current, tagId].slice(0, 10),
     );
   }
 
@@ -94,11 +127,15 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
       return;
     }
 
-    const existingTag = tags.find((tag) => tag.name.toLowerCase() === trimmedName.toLowerCase());
+    const existingTag = tags.find(
+      (tag) => tag.name.toLowerCase() === trimmedName.toLowerCase(),
+    );
     if (existingTag) {
       setNewTagName("");
       setTagQuery(existingTag.name);
-      setFeedback(`Tag "${existingTag.name}" already exists. Search and select it from the tag picker.`);
+      setFeedback(
+        `Tag "${existingTag.name}" already exists. Search and select it from the tag picker.`,
+      );
       setFeedbackTone("success");
       setCreatedSlug(null);
       return;
@@ -108,7 +145,9 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
       const createdTag = await createTag({ name: trimmedName }).unwrap();
       setNewTagName("");
       setTagQuery(createdTag.name);
-      setFeedback(`Tag "${createdTag.name}" created. Select it from the tag picker if you want to use it.`);
+      setFeedback(
+        `Tag "${createdTag.name}" created. Select it from the tag picker if you want to use it.`,
+      );
       setFeedbackTone("success");
       setCreatedSlug(null);
     } catch (error) {
@@ -124,7 +163,7 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
       setFeedbackTone("error");
       return;
     }
-    
+
     if (!title.trim()) {
       setFeedback("Story title is required.");
       setFeedbackTone("error");
@@ -163,12 +202,16 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
           status,
         }).unwrap();
 
-        setFeedback(status === "PUBLISHED" ? "Post updated and published successfully." : "Draft updated successfully.");
+        setFeedback(
+          status === "PUBLISHED"
+            ? "Post updated and published successfully."
+            : "Draft updated successfully.",
+        );
         setFeedbackTone("success");
         setCreatedSlug(post.slug);
-        
+
         if (post.slug !== initialData.slug) {
-            router.push(`/write/${post.slug}`);
+          router.push(`/write/${post.slug}`);
         }
       } else {
         const post = await createPost({
@@ -180,7 +223,11 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
           status,
         }).unwrap();
 
-        setFeedback(status === "PUBLISHED" ? "Post published successfully." : "Draft saved successfully.");
+        setFeedback(
+          status === "PUBLISHED"
+            ? "Post published successfully."
+            : "Draft saved successfully.",
+        );
         setFeedbackTone("success");
         setCreatedSlug(post.slug);
         setTitle("");
@@ -197,78 +244,234 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-background text-foreground">
+    <div className="min-h-screen overflow-x-hidden dark:bg-gray-950 text-foreground">
       <main className="relative">
-        <section className="relative overflow-hidden border-b-4 border-primary bg-muted/40">
-          <div className="pointer-events-none absolute inset-0 opacity-20 halftone-bg" />
-          <div className="relative container mx-auto px-4 py-14 md:py-18">
+        {/* Hero Section */}
+        <section className="relative overflow-hidden border-b-8 border-black dark:border-white bg-white dark:bg-gray-900">
+          {/* Halftone Background */}
+          <div
+            className="absolute inset-0 opacity-[0.06] dark:opacity-[0.03] pointer-events-none"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle, black 1.5px, transparent 1.5px)",
+              backgroundSize: "20px 20px",
+            }}
+          />
+
+          {/* Action Lines */}
+          <svg
+            className="absolute top-0 left-0 w-40 h-full opacity-[0.07] dark:opacity-[0.04] pointer-events-none"
+            viewBox="0 0 100 400"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M80 0 L20 200 L85 400"
+              stroke="black"
+              strokeWidth="3"
+              fill="none"
+              strokeDasharray="12 6"
+            />
+            <path
+              d="M60 50 L10 200 L70 350"
+              stroke="black"
+              strokeWidth="2"
+              fill="none"
+              strokeDasharray="8 8"
+            />
+          </svg>
+          <svg
+            className="absolute top-0 right-0 w-40 h-full opacity-[0.07] dark:opacity-[0.04] pointer-events-none rotate-180"
+            viewBox="0 0 100 400"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M80 0 L20 200 L85 400"
+              stroke="black"
+              strokeWidth="3"
+              fill="none"
+              strokeDasharray="12 6"
+            />
+          </svg>
+
+          {/* Floating Sound Effects */}
+          <div className="absolute top-16 left-[10%] bg-[#f0b443] border-3 border-black dark:border-white px-3 py-1 font-bangers text-sm text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)] -rotate-12 pointer-events-none hidden lg:block">
+            CREATE!
+          </div>
+          <div className="absolute bottom-16 right-[15%] bg-[#f28b6a] border-3 border-black dark:border-white px-3 py-1 font-bangers text-sm text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)] rotate-12 pointer-events-none hidden lg:block">
+            PUBLISH!
+          </div>
+
+          <div className="relative container mx-auto px-4 py-16 md:py-24">
             <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
-              <div className="space-y-5">
-                <div className="inline-flex items-center gap-2 bg-card px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-primary comic-border">
-                  <PenSquare size={16} />
-                  {isEditing ? "Edit Your Story Arc" : "Create Your Story Arc"}
+              {/* Left Content */}
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ type: "spring", stiffness: 100 }}
+                className="space-y-6"
+              >
+                {/* Eyebrow Badge */}
+                <div className="relative inline-block">
+                  <svg
+                    className="absolute -inset-4 w-[calc(100%+32px)] h-[calc(100%+32px)] text-yellow-400 -z-10"
+                    viewBox="0 0 100 100"
+                  >
+                    <path
+                      d="M50 0 L58 38 L95 30 L65 55 L85 90 L50 68 L15 90 L35 55 L5 30 L42 38Z"
+                      fill="currentColor"
+                      stroke="black"
+                      strokeWidth="2"
+                    />
+                  </svg>
+                  <div className="inline-flex items-center gap-2 bg-[#f0b443] border-3 border-black dark:border-white px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)]">
+                    <PenSquare size={16} strokeWidth={3} />
+                    {isEditing
+                      ? "Edit Your Story Arc"
+                      : "Create Your Story Arc"}
+                  </div>
                 </div>
+
+                {/* Title */}
                 <div>
-                  <h1 className="max-w-3xl font-bangers text-4xl leading-none drop-shadow-[3px_3px_0px_hsl(var(--primary))] sm:text-5xl md:text-7xl">
-                    {isEditing ? "EDIT YOUR ISSUE" : "WRITE YOUR OWN ISSUE"}
+                  <h1
+                    className="max-w-3xl font-bangers text-5xl leading-none text-black dark:text-white sm:text-6xl md:text-8xl tracking-wide"
+                    style={{
+                      textShadow:
+                        "4px 4px 0px rgba(0,0,0,0.1) dark:shadow-[4px_4px_0px_rgba(255,255,255,0.1)]",
+                      WebkitTextStroke: "1.5px black dark:stroke-white",
+                    }}
+                  >
+                    {isEditing ? "EDIT YOUR" : "WRITE YOUR OWN"}
+                    <span
+                      className="block text-[#f0b443] mt-2"
+                      style={{ textShadow: "3px 3px 0px rgba(0,0,0,0.15)" }}
+                    >
+                      {isEditing ? "ISSUE" : "ISSUE"}
+                    </span>
                   </h1>
-                  <p className="mt-4 max-w-2xl font-oswald text-base uppercase tracking-wide text-muted-foreground sm:text-lg">
-                    {isEditing 
+                  <p className="mt-5 max-w-2xl font-oswald text-base uppercase tracking-wide text-gray-600 dark:text-gray-400 sm:text-lg">
+                    {isEditing
                       ? "Refine your story, update the visuals, and keep your readers engaged with the latest version."
                       : "Draft fast, polish with Quill, and publish straight to the API your frontend already uses."}
                   </p>
                 </div>
+
+                {/* Stats Badges */}
                 <div className="flex flex-wrap gap-3 font-oswald text-sm uppercase tracking-wide">
-                  <div className="bg-card px-4 py-2 comic-border">
-                    {categoriesLoading ? "Loading categories..." : `${categories.length} categories ready`}
+                  <div className="bg-white dark:bg-gray-800 border-3 border-black dark:border-white px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] flex items-center gap-2">
+                    <BookOpen
+                      size={16}
+                      className="text-[#f0b443]"
+                      strokeWidth={3}
+                    />
+                    {categoriesLoading
+                      ? "Loading..."
+                      : `${categories.length} categories ready`}
                   </div>
-                  <div className="bg-card px-4 py-2 comic-border-secondary">
-                    {tagsLoading ? "Loading tags..." : `${tags.length} tags ready`}
+                  <div className="bg-white dark:bg-gray-800 border-3 border-black dark:border-white px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] flex items-center gap-2">
+                    <Tags
+                      size={16}
+                      className="text-[#f28b6a]"
+                      strokeWidth={3}
+                    />
+                    {tagsLoading ? "Loading..." : `${tags.length} tags ready`}
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
-              <div className="self-start bg-card p-6 shadow-lg comic-border-secondary">
-                {user ? (
-                  <>
-                    <p className="font-oswald text-xs uppercase tracking-[0.3em] text-muted-foreground">Logged in as</p>
-                    <p className="mt-2 font-bangers text-3xl text-primary">{user.username}</p>
-                    <p className="mt-2 font-sans text-sm text-muted-foreground">
-                      Posts will be {isEditing ? "updated" : "created"} under your account.
-                    </p>
-                    {isSaving && (
-                      <div className="mt-4 flex items-center gap-2 font-oswald text-sm uppercase tracking-wide text-primary">
-                        <LoaderCircle size={16} className="animate-spin" />
-                        {isEditing ? "Updating..." : "Publishing..."}
+              {/* Right Panel - User Info */}
+              <motion.div
+                initial={{ opacity: 0, x: 50, rotate: 2 }}
+                animate={{ opacity: 1, x: 0, rotate: 0 }}
+                transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
+                className="self-start"
+              >
+                <div className="bg-white dark:bg-gray-900 border-4 border-black dark:border-white p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.15)] relative">
+                  {/* Inner dashed border */}
+                  <div className="absolute inset-2 border-2 border-dashed border-gray-200 dark:border-gray-700 pointer-events-none" />
+
+                  {/* Corner accent */}
+                  <div className="absolute -top-3 -right-3 w-8 h-8 bg-[#f28b6a] border-3 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]" />
+
+                  {user ? (
+                    <>
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-3 h-3 bg-green-500 border-2 border-black dark:border-white rounded-full animate-pulse" />
+                        <p className="font-oswald text-xs uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
+                          Logged in as
+                        </p>
                       </div>
-                    )}
-                  </>
-                ) : null}
-              </div>
+                      <p
+                        className="font-bangers text-4xl text-[#f0b443] tracking-wide"
+                        style={{ textShadow: "2px 2px 0px rgba(0,0,0,0.1)" }}
+                      >
+                        {user.username}
+                      </p>
+                      <div className="mt-3 h-[2px] bg-black dark:bg-white shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
+                      <p className="mt-3 font-sans text-sm text-gray-600 dark:text-gray-400">
+                        Posts will be {isEditing ? "updated" : "created"} under
+                        your account.
+                      </p>
+                      {isSaving && (
+                        <div className="mt-4 flex items-center gap-2 bg-[#f0b443]/20 border-2 border-[#f0b443] px-3 py-2">
+                          <LoaderCircle
+                            size={16}
+                            className="animate-spin text-[#f0b443]"
+                            strokeWidth={3}
+                          />
+                          <span className="font-oswald text-sm uppercase tracking-wide text-[#f0b443] font-bold">
+                            {isEditing ? "Updating..." : "Publishing..."}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="font-bangers text-2xl text-gray-400 dark:text-gray-600">
+                        Not logged in
+                      </p>
+                      <p className="mt-2 font-oswald text-xs uppercase tracking-wider text-gray-500">
+                        Sign in to create posts
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
             </div>
           </div>
         </section>
 
-        <section className="container mx-auto px-4 py-10">
+        {/* Form Section */}
+        <section className="container mx-auto px-4 py-12 md:py-16">
           <div className="mx-auto max-w-5xl">
-            <div className="space-y-6">
-              <div className="bg-card p-6 shadow-md comic-border">
-                <div className="grid gap-5 md:grid-cols-2">
+            <div className="space-y-8">
+              {/* Main Form Panel */}
+              <div className="bg-white dark:bg-gray-900 border-4 border-black dark:border-white p-6 md:p-8 shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:shadow-[10px_10px_0px_0px_rgba(255,255,255,0.15)] relative">
+                {/* Inner dashed border */}
+                <div className="absolute inset-3 border-2 border-dashed border-gray-200 dark:border-gray-700 pointer-events-none" />
+
+                {/* Corner accents */}
+                <div className="absolute -top-3 -left-3 w-8 h-8 bg-[#f0b443] border-3 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]" />
+                <div className="absolute -bottom-3 -right-3 w-8 h-8 bg-[#f28b6a] border-3 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]" />
+
+                <div className="relative z-10 grid gap-6 md:grid-cols-2">
+                  {/* Title Input */}
                   <div className="md:col-span-2">
-                    <label className="mb-2 block font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                      Story Title
+                    <label className="mb-2 inline-block bg-[#f0b443] border-2 border-black dark:border-white px-3 py-1 font-oswald text-xs uppercase tracking-[0.28em] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]">
+                      Story Title *
                     </label>
                     <input
                       value={title}
                       onChange={(event) => setTitle(event.target.value)}
                       placeholder="The day the algorithm learned sarcasm"
                       disabled={!isAuthenticated}
-                      className="w-full bg-background px-4 py-3 font-bangers text-3xl text-foreground placeholder:text-muted-foreground/50 disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none comic-border"
+                      className="w-full bg-[#F5F5F0] dark:bg-gray-800 border-3 border-black dark:border-white px-4 py-4 font-bangers text-2xl text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)]"
                     />
                   </div>
 
+                  {/* Thumbnail URL */}
                   <div className="md:col-span-2">
-                    <label className="mb-2 block font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                    <label className="mb-2 inline-block bg-[#f28b6a] border-2 border-black dark:border-white px-3 py-1 font-oswald text-xs uppercase tracking-[0.28em] text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]">
                       Thumbnail URL
                     </label>
                     <input
@@ -276,23 +479,28 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                       onChange={(event) => setThumbnail(event.target.value)}
                       placeholder="https://example.com/cover-image.jpg"
                       disabled={!isAuthenticated}
-                      className="w-full bg-background px-4 py-3 font-sans text-base text-foreground placeholder:text-muted-foreground/50 disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none comic-border-secondary"
+                      className="w-full bg-[#F5F5F0] dark:bg-gray-800 border-3 border-black dark:border-white px-4 py-3 font-sans text-base text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)]"
                     />
                   </div>
 
+                  {/* Category Select */}
                   <div>
-                    <label className="mb-2 block font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                      Category
+                    <label className="mb-2 inline-block bg-[#f0b443] border-2 border-black dark:border-white px-3 py-1 font-oswald text-xs uppercase tracking-[0.28em] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]">
+                      Category *
                     </label>
                     <select
                       value={categoryId}
                       onChange={(event) => setCategoryId(event.target.value)}
                       disabled={!isAuthenticated || categoriesLoading}
-                      className={`w-full bg-background px-4 py-3 font-oswald text-sm uppercase tracking-wide text-foreground disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none comic-border ${
-                        !categoryId && title.trim() ? "border-destructive/50" : ""
+                      className={`w-full bg-[#F5F5F0] dark:bg-gray-800 border-3 border-black dark:border-white px-4 py-3 font-oswald text-sm uppercase tracking-wide text-black dark:text-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)] ${
+                        !categoryId && title.trim()
+                          ? "border-red-500 dark:border-red-400"
+                          : ""
                       }`}
                     >
-                      <option value="" disabled>Select category *</option>
+                      <option value="" disabled>
+                        Select category
+                      </option>
                       {categories.map((category) => (
                         <option key={category.id} value={category.id}>
                           {category.name}
@@ -301,16 +509,17 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                     </select>
                   </div>
 
+                  {/* Action Buttons */}
                   <div>
-                    <label className="mb-2 block font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
+                    <label className="mb-2 inline-block bg-[#f28b6a] border-2 border-black dark:border-white px-3 py-1 font-oswald text-xs uppercase tracking-[0.28em] text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]">
                       Actions
                     </label>
-                    <div className="flex h-full items-center gap-3">
+                    <div className="flex h-full items-start gap-3">
                       <button
                         type="button"
                         onClick={() => void handleSubmit("DRAFT")}
                         disabled={!canSubmit}
-                        className="flex-1 px-4 py-3 font-bangers text-xl transition-colors hover:text-accent disabled:cursor-not-allowed disabled:opacity-50 comic-border-secondary"
+                        className="flex-1 bg-white dark:bg-gray-800 border-3 border-black dark:border-white px-4 py-3 font-bangers text-xl text-black dark:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.3)] hover:bg-[#f0b443] hover:text-black disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
                       >
                         {isEditing ? "Update Draft" : "Save Draft"}
                       </button>
@@ -318,7 +527,7 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                         type="button"
                         onClick={() => void handleSubmit("PUBLISHED")}
                         disabled={!canSubmit}
-                        className="flex-1 bg-accent px-4 py-3 font-bangers text-xl text-background transition-colors hover:bg-primary disabled:cursor-not-allowed disabled:opacity-50 comic-border"
+                        className="flex-1 bg-[#f28b6a] border-3 border-black dark:border-white px-4 py-3 font-bangers text-xl text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.4)] hover:bg-[#f0b443] hover:text-black disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
                       >
                         {isEditing ? "Update & Publish" : "Publish"}
                       </button>
@@ -326,11 +535,14 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                   </div>
                 </div>
 
-                <div className="mt-6">
-                  <label className="mb-2 block font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                    Blog Content
+                {/* Content Editor */}
+                <div className="mt-8 relative z-10">
+                  <label className="mb-2 inline-block bg-[#f0b443] border-2 border-black dark:border-white px-3 py-1 font-oswald text-xs uppercase tracking-[0.28em] text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]">
+                    Blog Content *
                   </label>
-                  <div className={`${!isAuthenticated ? "pointer-events-none opacity-70" : ""}`}>
+                  <div
+                    className={`border-3 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] ${!isAuthenticated ? "pointer-events-none opacity-70" : ""}`}
+                  >
                     <QuillEditor
                       value={content}
                       onChange={setContent}
@@ -339,13 +551,20 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                   </div>
                 </div>
 
-                <div className="mt-6">
-                  <div className="mb-3 flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                    <Tags size={14} />
-                    Pick up to 10 tags
+                {/* Tags Section */}
+                <div className="mt-8 relative z-10">
+                  <div className="mb-4 flex items-center gap-2">
+                    <div className="bg-[#f28b6a] border-2 border-black dark:border-white p-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]">
+                      <Tags size={14} className="text-white" strokeWidth={3} />
+                    </div>
+                    <span className="font-oswald text-xs uppercase tracking-[0.28em] text-gray-600 dark:text-gray-400 font-bold">
+                      Pick up to 10 tags
+                    </span>
                   </div>
-                  <div className="rounded-md bg-background/70 p-4 comic-border-secondary">
-                    <label className="mb-2 block font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
+
+                  {/* Selected Tags */}
+                  <div className="border-3 border-black dark:border-white bg-[#F5F5F0] dark:bg-gray-800 p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.1)] mb-4">
+                    <label className="mb-3 block font-oswald text-xs uppercase tracking-[0.28em] text-gray-500 dark:text-gray-400">
                       Selected Tags
                     </label>
                     {selectedTags.length > 0 ? (
@@ -356,56 +575,79 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                             type="button"
                             onClick={() => toggleTag(tag.id)}
                             disabled={!isAuthenticated}
-                            className="inline-flex items-center gap-2 bg-primary px-3 py-2 font-oswald text-xs uppercase tracking-wide text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60 comic-border"
+                            className="inline-flex items-center gap-2 bg-[#f0b443] border-2 border-black dark:border-white px-3 py-2 font-oswald text-xs uppercase tracking-wide text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)] transition-all hover:-translate-y-1 hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
                           >
-                            <span>{tag.name}</span>
-                            <X size={12} />
+                            <span className="font-bangers">{tag.name}</span>
+                            <X size={12} strokeWidth={3} />
                           </button>
                         ))}
                       </div>
                     ) : (
-                      <p className="font-sans text-sm text-muted-foreground">
-                        No tags selected yet. Search below to add the ones you need.
+                      <p className="font-sans text-sm text-gray-500 dark:text-gray-500 italic">
+                        No tags selected yet. Search below to add the ones you
+                        need.
                       </p>
                     )}
                   </div>
-                  <div className="mt-4">
-                    <label className="mb-2 block font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
+
+                  {/* Tag Picker */}
+                  <div className="mb-4">
+                    <label className="mb-2 block font-oswald text-xs uppercase tracking-[0.28em] text-gray-500 dark:text-gray-400">
                       Select Tags
                     </label>
-                    <Popover open={isTagPickerOpen} onOpenChange={setIsTagPickerOpen}>
+                    <Popover
+                      open={isTagPickerOpen}
+                      onOpenChange={setIsTagPickerOpen}
+                    >
                       <PopoverTrigger asChild>
                         <button
                           type="button"
-                          disabled={!isAuthenticated || tagsLoading || tagIds.length >= 10}
-                          className="flex w-full items-center justify-between gap-3 bg-background px-4 py-3 text-left disabled:cursor-not-allowed disabled:opacity-70 comic-border"
+                          disabled={
+                            !isAuthenticated ||
+                            tagsLoading ||
+                            tagIds.length >= 10
+                          }
+                          className="flex w-full items-center justify-between gap-3 bg-white dark:bg-gray-800 border-3 border-black dark:border-white px-4 py-3 text-left shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.3)] disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0"
                         >
                           <div>
-                            <p className="font-oswald text-sm uppercase tracking-wide text-foreground">
+                            <p className="font-oswald text-sm uppercase tracking-wide text-black dark:text-white">
                               {tagsLoading
                                 ? "Loading tags..."
                                 : normalizedTagQuery
                                   ? `Showing ${filteredTags.length} matching tags`
                                   : `Browse ${tags.length} available tags`}
                             </p>
-                            <p className="mt-1 font-sans text-sm text-muted-foreground">
+                            <p className="mt-1 font-sans text-sm text-gray-500 dark:text-gray-500">
                               {tagIds.length >= 10
                                 ? "Tag limit reached. Remove one to add another."
                                 : "Open the picker to browse or search the tag library."}
                             </p>
                           </div>
-                          <ChevronDown size={18} className="shrink-0 text-muted-foreground" />
+                          <ChevronDown
+                            size={18}
+                            className="shrink-0 text-[#f0b443]"
+                            strokeWidth={3}
+                          />
                         </button>
                       </PopoverTrigger>
-                      <PopoverContent align="start" className="w-[min(32rem,calc(100vw-2rem))] bg-card p-0 comic-border-secondary">
-                        <div className="border-b-2 border-border p-3">
-                          <div className="flex items-center gap-3 bg-background px-4 py-3 comic-border">
-                            <Search size={16} className="text-muted-foreground" />
+                      <PopoverContent
+                        align="start"
+                        className="w-[min(32rem,calc(100vw-2rem))] bg-white dark:bg-gray-900 border-3 border-black dark:border-white p-0 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,0.2)]"
+                      >
+                        <div className="border-b-3 border-black dark:border-white p-3">
+                          <div className="flex items-center gap-3 bg-[#F5F5F0] dark:bg-gray-800 border-2 border-black dark:border-white px-4 py-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)]">
+                            <Search
+                              size={16}
+                              className="text-[#f0b443]"
+                              strokeWidth={3}
+                            />
                             <input
                               value={tagQuery}
-                              onChange={(event) => setTagQuery(event.target.value)}
+                              onChange={(event) =>
+                                setTagQuery(event.target.value)
+                              }
                               placeholder="Search existing tags"
-                              className="w-full bg-transparent font-sans text-base text-foreground placeholder:text-muted-foreground/50 focus:outline-none"
+                              className="w-full bg-transparent font-sans text-base text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none"
                             />
                           </div>
                         </div>
@@ -419,12 +661,22 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                                     key={tag.id}
                                     type="button"
                                     onClick={() => toggleTag(tag.id)}
-                                    className={`flex w-full items-center justify-between px-4 py-3 text-left font-oswald text-sm uppercase tracking-wide transition-colors ${
-                                      active ? "bg-primary text-primary-foreground" : "bg-background hover:text-accent"
-                                    } comic-border`}
+                                    className={`flex w-full items-center justify-between px-4 py-3 text-left font-oswald text-sm uppercase tracking-wide transition-all border-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.2)] hover:-translate-y-0.5 ${
+                                      active
+                                        ? "bg-[#f0b443] text-black border-black dark:border-white"
+                                        : "bg-[#F5F5F0] dark:bg-gray-800 text-black dark:text-white border-black dark:border-white hover:bg-[#f28b6a] hover:text-white"
+                                    }`}
                                   >
-                                    <span>{tag.name}</span>
-                                    <span className="text-[10px] tracking-[0.2em]">
+                                    <span className="font-bangers">
+                                      {tag.name}
+                                    </span>
+                                    <span
+                                      className={`text-[10px] tracking-[0.2em] px-2 py-0.5 border-2 ${
+                                        active
+                                          ? "bg-white text-[#f0b443] border-black dark:border-white"
+                                          : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-black dark:border-white"
+                                      }`}
+                                    >
                                       {active ? "Selected" : "Add"}
                                     </span>
                                   </button>
@@ -432,15 +684,18 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                               })}
                             </div>
                           ) : (
-                            <p className="px-1 py-2 font-sans text-sm text-muted-foreground">
-                              No matching tags found. Create a new one below if needed.
+                            <p className="px-1 py-2 font-sans text-sm text-gray-500 dark:text-gray-500 text-center">
+                              No matching tags found. Create a new one below if
+                              needed.
                             </p>
                           )}
                         </div>
                       </PopoverContent>
                     </Popover>
                   </div>
-                  <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+
+                  {/* Create New Tag */}
+                  <div className="flex flex-col gap-3 sm:flex-row">
                     <input
                       value={newTagName}
                       onChange={(event) => setNewTagName(event.target.value)}
@@ -452,40 +707,61 @@ export function WritePostForm({ initialData, isEditing = false }: WritePostFormP
                       }}
                       placeholder="Create a new tag"
                       disabled={!isAuthenticated || isCreatingTag}
-                      className="flex-1 bg-background px-4 py-3 font-sans text-base text-foreground placeholder:text-muted-foreground/50 disabled:cursor-not-allowed disabled:opacity-70 focus:outline-none comic-border-secondary"
+                      className="flex-1 bg-white dark:bg-gray-800 border-3 border-black dark:border-white px-4 py-3 font-sans text-base text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)]"
                     />
                     <button
                       type="button"
                       onClick={() => void handleCreateTag()}
-                      disabled={!isAuthenticated || !newTagName.trim() || isCreatingTag}
-                      className="w-full px-4 py-3 font-bangers text-xl transition-colors hover:text-accent disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto comic-border-secondary"
+                      disabled={
+                        !isAuthenticated || !newTagName.trim() || isCreatingTag
+                      }
+                      className="w-full bg-[#f0b443] border-3 border-black dark:border-white px-6 py-3 font-bangers text-xl text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] transition-all hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,0.4)] hover:bg-[#f28b6a] hover:text-white disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 sm:w-auto"
                     >
                       {isCreatingTag ? "Adding..." : "Add Tag"}
                     </button>
                   </div>
                 </div>
 
+                {/* Feedback Messages */}
                 <AnimatePresence mode="wait">
                   {feedback && (
                     <motion.div
                       key={feedback}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      className={`mt-6 flex items-start gap-3 p-4 ${
-                        feedbackTone === "success" ? "bg-primary/15" : "bg-destructive/10"
-                      } comic-border`}
+                      initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.95 }}
+                      className={`mt-8 flex items-start gap-3 p-5 border-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)] relative ${
+                        feedbackTone === "success"
+                          ? "bg-[#f0b443]/20 border-[#f0b443]"
+                          : "bg-red-500/10 border-red-500"
+                      }`}
                     >
+                      <div
+                        className={`absolute -top-3 -right-3 w-6 h-6 ${feedbackTone === "success" ? "bg-[#f0b443]" : "bg-red-500"} border-2 border-black dark:border-white`}
+                      />
                       {feedbackTone === "success" ? (
-                        <CheckCircle2 className="mt-0.5 text-primary" size={18} />
+                        <CheckCircle2
+                          className="mt-0.5 text-[#f0b443]"
+                          size={20}
+                          strokeWidth={3}
+                        />
                       ) : (
-                        <AlertCircle className="mt-0.5 text-destructive" size={18} />
+                        <AlertCircle
+                          className="mt-0.5 text-red-500"
+                          size={20}
+                          strokeWidth={3}
+                        />
                       )}
                       <div>
-                        <p className="font-oswald text-sm uppercase tracking-wide">{feedback}</p>
+                        <p className="font-oswald text-sm uppercase tracking-wide font-bold text-black dark:text-white">
+                          {feedback}
+                        </p>
                         {createdSlug && (
-                          <p className="mt-1 font-sans text-sm text-muted-foreground">
-                            {isEditing ? "Updated slug: " : "Created slug: "} <span className="font-medium text-foreground">{createdSlug}</span>
+                          <p className="mt-1 font-sans text-sm text-gray-600 dark:text-gray-400">
+                            {isEditing ? "Updated slug: " : "Created slug: "}{" "}
+                            <span className="font-medium text-[#f0b443] font-bangers">
+                              {createdSlug}
+                            </span>
                           </p>
                         )}
                       </div>
