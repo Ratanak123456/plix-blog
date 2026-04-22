@@ -22,7 +22,7 @@ export default function Page() {
         <AboutSummary />
         <FAQ />
         <Reviews />
-        <FeedbackForm />
+        {/* <FeedbackForm /> */}
       </main>
     </div>
   );
