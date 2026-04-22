@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://plix-blog.vercel.app/talk.jpg",
+        url: "https://api.escuelajs.co/api/v1/files/de34.png",
         width: 1200,
         height: 630,
         alt: "PlixBlog Home",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "PlixBlog - The Tech Comic Blog",
     description: "Where silicon meets sequels. PlixBlog covers the arc of technology — from the first commit to the final panel.",
-    images: ["https://plix-blog.vercel.app/talk.jpg"],
+    images: ["https://api.escuelajs.co/api/v1/files/de34.png"],
   },
 };
 

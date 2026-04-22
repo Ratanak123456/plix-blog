@@ -5,28 +5,11 @@ import { useRouter } from "next/navigation";
 import { type ChangeEvent, useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
-  Bookmark,
-  CalendarDays,
-  ChevronDown,
-  Edit,
-  Eye,
-  EyeOff,
-  FileText,
-  ImagePlus,
-  LoaderCircle,
-  Lock,
-  LogOut,
-  Mail,
-  Save,
-  Trash2,
-  User2,
 } from "lucide-react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { logout } from "@/lib/features/auth/auth-slice";
 import { getGeneralErrorMessage } from "@/lib/utils/auth-utils";
 import { navigateWithFallback } from "@/lib/utils/client-navigation";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -49,34 +32,18 @@ import {
   useUploadImageMutation,
 } from "@/lib/services/auth-api";
 import { BlogCard } from "@/components/blog/blog-card";
-import { PostActions } from "@/components/home/post-actions";
 import { useAppDispatch, useAppSelector } from "@/lib/store";
 import {
   getFileUploadErrorMessage,
 } from "@/lib/utils/file-upload";
 import { getRenderableImageUrl } from "@/lib/utils/image-url";
+import { ProfileSidebar } from "./profile-sidebar";
+import { UserInfoForm } from "./user-info-form";
+import { ChangePasswordForm } from "./change-password-form";
+import { formatDate } from "./profile-utils";
 
 type ProfileTab = "info" | "posts" | "bookmarks";
 type ImageField = "profileImage" | "coverImage";
-
-function formatDate(input: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(input));
-}
-
-function getInitials(name: string) {
-  return (
-    name
-      .split(" ")
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0]?.toUpperCase() ?? "")
-      .join("") || "PB"
-  );
-}
 
 function PaginationBar({
   page,
@@ -144,7 +111,6 @@ function PostGrid({
   isLoading,
   emptyMessage,
   onPageChange,
-  showEditButton = false,
   showStatus = false,
   statusFilter,
   onStatusChange,
@@ -163,7 +129,6 @@ function PostGrid({
   onDelete?: (id: string) => void;
 }) {
   const router = useRouter();
-  const [isEditMode, setIsEditMode] = useState(false);
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
   const filteredContent = useMemo(() => {
@@ -215,18 +180,6 @@ function PostGrid({
               <option value="DRAFT">Draft</option>
             </select>
           )}
-          {showEditButton && (
-            <button
-              type="button"
-              onClick={() => setIsEditMode(!isEditMode)}
-              className={`inline-flex items-center gap-2 px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] comic-border-secondary transition-colors ${
-                isEditMode ? "bg-primary text-primary-foreground" : "bg-background text-primary hover:bg-muted"
-              }`}
-            >
-              <Edit size={14} />
-              {isEditMode ? "Exit Edit Mode" : "Edit Blogs"}
-            </button>
-          )}
           <div className="bg-background px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground comic-border-secondary">
             {(page?.totalElements ?? 0)} stories
           </div>
@@ -242,92 +195,16 @@ function PostGrid({
       ) : filteredContent.length ? (
         <>
           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-            {filteredContent.map((post, index) => {
-              // Use standard BlogCard for published posts when not editing
-              if (post.status === "PUBLISHED" && !isEditMode) {
-                return <BlogCard key={post.id} post={post} index={index} onDelete={onDelete} />;
-              }
-
-              // Use manual rendering for Drafts or when Edit Mode is active
-              return (
-                <article
-                  key={post.id}
-                  className={`overflow-hidden bg-background comic-border-secondary transition-transform ${
-                    isEditMode
-                      ? "hover:scale-[1.02] cursor-pointer ring-2 ring-primary ring-offset-2"
-                      : ""
-                  }`}
-                  onClick={() => {
-                    if (isEditMode) {
-                      navigateWithFallback(router, `/write/${post.slug}`);
-                    }
-                  }}
-                >
-                  <div className="relative aspect-[16/9] overflow-hidden bg-linear-to-br from-orange-800 via-primary/40 to-amber-300">
-                    {getRenderableImageUrl(post.thumbnailUrl) ? (
-                      <div
-                        className="absolute inset-0 bg-cover bg-center"
-                        style={{ backgroundImage: `url("${getRenderableImageUrl(post.thumbnailUrl)}")` }}
-                      />
-                    ) : null}
-                    <div className="absolute inset-0 opacity-20 halftone-bg" />
-                    {showStatus && (
-                      <div className="absolute top-3 right-3 bg-accent px-2 py-1 font-oswald text-[10px] uppercase tracking-wider text-accent-foreground comic-border">
-                        {post.status}
-                      </div>
-                    )}
-                    {isEditMode && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-primary/20 backdrop-blur-[2px]">
-                        <div className="bg-primary px-4 py-2 font-bangers text-2xl text-primary-foreground comic-border shadow-xl">
-                          Click to Edit
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-5">
-                    <p className="font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                      {post.category?.name ?? "Latest"} • {formatDate(post.publishedAt ?? post.createdAt)}
-                    </p>
-                    <h3 className="mt-3 font-bangers text-3xl leading-none text-primary line-clamp-2 min-h-[3.5rem]">
-                      {post.title}
-                    </h3>
-
-                    <div className="mt-4 border-t border-border pt-4">
-                      <PostActions
-                        postId={post.id}
-                        initialLikeCount={post.likeCount}
-                        initialBookmarkCount={post.bookmarkCount}
-                        initialLiked={post.likedByCurrentUser}
-                        initialBookmarked={post.bookmarkedByCurrentUser}
-                        compact
-                      />
-                    </div>
-
-                    <div className="mt-6 flex items-center justify-between gap-2">
-                      <Link
-                        href={isEditMode ? `/write/${post.slug}` : `/posts/${post.slug}`}
-                        className="inline-flex items-center gap-2 bg-accent px-4 py-2 font-bangers text-xl text-accent-foreground comic-border"
-                      >
-                        {isEditMode ? "Edit story" : "Open story"}
-                      </Link>
-                      {onDelete && (
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setPostToDelete(post.id);
-                          }}
-                          className="inline-flex h-11 w-11 items-center justify-center bg-destructive text-destructive-foreground transition-all hover:scale-105 active:scale-95 comic-border"
-                          title="Delete this blog"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
+            {filteredContent.map((post, index) => (
+              <div key={post.id} className="relative group">
+                <BlogCard
+                  post={post}
+                  index={index}
+                  onDelete={onDelete ? (id) => setPostToDelete(id) : undefined}
+                  showStatus={showStatus}
+                />
+              </div>
+            ))}
           </div>
           <PaginationBar
             page={page!.number}
@@ -399,9 +276,6 @@ export function ProfileDashboard() {
   });
   const [passwordMessage, setPasswordMessage] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [isTabMenuOpen, setIsTabMenuOpen] = useState(false);
 
@@ -708,442 +582,57 @@ export function ProfileDashboard() {
         </Link>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[22rem_minmax(0,1fr)]">
-          <aside className="overflow-hidden bg-card comic-border">
-            <div
-              className="relative min-h-44 border-b-4 border-primary bg-linear-to-br from-primary via-orange-500 to-amber-300"
-              style={previewCoverImageUrl ? { backgroundImage: `url("${previewCoverImageUrl}")`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
-            >
-              <div className="absolute inset-0 bg-background/20" />
-              <div className="absolute inset-0 opacity-25 halftone-bg" />
-            </div>
-
-            <div className="relative px-6 pb-6">
-              <div className="-mt-12 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-background bg-primary font-bangers text-3xl text-primary-foreground">
-                {previewProfileImageUrl ? (
-                  <div
-                    className="h-full w-full bg-cover bg-center"
-                    style={{ backgroundImage: `url("${previewProfileImageUrl}")` }}
-                  />
-                ) : (
-                  getInitials(previewFullName)
-                )}
-              </div>
-
-              <div className="mt-4">
-                <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Profile HQ</p>
-                <h1 className="mt-2 font-bangers text-4xl leading-none text-primary sm:text-5xl">{previewFullName}</h1>
-                <p className="mt-2 font-sans text-base text-muted-foreground">@{previewUsername}</p>
-                <p className="mt-5 font-sans text-sm leading-7 text-foreground">
-                  {previewBio?.trim() || "Add a bio so readers know what kind of stories you publish."}
-                </p>
-              </div>
-
-              <div className="mt-6 space-y-3">
-                <div className="bg-background p-4 comic-border-secondary">
-                  <div className="flex items-center gap-2 font-oswald text-xs uppercase tracking-wider text-muted-foreground">
-                    <CalendarDays size={14} />
-                    Joined
-                  </div>
-                  <p className="mt-2 font-bangers text-2xl text-primary">{formatDate(profile.createdAt)}</p>
-                </div>
-                <div className="bg-background p-4 comic-border-secondary">
-                  <div className="flex items-center gap-2 font-oswald text-xs uppercase tracking-wider text-muted-foreground">
-                    <FileText size={14} />
-                    Total blogs
-                  </div>
-                  <p className="mt-2 font-bangers text-2xl text-primary">{postsPage?.totalElements ?? 0}</p>
-                </div>
-                <div className="bg-background p-4 comic-border-secondary">
-                  <div className="flex items-center gap-2 font-oswald text-xs uppercase tracking-wider text-muted-foreground">
-                    <Bookmark size={14} />
-                    Saved stories
-                  </div>
-                  <p className="mt-2 font-bangers text-2xl text-primary">{bookmarksPage?.totalElements ?? 0}</p>
-                </div>
-              </div>
-
-              <div className="mt-6">
-                {/* Mobile/Tablet Toggle Box */}
-                <div className="lg:hidden">
-                  <button
-                    type="button"
-                    onClick={() => setIsTabMenuOpen(!isTabMenuOpen)}
-                    className="flex w-full items-center justify-between bg-background px-4 py-3 font-oswald text-xs uppercase tracking-[0.28em] text-primary comic-border-secondary"
-                  >
-                    <span>{tabs.find((t) => t.id === activeTab)?.label}</span>
-                    <ChevronDown className={`transition-transform duration-300 ${isTabMenuOpen ? "rotate-180" : ""}`} size={16} />
-                  </button>
-                  
-                  <div className={`mt-2 grid gap-2 overflow-hidden transition-all duration-300 ${isTabMenuOpen ? "max-h-60 opacity-100" : "max-h-0 opacity-0"}`}>
-                    {tabs.map((tab) => (
-                      <button
-                        key={tab.id}
-                        type="button"
-                        onClick={() => {
-                          setActiveTab(tab.id);
-                          setIsTabMenuOpen(false);
-                        }}
-                        className={`px-4 py-3 text-left font-oswald text-xs uppercase tracking-[0.28em] transition-colors comic-border-secondary ${
-                          activeTab === tab.id
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-background text-muted-foreground hover:text-primary"
-                        }`}
-                      >
-                        {tab.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Desktop Buttons */}
-                <div className="hidden lg:grid lg:gap-2">
-                  {tabs.map((tab) => (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`px-4 py-3 text-left font-oswald text-xs uppercase tracking-[0.28em] transition-colors comic-border-secondary ${
-                        activeTab === tab.id
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-background text-muted-foreground hover:text-primary"
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
-                </div>
-                
-                <button
-                  type="button"
-                  onClick={() => {
-                    dispatch(logout());
-                    navigateWithFallback(router, "/");
-                  }}
-                  className="mt-4 flex w-full items-center justify-center gap-2 bg-destructive/10 px-4 py-3 font-bangers text-2xl text-destructive transition-all hover:bg-destructive hover:text-destructive-foreground comic-border-secondary"
-                >
-                  <LogOut size={20} /> LOGOUT
-                </button>
-              </div>
-            </div>
-          </aside>
+          <ProfileSidebar
+            profile={profile}
+            previewFullName={previewFullName}
+            previewUsername={previewUsername}
+            previewBio={previewBio}
+            previewProfileImageUrl={previewProfileImageUrl}
+            previewCoverImageUrl={previewCoverImageUrl}
+            postsCount={postsPage?.totalElements ?? 0}
+            bookmarksCount={bookmarksPage?.totalElements ?? 0}
+            activeTab={activeTab}
+            tabs={tabs}
+            isTabMenuOpen={isTabMenuOpen}
+            setIsTabMenuOpen={setIsTabMenuOpen}
+            setActiveTab={setActiveTab}
+            formatDate={formatDate}
+            onLogout={() => {
+              dispatch(logout());
+              navigateWithFallback(router, "/");
+            }}
+          />
 
           <div className="space-y-6">
             {activeTab === "info" ? (
-              <section className="bg-card p-6 md:p-8 comic-border-secondary">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Account editor</p>
-                    <h2 className="mt-2 font-bangers text-4xl text-primary">User information</h2>
-                  </div>
-                  <div className="bg-background px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground comic-border">
-                    Joined on {formatDate(profile.createdAt)}
-                  </div>
-                </div>
-
-                <form onSubmit={handleSaveProfile} className="mt-6 space-y-5">
-                  <div className="grid gap-5 md:grid-cols-2">
-                    <label className="space-y-2">
-                      <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                        <User2 size={14} />
-                        Full name
-                      </span>
-                      <Input
-                        value={form.fullName}
-                        onChange={(event) => setForm((current) => ({ ...current, fullName: event.target.value }))}
-                        className="h-11 bg-background comic-border-secondary"
-                      />
-                      {fieldErrors.fullName && <p className="text-sm text-red-500 mt-1">{fieldErrors.fullName}</p>}
-                    </label>
-
-                    <label className="space-y-2">
-                      <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                        <User2 size={14} />
-                        Username
-                      </span>
-                      <Input
-                        value={form.username}
-                        onChange={(event) => setForm((current) => ({ ...current, username: event.target.value }))}
-                        className="h-11 bg-background comic-border-secondary"
-                      />
-                      {fieldErrors.username && <p className="text-sm text-red-500 mt-1">{fieldErrors.username}</p>}
-
-                    </label>
-                    <label className="space-y-2 md:col-span-2">
-                      <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                        <Mail size={14} />
-                        Email
-                      </span>
-                      <Input
-                        type="email"
-                        value={form.email}
-                        onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
-                        className="h-11 bg-background comic-border-secondary"
-                      />
-                      {fieldErrors.email && <p className="text-sm text-red-500 mt-1">{fieldErrors.email}</p>}
-
-                    </label>
-                    <div className="space-y-2">
-                      <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                        <ImagePlus size={14} />
-                        Profile image
-                      </span>
-                      <Input
-                        value={form.profileImage}
-                        onChange={(event) => {
-                          setForm((current) => ({
-                            ...current,
-                            profileImage: event.target.value,
-                          }));
-                          clearFieldError("profileImage");
-                          setUploadMessages((current) => ({
-                            ...current,
-                            profileImage: null,
-                          }));
-                        }}
-                        className="h-11 bg-background comic-border-secondary"
-                        placeholder="Paste a URL or upload an image below"
-                      />
-                      <div className="flex flex-wrap items-center gap-2">
-                        <label className={`inline-flex cursor-pointer items-center gap-2 px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] comic-border-secondary ${uploadingField === "profileImage" ? "bg-primary text-primary-foreground" : "bg-background text-primary"}`}>
-                          {uploadingField === "profileImage" ? (
-                            <LoaderCircle size={14} className="animate-spin" />
-                          ) : (
-                            <ImagePlus size={14} />
-                          )}
-                          {uploadingField === "profileImage" ? "Uploading..." : "Upload image"}
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="sr-only"
-                            onChange={(event) =>
-                              void handleImageUpload("profileImage", event)
-                            }
-                            disabled={isUploadingImage}
-                          />
-                        </label>
-                        {form.profileImage ? (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setForm((current) => ({
-                                ...current,
-                                profileImage: "",
-                              }));
-                              clearFieldError("profileImage");
-                              setUploadMessages((current) => ({
-                                ...current,
-                                profileImage: null,
-                              }));
-                            }}
-                            className="px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] comic-border-secondary"
-                          >
-                            Clear
-                          </button>
-                        ) : null}
-                      </div>
-                      {uploadMessages.profileImage ? (
-                        <p className="text-sm text-green-600">
-                          {uploadMessages.profileImage}
-                        </p>
-                      ) : null}
-                      {fieldErrors.profileImage && <p className="text-sm text-red-500 mt-1">{fieldErrors.profileImage}</p>}
-                    </div>
-
-                    <div className="space-y-2">
-                      <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                        <ImagePlus size={14} />
-                        Cover image
-                      </span>
-                      <Input
-                        value={form.coverImage}
-                        onChange={(event) => {
-                          setForm((current) => ({
-                            ...current,
-                            coverImage: event.target.value,
-                          }));
-                          clearFieldError("coverImage");
-                          setUploadMessages((current) => ({
-                            ...current,
-                            coverImage: null,
-                          }));
-                        }}
-                        className="h-11 bg-background comic-border-secondary"
-                        placeholder="Paste a URL or upload an image below"
-                      />
-                      <div className="flex flex-wrap items-center gap-2">
-                        <label className={`inline-flex cursor-pointer items-center gap-2 px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] comic-border-secondary ${uploadingField === "coverImage" ? "bg-primary text-primary-foreground" : "bg-background text-primary"}`}>
-                          {uploadingField === "coverImage" ? (
-                            <LoaderCircle size={14} className="animate-spin" />
-                          ) : (
-                            <ImagePlus size={14} />
-                          )}
-                          {uploadingField === "coverImage" ? "Uploading..." : "Upload image"}
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="sr-only"
-                            onChange={(event) =>
-                              void handleImageUpload("coverImage", event)
-                            }
-                            disabled={isUploadingImage}
-                          />
-                        </label>
-                        {form.coverImage ? (
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setForm((current) => ({
-                                ...current,
-                                coverImage: "",
-                              }));
-                              clearFieldError("coverImage");
-                              setUploadMessages((current) => ({
-                                ...current,
-                                coverImage: null,
-                              }));
-                            }}
-                            className="px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] comic-border-secondary"
-                          >
-                            Clear
-                          </button>
-                        ) : null}
-                      </div>
-                      {uploadMessages.coverImage ? (
-                        <p className="text-sm text-green-600">
-                          {uploadMessages.coverImage}
-                        </p>
-                      ) : null}
-                      {fieldErrors.coverImage && <p className="text-sm text-red-500 mt-1">{fieldErrors.coverImage}</p>}
-                    </div>
-                  </div>
-
-                  <label className="block space-y-2">
-                    <span className="font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">Bio</span>
-                    <Textarea
-                      value={form.bio}
-                      onChange={(event) => setForm((current) => ({ ...current, bio: event.target.value }))}
-                      className="min-h-36 resize-y bg-background comic-border-secondary"
-                    />
-                  </label>
-                    {fieldErrors.bio && <p className="text-sm text-red-500 mt-1">{fieldErrors.bio}</p>}
-
-                  {saveMessage ? <p className="font-sans text-sm text-green-600">{saveMessage}</p> : null}
-                  {saveError ? <p className="font-sans text-sm text-red-500">{saveError}</p> : null}
-
-                  <div className="flex flex-wrap items-center gap-3">
-                    <button
-                      type="submit"
-                      disabled={isSaving || isUploadingImage}
-                      className="inline-flex items-center gap-2 bg-accent px-5 py-3 font-bangers text-xl text-accent-foreground disabled:cursor-not-allowed disabled:opacity-60 comic-border"
-                    >
-                      <Save size={16} />
-                      {isSaving ? "Saving..." : isUploadingImage ? "Uploading image..." : "Save profile"}
-                    </button>
-                    <p className="font-sans text-sm text-muted-foreground">
-                      Your join date stays fixed and cannot be edited.
-                    </p>
-                  </div>
-                </form>
+              <>
+                <UserInfoForm
+                  form={form}
+                  setForm={setForm}
+                  fieldErrors={fieldErrors}
+                  clearFieldError={clearFieldError}
+                  uploadingField={uploadingField}
+                  uploadMessages={uploadMessages}
+                  isUploadingImage={isUploadingImage}
+                  isSaving={isSaving}
+                  saveMessage={saveMessage}
+                  saveError={saveError}
+                  handleImageUpload={handleImageUpload}
+                  handleSaveProfile={handleSaveProfile}
+                  joinedDate={profile.createdAt}
+                />
 
                 <div className="my-10 h-px bg-muted" />
 
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Security core</p>
-                    <h2 className="mt-2 font-bangers text-4xl text-primary">Change password</h2>
-                  </div>
-                </div>
-
-                <form onSubmit={handlePasswordChange} className="mt-6 space-y-5">
-                  <div className="grid gap-5 md:grid-cols-2">
-                    <div className="space-y-2 md:col-span-2">
-                      <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                        <Lock size={14} />
-                        Current password
-                      </span>
-                      <div className="relative">
-                        <Input
-                          type={showCurrentPassword ? "text" : "password"}
-                          value={passwordForm.currentPassword}
-                          onChange={(e) => setPasswordForm((p) => ({ ...p, currentPassword: e.target.value }))}
-                          className="h-11 bg-background pr-10 comic-border-secondary"
-                          placeholder="••••••••"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
-                        >
-                          {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                        <Lock size={14} />
-                        New password
-                      </span>
-                      <div className="relative">
-                        <Input
-                          type={showNewPassword ? "text" : "password"}
-                          value={passwordForm.newPassword}
-                          onChange={(e) => setPasswordForm((p) => ({ ...p, newPassword: e.target.value }))}
-                          className="h-11 bg-background pr-10 comic-border-secondary"
-                          placeholder="••••••••"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowNewPassword(!showNewPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
-                        >
-                          {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-                        <Lock size={14} />
-                        Confirm new password
-                      </span>
-                      <div className="relative">
-                        <Input
-                          type={showConfirmPassword ? "text" : "password"}
-                          value={passwordForm.confirmPassword}
-                          onChange={(e) => setPasswordForm((p) => ({ ...p, confirmPassword: e.target.value }))}
-                          className="h-11 bg-background pr-10 comic-border-secondary"
-                          placeholder="••••••••"
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary"
-                        >
-                          {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {passwordMessage ? <p className="font-sans text-sm text-green-600">{passwordMessage}</p> : null}
-                  {passwordError ? <p className="font-sans text-sm text-red-500">{passwordError}</p> : null}
-
-                  <div className="flex flex-wrap items-center gap-3">
-                    <button
-                      type="submit"
-                      disabled={isChangingPassword}
-                      className="inline-flex items-center gap-2 bg-accent px-5 py-3 font-bangers text-xl text-accent-foreground disabled:cursor-not-allowed disabled:opacity-60 comic-border"
-                    >
-                      <Lock size={16} />
-                      {isChangingPassword ? "Updating..." : "Update password"}
-                    </button>
-                  </div>
-                </form>
-              </section>
+                <ChangePasswordForm
+                  passwordForm={passwordForm}
+                  setPasswordForm={setPasswordForm}
+                  handlePasswordChange={handlePasswordChange}
+                  isChangingPassword={isChangingPassword}
+                  passwordMessage={passwordMessage}
+                  passwordError={passwordError}
+                />
+              </>
             ) : null}
 
             {activeTab === "posts" ? (
@@ -1164,7 +653,6 @@ export function ProfileDashboard() {
                     : "Your story arc hasn't started yet. Create your first post!"
                 }
                 onPageChange={setPostsPageIndex}
-                showEditButton={true}
                 showStatus={true}
                 statusFilter={statusFilter}
                 onStatusChange={(status) => {

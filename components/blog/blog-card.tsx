@@ -13,6 +13,7 @@ interface BlogCardProps {
   post: BlogPost;
   index?: number;
   onDelete?: (id: string) => void;
+  showStatus?: boolean;
 }
 
 function stripHtml(value: string) {
@@ -36,7 +37,7 @@ function estimateReadMinutes(content: string) {
   return Math.max(1, Math.ceil(words / 200));
 }
 
-export function BlogCard({ post, index = 0, onDelete }: BlogCardProps) {
+export function BlogCard({ post, index = 0, onDelete, showStatus = false }: BlogCardProps) {
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const isAuthor = currentUser?.id === post.author.id;
   const thumbnailUrl = getRenderableImageUrl(post.thumbnailUrl);
@@ -86,6 +87,15 @@ export function BlogCard({ post, index = 0, onDelete }: BlogCardProps) {
             <div className="absolute top-4 left-4 z-20 rotate-[-3deg] transition-transform duration-200 group-hover:rotate-0">
               <div className="bg-primary border-3 border-foreground px-3 py-1 font-bangers text-sm text-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))]">
                 {post.category.name}
+              </div>
+            </div>
+          )}
+
+          {/* Status Badge */}
+          {showStatus && (
+            <div className="absolute top-4 right-12 z-20 rotate-[3deg] transition-transform duration-200 group-hover:rotate-0">
+              <div className={`${post.status === "PUBLISHED" ? "bg-emerald-500" : "bg-amber-500"} border-3 border-foreground px-3 py-1 font-bangers text-sm text-white shadow-[3px_3px_0px_0px_hsl(var(--foreground))]`}>
+                {post.status}
               </div>
             </div>
           )}
