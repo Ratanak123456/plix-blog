@@ -78,8 +78,8 @@ export function SiteHeader() {
             >
               <PenSquare size={16} /> WRITE
             </Link>
-            {isAuthenticated && user ? (
-              <>
+            {isAuthenticated ? (
+              user ? (
                 <Link
                   href="/profile"
                   className="flex items-center gap-2 p-1 transition-all hover:border-accent comic-border"
@@ -100,7 +100,9 @@ export function SiteHeader() {
                     )}
                   </div>
                 </Link>
-              </>
+              ) : (
+                <div className="h-10 w-10 animate-pulse rounded-full border-2 border-primary bg-accent/20 shadow-[1px_1px_0px_0px_hsl(var(--foreground))]" />
+              )
             ) : (
               <button
                 onClick={() => {
@@ -155,8 +157,8 @@ export function SiteHeader() {
                 >
                   <PenSquare size={20} /> WRITE
                 </Link>
-                {isAuthenticated && user ? (
-                  <>
+                {isAuthenticated ? (
+                  user ? (
                     <Link
                       href="/profile"
                       onClick={() => setMobileMenuOpen(false)}
@@ -178,7 +180,9 @@ export function SiteHeader() {
                       </div>
                       <span>{user.username}</span>
                     </Link>
-                  </>
+                  ) : (
+                    <div className="mt-2 flex h-12 w-full animate-pulse items-center gap-3 rounded-md border-2 border-primary bg-accent/20 px-4 shadow-[1px_1px_0px_0px_hsl(var(--foreground))]" />
+                  )
                 ) : (
                   <button
                     onClick={() => {

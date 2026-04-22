@@ -438,38 +438,47 @@ export function WritePostForm({
                   {/* Corner accent */}
                   <div className="absolute -top-3 -right-3 w-8 h-8 bg-[#f28b6a] border-3 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]" />
 
-                  {user ? (
-                    <>
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-3 h-3 bg-green-500 border-2 border-black dark:border-white rounded-full animate-pulse" />
-                        <p className="font-oswald text-xs uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
-                          Logged in as
-                        </p>
-                      </div>
-                      <p
-                        className="font-bangers text-4xl text-[#f0b443] tracking-wide"
-                        style={{ textShadow: "2px 2px 0px rgba(0,0,0,0.1)" }}
-                      >
-                        {user.username}
-                      </p>
-                      <div className="mt-3 h-[2px] bg-black dark:bg-white shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
-                      <p className="mt-3 font-sans text-sm text-gray-600 dark:text-gray-400">
-                        Posts will be {isEditing ? "updated" : "created"} under
-                        your account.
-                      </p>
-                      {isSaving && (
-                        <div className="mt-4 flex items-center gap-2 bg-[#f0b443]/20 border-2 border-[#f0b443] px-3 py-2">
-                          <LoaderCircle
-                            size={16}
-                            className="animate-spin text-[#f0b443]"
-                            strokeWidth={3}
-                          />
-                          <span className="font-oswald text-sm uppercase tracking-wide text-[#f0b443] font-bold">
-                            {isEditing ? "Updating..." : "Publishing..."}
-                          </span>
+                  {isAuthenticated ? (
+                    user ? (
+                      <>
+                        <div className="flex items-center gap-2 mb-3">
+                          <div className="w-3 h-3 bg-green-500 border-2 border-black dark:border-white rounded-full animate-pulse" />
+                          <p className="font-oswald text-xs uppercase tracking-[0.3em] text-gray-500 dark:text-gray-400">
+                            Logged in as
+                          </p>
                         </div>
-                      )}
-                    </>
+                        <p
+                          className="font-bangers text-4xl text-[#f0b443] tracking-wide"
+                          style={{ textShadow: "2px 2px 0px rgba(0,0,0,0.1)" }}
+                        >
+                          {user.username}
+                        </p>
+                        <div className="mt-3 h-[2px] bg-black dark:bg-white shadow-[1px_1px_0px_0px_rgba(0,0,0,0.2)]" />
+                        <p className="mt-3 font-sans text-sm text-gray-600 dark:text-gray-400">
+                          Posts will be {isEditing ? "updated" : "created"} under
+                          your account.
+                        </p>
+                        {isSaving && (
+                          <div className="mt-4 flex items-center gap-2 bg-[#f0b443]/20 border-2 border-[#f0b443] px-3 py-2">
+                            <LoaderCircle
+                              size={16}
+                              className="animate-spin text-[#f0b443]"
+                              strokeWidth={3}
+                            />
+                            <span className="font-oswald text-sm uppercase tracking-wide text-[#f0b443] font-bold">
+                              {isEditing ? "Updating..." : "Publishing..."}
+                            </span>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="space-y-4 py-4">
+                        <div className="h-4 w-24 animate-pulse bg-gray-200 dark:bg-gray-800" />
+                        <div className="h-10 w-full animate-pulse bg-gray-200 dark:bg-gray-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)]" />
+                        <div className="h-2 w-full bg-black/10 dark:bg-white/10" />
+                        <div className="h-4 w-full animate-pulse bg-gray-200 dark:bg-gray-800" />
+                      </div>
+                    )
                   ) : (
                     <div className="text-center py-4">
                       <p className="font-bangers text-2xl text-gray-400 dark:text-gray-600">

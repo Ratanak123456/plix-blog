@@ -2,7 +2,6 @@ import { type AuthUser, type PersistedAuthState } from "@/lib/types";
 
 export type { AuthUser, PersistedAuthState };
 
-const AUTH_USER_STORAGE_KEY = "plixblog-auth-user";
 const ACCESS_TOKEN_COOKIE = "plixblog-access-token";
 const REFRESH_TOKEN_COOKIE = "plixblog-refresh-token";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
@@ -55,19 +54,13 @@ export function loadAuthState(): PersistedAuthState {
 
   const accessToken = getCookie(ACCESS_TOKEN_COOKIE);
   const refreshToken = getCookie(REFRESH_TOKEN_COOKIE);
-  const rawUser = window.localStorage.getItem(AUTH_USER_STORAGE_KEY);
 
-  try {
-    const parsedUser = rawUser ? (JSON.parse(rawUser) as AuthUser) : null;
-    return {
-      accessToken,
-      refreshToken,
-      user: parsedUser,
-      isAuthenticated: Boolean(accessToken && refreshToken),
-    };
-  } catch {
-    return emptyAuthState;
-  }
+  return {
+    accessToken,
+    refreshToken,
+    user: null,
+    isAuthenticated: Boolean(accessToken && refreshToken),
+  };
 }
 
 export function saveAuthState(state: PersistedAuthState) {
@@ -85,12 +78,6 @@ export function saveAuthState(state: PersistedAuthState) {
     setCookie(REFRESH_TOKEN_COOKIE, state.refreshToken);
   } else {
     clearCookie(REFRESH_TOKEN_COOKIE);
-  }
-
-  if (state.user) {
-    window.localStorage.setItem(AUTH_USER_STORAGE_KEY, JSON.stringify(state.user));
-  } else {
-    window.localStorage.removeItem(AUTH_USER_STORAGE_KEY);
   }
 }
 

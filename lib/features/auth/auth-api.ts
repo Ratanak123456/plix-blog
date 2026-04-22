@@ -26,18 +26,7 @@ const extendedAuthApi = authApi.injectEndpoints({
             setCredentials({
               accessToken: data.accessToken ?? null,
               refreshToken: data.refreshToken ?? null,
-              user: {
-                id: data.user.id,
-                username: data.user.username,
-                fullName: data.user.fullName,
-                email: data.user.email,
-                bio: data.user.bio,
-                profileImage: data.user.profileImage,
-                coverImage: data.user.coverImage,
-                verified: data.user.isVerified ?? data.user.verified ?? false,
-                role: data.user.role,
-                createdAt: data.user.createdAt,
-              },
+              user: null,
               isAuthenticated: Boolean(data.accessToken && data.refreshToken),
             }),
           );
@@ -57,18 +46,7 @@ const extendedAuthApi = authApi.injectEndpoints({
             setCredentials({
               accessToken: data.accessToken ?? null,
               refreshToken: data.refreshToken ?? null,
-              user: {
-                id: data.user.id,
-                username: data.user.username,
-                fullName: data.user.fullName,
-                email: data.user.email,
-                bio: data.user.bio,
-                profileImage: data.user.profileImage,
-                coverImage: data.user.coverImage,
-                verified: data.user.isVerified ?? data.user.verified ?? false,
-                role: data.user.role,
-                createdAt: data.user.createdAt,
-              },
+              user: null,
               isAuthenticated: Boolean(data.accessToken && data.refreshToken),
             }),
           );
