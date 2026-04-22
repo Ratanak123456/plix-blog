@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 import { useGetPostBySlugQuery } from "@/lib/services/auth-api";
+import { goBackWithFallback } from "@/lib/utils/client-navigation";
 import { PostCommentsPanel } from "./post-comments-panel";
 import { PostLikesPanel } from "./post-likes-panel";
 import { PostSharePanel } from "@/components/posts/post-share-panel";
@@ -44,7 +45,7 @@ export function PostFeedbackView({ slug, mode, modal = false }: PostFeedbackView
         {modal ? (
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={() => goBackWithFallback(router, `/posts/${slug}`)}
             className="inline-flex items-center gap-2 bg-card px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-primary comic-border-secondary"
           >
             <ArrowLeft size={14} />

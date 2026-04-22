@@ -7,6 +7,7 @@ import { loadAuthState } from "@/lib/features/auth/auth-storage";
 import { hydrateAuthState } from "@/lib/features/auth/auth-slice";
 import { useRefreshMutation } from "@/lib/services/auth-api";
 import { ThemeProvider } from "next-themes";
+import { NavigationErrorGuard } from "@/components/navigation-error-guard";
 import { store } from "@/lib/store";
 
 const REFRESH_LEEWAY_MS = 60_000;
@@ -132,6 +133,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <NavigationErrorGuard />
         <SessionRefreshManager />
         {children}
       </ThemeProvider>

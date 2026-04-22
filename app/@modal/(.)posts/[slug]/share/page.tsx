@@ -5,7 +5,7 @@ export default async function InterceptedPostSharePage(props: PageProps<"/posts/
   const { slug } = await props.params;
 
   return (
-    <InterceptedRouteModal>
+    <InterceptedRouteModal fallbackHref={`/posts/${slug}`}>
       <PostFeedbackView slug={slug} mode="share" modal />
     </InterceptedRouteModal>
   );

@@ -34,6 +34,7 @@ import {
   getFileUploadErrorMessage,
   uploadImageFile,
 } from "@/lib/utils/file-upload";
+import { navigateWithFallback } from "@/lib/utils/client-navigation";
 
 type ApiErrorPayload = {
   message?: string;
@@ -253,7 +254,7 @@ export function WritePostForm({
         setCreatedSlug(post.slug);
 
         if (post.slug !== initialData.slug) {
-          router.push(`/write/${post.slug}`);
+          navigateWithFallback(router, `/write/${post.slug}`);
         }
       } else {
         const post = await createPost({

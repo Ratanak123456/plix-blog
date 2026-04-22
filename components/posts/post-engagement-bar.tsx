@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Heart, MessageCircle, Send, Bookmark } from "lucide-react";
 import { useState } from "react";
 import { 
@@ -10,6 +10,7 @@ import {
   useTogglePostBookmarkMutation
 } from "@/lib/services/auth-api";
 import { useAppSelector } from "@/lib/store";
+import { navigateWithFallback } from "@/lib/utils/client-navigation";
 
 type PostEngagementBarProps = {
   postId: string;
@@ -28,6 +29,7 @@ export function PostEngagementBar({
   initialLiked = false,
   initialBookmarked = false,
 }: PostEngagementBarProps) {
+  const router = useRouter();
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   
   // Like Logic
@@ -82,26 +84,29 @@ export function PostEngagementBar({
 
   const actionClassName =
     "flex flex-1 items-center justify-center gap-2 px-2 py-3 font-oswald text-[10px] uppercase tracking-wider transition-colors sm:text-xs sm:tracking-[0.2em]";
+  const likesHref = `/posts/${slug}/likes`;
+  const commentsHref = `/posts/${slug}/comments`;
+  const shareHref = `/posts/${slug}/share`;
 
   return (
     <section className="bg-card p-5 comic-border-secondary">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b-2 border-dashed border-primary/30 pb-4">
-        <Link
-          href={`/posts/${slug}/likes`}
-          scroll={false}
+        <button
+          type="button"
+          onClick={() => navigateWithFallback(router, likesHref)}
           className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground transition-colors hover:text-primary"
         >
           <Heart size={14} className="text-primary" />
           {likeCount} like{likeCount === 1 ? "" : "s"}
-        </Link>
-        <Link
-          href={`/posts/${slug}/comments`}
-          scroll={false}
+        </button>
+        <button
+          type="button"
+          onClick={() => navigateWithFallback(router, commentsHref)}
           className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground transition-colors hover:text-primary"
         >
           <MessageCircle size={14} className="text-primary" />
           {commentCount} comment{commentCount === 1 ? "" : "s"}
-        </Link>
+        </button>
       </div>
 
       <div className="mt-4 grid grid-cols-2 overflow-hidden divide-y-2 divide-dashed divide-primary/30 bg-background sm:grid-cols-4 sm:divide-x-2 sm:divide-y-0 comic-border">
@@ -115,10 +120,14 @@ export function PostEngagementBar({
           <Heart size={16} className={liked ? "fill-current" : ""} />
           <span className="hidden xs:inline">Like</span>
         </button>
-        <Link href={`/posts/${slug}/comments`} scroll={false} className={`${actionClassName} text-muted-foreground hover:bg-muted`}>
+        <button
+          type="button"
+          onClick={() => navigateWithFallback(router, commentsHref)}
+          className={`${actionClassName} text-muted-foreground hover:bg-muted`}
+        >
           <MessageCircle size={16} />
           <span className="hidden xs:inline">Comment</span>
-        </Link>
+        </button>
         <button
           type="button"
           onClick={handleBookmark}
@@ -129,10 +138,14 @@ export function PostEngagementBar({
           <Bookmark size={16} className={bookmarked ? "fill-current" : ""} />
           <span className="hidden xs:inline">{bookmarked ? "Saved" : "Save"}</span>
         </button>
-        <Link href={`/posts/${slug}/share`} scroll={false} className={`${actionClassName} text-muted-foreground hover:bg-muted`}>
+        <button
+          type="button"
+          onClick={() => navigateWithFallback(router, shareHref)}
+          className={`${actionClassName} text-muted-foreground hover:bg-muted`}
+        >
           <Send size={16} />
           <span className="hidden xs:inline">Share</span>
-        </Link>
+        </button>
       </div>
     </section>
   );

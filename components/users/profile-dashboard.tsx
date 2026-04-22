@@ -24,6 +24,7 @@ import {
 import { skipToken } from "@reduxjs/toolkit/query";
 import { logout } from "@/lib/features/auth/auth-slice";
 import { getGeneralErrorMessage } from "@/lib/utils/auth-utils";
+import { navigateWithFallback } from "@/lib/utils/client-navigation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -258,7 +259,7 @@ function PostGrid({
                   }`}
                   onClick={() => {
                     if (isEditMode) {
-                      router.push(`/write/${post.slug}`);
+                      navigateWithFallback(router, `/write/${post.slug}`);
                     }
                   }}
                 >
@@ -814,7 +815,7 @@ export function ProfileDashboard() {
                   type="button"
                   onClick={() => {
                     dispatch(logout());
-                    router.push("/");
+                    navigateWithFallback(router, "/");
                   }}
                   className="mt-4 flex w-full items-center justify-center gap-2 bg-destructive/10 px-4 py-3 font-bangers text-2xl text-destructive transition-all hover:bg-destructive hover:text-destructive-foreground comic-border-secondary"
                 >
