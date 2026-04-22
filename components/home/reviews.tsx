@@ -202,6 +202,7 @@ export function Reviews() {
                           src={review.image}
                           alt={review.name}
                           fill
+                          sizes="56px"
                           className="object-cover"
                         />
                       ) : (

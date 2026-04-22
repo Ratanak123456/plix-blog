@@ -65,6 +65,7 @@ export function SiteFooter() {
                   src="/logo.png"
                   alt="ISTAD Logo"
                   fill
+                  sizes="(max-width: 768px) 100vw, 224px"
                   className="object-contain md:object-right"
                   priority
                 />

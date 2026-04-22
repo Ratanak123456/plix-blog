@@ -13,7 +13,7 @@ import {
 
 // ─── Raw Comic Components ──────────────────────────────────────
 
-function ThickBorder({ children, className = "", color = "foreground" }: { 
+function ThickBorder({ children, className = "", color = "secondary" }: { 
   children: React.ReactNode; 
   className?: string;
   color?: string;
@@ -21,14 +21,14 @@ function ThickBorder({ children, className = "", color = "foreground" }: {
   return (
     <div 
       className={`border-[4px] border-${color} ${className}`}
-      style={{ boxShadow: "6px 6px 0px 0px hsl(var(--foreground))" }}
+      style={{ boxShadow: "6px 6px 0px 0px hsl(var(--secondary))" }}
     >
       {children}
     </div>
   );
 }
 
-function BenDayDots({ className = "", color = "var(--foreground)", size = 6 }: {
+function BenDayDots({ className = "", color = "var(--secondary)", size = 6 }: {
   className?: string;
   color?: string;
   size?: number;
@@ -68,7 +68,7 @@ function ComicStarburst({ text, className = "", bg = "accent" }: {
   );
 }
 
-function JaggedEdge({ position = "top", color = "hsl(var(--foreground))" }: {
+function JaggedEdge({ position = "top", color = "hsl(var(--secondary))" }: {
   position?: "top" | "bottom";
   color?: string;
 }) {
@@ -92,8 +92,8 @@ function SoundFX({ text, className = "" }: { text: string; className?: string })
     <div 
       className={`font-bangers text-3xl uppercase leading-none ${className}`}
       style={{
-        WebkitTextStroke: "2px hsl(var(--foreground))",
-        textShadow: "3px 3px 0px hsl(var(--foreground))",
+        WebkitTextStroke: "2px hsl(var(--secondary))",
+        textShadow: "3px 3px 0px hsl(var(--secondary))",
       }}
     >
       {text}
@@ -118,11 +118,11 @@ export function Hero() {
     <section className="relative overflow-hidden bg-background py-6 md:py-10">
       {/* Top Bar — Raw, brutalist */}
       <div className="container mx-auto px-4 mb-6">
-        <div className="flex items-center justify-between border-b-[4px] border-foreground pb-3">
+        <div className="flex items-center justify-between border-b-4 border-secondary pb-3">
           <div className="flex items-center gap-2 font-bangers text-xl uppercase">
             <Skull className="h-5 w-5" />
             <span>Blog Comics</span>
-            <span className="text-muted-foreground">#{new Date().getFullYear()}</span>
+            <span className="text-muted-secondary">#{new Date().getFullYear()}</span>
           </div>
           <div className="hidden sm:flex items-center gap-1 font-oswald text-sm uppercase tracking-widest">
             <span>Vol. 1</span>
@@ -138,8 +138,8 @@ export function Hero() {
           <BenDayDots size={8} />
           
           {/* Corner tape effect */}
-          <div className="absolute -left-2 -top-2 h-8 w-16 -rotate-45 bg-primary opacity-80 border-2 border-foreground z-20" />
-          <div className="absolute -right-2 -bottom-2 h-8 w-16 -rotate-45 bg-accent opacity-80 border-2 border-foreground z-20" />
+          <div className="absolute -left-2 -top-2 h-8 w-16 -rotate-45 bg-primary opacity-80 border-2 border-secondary z-20" />
+          <div className="absolute -right-2 -bottom-2 h-8 w-16 -rotate-45 bg-accent opacity-80 border-2 border-secondary z-20" />
 
           <div className="relative z-10 flex flex-col gap-6 p-4 md:p-6 lg:flex-row lg:gap-8">
             
@@ -152,13 +152,13 @@ export function Hero() {
                 animate={{ scale: 1 }}
                 transition={{ type: "spring", stiffness: 300, delay: 0.1 }}
               >
-                <ComicStarburst text="Daily Issue" bg="primary" className="text-primary-foreground" />
+                <ComicStarburst text="Daily Issue" bg="primary" className="text-primary-secondary" />
               </motion.div>
 
               {isLoading ? (
                 <div className="space-y-4">
-                  <div className="h-28 bg-primary/20 border-[3px] border-foreground lg:h-36" />
-                  <div className="h-20 bg-muted border-[3px] border-foreground" />
+                  <div className="h-28 bg-primary/20 border-[3px] border-secondary lg:h-36" />
+                  <div className="h-20 bg-muted border-[3px] border-secondary" />
                 </div>
               ) : isError || !featuredPost ? (
                 <div className="space-y-4">
@@ -181,11 +181,10 @@ export function Hero() {
                     initial={{ x: -30, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ duration: 0.5 }}
-                    className="font-bangers line-clamp-3 text-5xl uppercase leading-[0.82] text-foreground sm:text-6xl lg:line-clamp-2 lg:text-[4.5rem] xl:text-[5.5rem]"
+                    className="font-bangers line-clamp-3 text-5xl uppercase leading-[0.82] text-primary sm:text-6xl lg:line-clamp-2 lg:text-[4.5rem] xl:text-[5.5rem]"
                     style={{
                       textShadow: `
-                        4px 4px 0px hsl(var(--primary)),
-                        8px 8px 0px hsl(var(--accent))
+                        4px 4px 0px hsl(var(--secondary))
                       `,
                     }}
                   >
@@ -197,11 +196,11 @@ export function Hero() {
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.2 }}
-                    className="flex flex-wrap items-center gap-x-3 gap-y-1 border-y-[3px] border-foreground py-2 font-oswald text-sm uppercase tracking-wide"
+                    className="flex flex-wrap items-center gap-x-3 gap-y-1 border-y-[3px] border-secondary py-2 font-oswald text-sm uppercase tracking-wide"
                   >
                     <span className="font-bold">{featuredPost.author.fullName}</span>
                     <span className="text-accent">◆</span>
-                    <span className="text-muted-foreground">
+                    <span className="text-muted-secondary">
                       {formatPublishedDate(featuredPost.publishedAt ?? featuredPost.createdAt)}
                     </span>
                     <span className="text-accent">◆</span>
@@ -224,7 +223,7 @@ export function Hero() {
                       <JaggedEdge position="top" />
                       <JaggedEdge position="bottom" />
                       <div className="p-4 sm:p-5">
-                        <p className="font-oswald text-lg leading-relaxed text-foreground sm:text-xl">
+                        <p className="font-oswald text-lg leading-relaxed text-secondary sm:text-xl">
                           <span className="text-4xl text-accent font-bangers">&quot;</span>
                           {excerpt}
                           {needsEllipsis ? "..." : ""}
@@ -233,7 +232,7 @@ export function Hero() {
                       </div>
                       {/* Speech tail */}
                       <div 
-                        className="absolute -bottom-4 left-8 h-4 w-4 rotate-45 border-r-[3px] border-b-[3px] border-foreground bg-background"
+                        className="absolute -bottom-4 left-8 h-4 w-4 rotate-45 border-r-[3px] border-b-[3px] border-secondary bg-background"
                       />
                     </ThickBorder>
                   </motion.div>
@@ -247,8 +246,8 @@ export function Hero() {
                   >
                     <Link
                       href={`/posts/${featuredPost.slug}`}
-                      className="group inline-flex items-center gap-3 bg-accent px-6 py-4 font-bangers text-xl uppercase text-accent-foreground border-[4px] border-foreground transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none active:translate-x-[6px] active:translate-y-[6px]"
-                      style={{ boxShadow: "6px 6px 0px 0px hsl(var(--foreground))" }}
+                      className="group inline-flex items-center gap-3 bg-accent px-6 py-4 font-bangers text-xl uppercase text-accent-secondary border-[4px] border-secondary transition-all hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-none active:translate-x-[6px] active:translate-y-[6px]"
+                      style={{ boxShadow: "6px 6px 0px 0px hsl(var(--secondary))" }}
                     >
                       <Zap className="h-5 w-5 fill-current" />
                       Read Full Strip
@@ -280,7 +279,7 @@ export function Hero() {
 
                 {/* Category badge — tilted, raw */}
                 {featuredPost?.category && (
-                  <div className="absolute left-4 top-4 z-20 -rotate-3 bg-accent px-4 py-1.5 font-bangers text-base uppercase text-accent-foreground border-[3px] border-foreground">
+                  <div className="absolute left-4 top-4 z-20 -rotate-3 bg-accent px-4 py-1.5 font-bangers text-base uppercase text-accent-secondary border-[3px] border-secondary">
                     {featuredPost.category.name}
                   </div>
                 )}
@@ -302,14 +301,14 @@ export function Hero() {
           </div>
 
           {/* Bottom bar — "To be continued" */}
-          <div className="relative z-10 flex items-center justify-between border-t-[4px] border-foreground bg-muted px-4 py-3 md:px-6">
-            <span className="font-bangers text-sm uppercase tracking-widest text-muted-foreground">
+          <div className="relative z-10 flex items-center justify-between border-t-[4px] border-secondary bg-muted px-4 py-3 md:px-6">
+            <span className="font-bangers text-sm uppercase tracking-widest text-muted-secondary">
               To Be Continued...
             </span>
             <div className="flex gap-2">
-              <Star className="h-4 w-4 fill-foreground text-foreground" />
-              <Star className="h-4 w-4 fill-foreground text-foreground" />
-              <Star className="h-4 w-4 text-foreground" />
+              <Star className="h-4 w-4 fill-secondary text-secondary" />
+              <Star className="h-4 w-4 fill-secondary text-secondary" />
+              <Star className="h-4 w-4 text-secondary" />
             </div>
           </div>
         </ThickBorder>

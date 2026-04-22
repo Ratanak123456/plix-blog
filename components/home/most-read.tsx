@@ -231,6 +231,7 @@ export function MostRead() {
                         src={post.author.profileImage}
                         alt={post.author.fullName}
                         fill
+                        sizes="56px"
                         className="object-cover"
                       />
                     ) : (

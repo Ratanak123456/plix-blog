@@ -4,9 +4,15 @@ import { Lock, EyeOff, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
+import { PasswordRequest } from "@/lib/types/user";
+
+export interface PasswordFormData extends PasswordRequest {
+  confirmPassword: string;
+}
+
 interface ChangePasswordFormProps {
-  passwordForm: any;
-  setPasswordForm: (form: any) => void;
+  passwordForm: PasswordFormData;
+  setPasswordForm: React.Dispatch<React.SetStateAction<PasswordFormData>>;
   handlePasswordChange: (event: React.FormEvent<HTMLFormElement>) => void;
   isChangingPassword: boolean;
   passwordMessage: string | null;
@@ -45,7 +51,7 @@ export function ChangePasswordForm({
               <Input
                 type={showCurrentPassword ? "text" : "password"}
                 value={passwordForm.currentPassword}
-                onChange={(e) => setPasswordForm((p: any) => ({ ...p, currentPassword: e.target.value }))}
+                onChange={(e) => setPasswordForm((p) => ({ ...p, currentPassword: e.target.value }))}
                 className="h-11 bg-background pr-10 comic-border-secondary"
                 placeholder="••••••••"
                 required
@@ -69,7 +75,7 @@ export function ChangePasswordForm({
               <Input
                 type={showNewPassword ? "text" : "password"}
                 value={passwordForm.newPassword}
-                onChange={(e) => setPasswordForm((p: any) => ({ ...p, newPassword: e.target.value }))}
+                onChange={(e) => setPasswordForm((p) => ({ ...p, newPassword: e.target.value }))}
                 className="h-11 bg-background pr-10 comic-border-secondary"
                 placeholder="••••••••"
                 required
@@ -93,7 +99,7 @@ export function ChangePasswordForm({
               <Input
                 type={showConfirmPassword ? "text" : "password"}
                 value={passwordForm.confirmPassword}
-                onChange={(e) => setPasswordForm((p: any) => ({ ...p, confirmPassword: e.target.value }))}
+                onChange={(e) => setPasswordForm((p) => ({ ...p, confirmPassword: e.target.value }))}
                 className="h-11 bg-background pr-10 comic-border-secondary"
                 placeholder="••••••••"
                 required

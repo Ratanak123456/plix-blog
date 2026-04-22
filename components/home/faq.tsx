@@ -30,7 +30,7 @@ export function FAQ() {
     <section className="relative overflow-hidden px-4 py-16 md:py-24 bg-background transition-colors duration-300">
       {/* ── Halftone Background ── */}
       <div
-        className="absolute inset-0 opacity-[0.06] dark:opacity-[0.1] pointer-events-none text-foreground dark:text-primary"
+        className="absolute inset-0 opacity-[0.06] dark:opacity-[0.1] pointer-events-none text-secondary dark:text-primary"
         style={{
           backgroundImage:
             "radial-gradient(circle, currentColor 1.5px, transparent 1.5px)",
@@ -40,7 +40,7 @@ export function FAQ() {
 
       {/* ── Action Lines - Top Left ── */}
       <svg
-        className="absolute top-8 left-0 w-40 h-64 opacity-[0.08] dark:opacity-[0.15] pointer-events-none text-foreground dark:text-primary"
+        className="absolute top-8 left-0 w-40 h-64 opacity-[0.08] dark:opacity-[0.15] pointer-events-none text-secondary dark:text-primary"
         viewBox="0 0 100 200"
       >
         <path
@@ -68,7 +68,7 @@ export function FAQ() {
 
       {/* ── Action Lines - Bottom Right ── */}
       <svg
-        className="absolute bottom-8 right-0 w-40 h-64 opacity-[0.08] dark:opacity-[0.15] pointer-events-none rotate-180 text-foreground dark:text-primary"
+        className="absolute bottom-8 right-0 w-40 h-64 opacity-[0.08] dark:opacity-[0.15] pointer-events-none rotate-180 text-secondary dark:text-primary"
         viewBox="0 0 100 200"
       >
         <path
@@ -92,10 +92,10 @@ export function FAQ() {
         {/* Header */}
         <div className="mb-14 text-center relative">
           <h2
-            className="font-bangers text-5xl text-foreground dark:text-white sm:text-6xl md:text-7xl tracking-wide relative inline-block"
+            className="font-bangers text-5xl text-primary dark:text-white sm:text-6xl md:text-7xl tracking-wide relative inline-block"
             style={{
-              textShadow: "4px 4px 0px hsl(var(--primary)), 8px 8px 0px hsl(var(--accent))",
-              WebkitTextStroke: "1.5px black",
+              textShadow: "4px 4px 0px hsl(var(--accent))",
+              WebkitTextStroke: "1.5px hsl(var(--accent))",
             }}
           >
             FREQUENTLY ASKED
@@ -103,9 +103,9 @@ export function FAQ() {
 
           {/* Comic Divider */}
           <div className="flex items-center justify-center mt-6 gap-3">
-            <div className="h-[3px] w-16 bg-black dark:bg-primary shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]" />
-            <div className="w-3 h-3 bg-primary border-2 border-foreground rotate-45 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]" />
-            <div className="h-[3px] w-16 bg-black dark:bg-primary shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]" />
+            <div className="h-0.75` w-16 bg-secondary dark:bg-primary shadow-[2px_2px_0px_0px_hsl(var(--accent))]" />
+            <div className="w-3 h-3 bg-primary border-2 border-secondary rotate-45 shadow-[2px_2px_0px_0px_hsl(var(--accent))]" />
+            <div className="h-0.75` w-16 bg-secondary dark:bg-primary shadow-[2px_2px_0px_0px_hsl(var(--accent))]" />
           </div>
         </div>
 
@@ -140,15 +140,15 @@ export function FAQ() {
                     onClick={() => setOpenFaq(isOpen ? null : index)}
                     className={`
                   relative flex w-full items-center gap-4 px-5 py-5 text-left sm:gap-5 sm:px-7 sm:py-6
-                  border-4 border-foreground dark:border-white transition-all duration-200
-                  ${isOpen ? "bg-primary text-white" : "bg-card dark:bg-card text-foreground dark:text-white hover:bg-yellow-50 dark:hover:bg-primary/20"}
+                  border-4 border-secondary dark:border-white transition-all duration-200
+                  ${isOpen ? "bg-primary text-white" : "bg-card dark:bg-card text-secondary dark:text-white hover:bg-yellow-50 dark:hover:bg-primary/20"}
                 `}
                   >
                     {/* Comic Number Badge */}
                     <span
                       className={`
                   flex items-center justify-center w-12 h-12 shrink-0 font-bangers text-xl sm:text-2xl
-                  border-3 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))]
+                  border-3 border-secondary shadow-[3px_3px_0px_0px_hsl(var(--secondary))]
                   ${isOpen ? "bg-card text-primary rotate-3" : "bg-primary text-white -rotate-2"}
                   transition-transform duration-200
                 `}
@@ -164,8 +164,8 @@ export function FAQ() {
                     {/* Comic Chevron */}
                     <div
                       className={`
-                  flex items-center justify-center w-10 h-10 shrink-0 border-3 border-foreground dark:border-white
-                  ${isOpen ? "bg-card text-primary dark:white  dark:text-foreground rotate-0" : "bg-black dark:bg-card text-white dark:text-foreground rotate-0"}
+                  flex items-center justify-center w-10 h-10 shrink-0 border-3 border-secondary dark:border-white
+                  ${isOpen ? "bg-card text-primary dark:white  dark:text-secondary rotate-0" : "bg-black dark:bg-card text-white dark:text-secondary rotate-0"}
                   transition-all duration-300 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]
                 `}
                     >
@@ -187,15 +187,15 @@ export function FAQ() {
                         transition={{ duration: 0.25, ease: "easeInOut" }}
                         className="overflow-hidden"
                       >
-                        <div className="border-x-4 border-b-4 border-foreground dark:border-white bg-card dark:bg-card p-6 sm:p-8 relative">
+                        <div className="border-x-4 border-b-4 border-secondary dark:border-white bg-card dark:bg-card p-6 sm:p-8 relative">
                           {/* Speech Bubble Tail */}
-                          <div className="absolute -top-[2px] left-24 w-6 h-4 bg-black dark:bg-card border-l-4 border-r-4 dark:border-white border-foreground transform -translate-y-1/2 rotate-45" />
+                          <div className="absolute -top-[2px] left-24 w-6 h-4 bg-primary dark:bg-card border-l-4 border-r-4 dark:border-white border-secondary transform -translate-y-1/2 rotate-45" />
 
                           <div className="relative pl-8">
                             {/* Comic Quote Mark */}
                             <MessageSquare
                               size={20}
-                              className="absolute -left-2 top-0 text-primary bg-card dark:bg-card border-2 border-foreground p-1"
+                              className="absolute -left-2 top-0 text-primary bg-primary dark:bg-card border-2 border-secondary p-1"
                               strokeWidth={2.5}
                             />
                             <p
@@ -229,8 +229,8 @@ export function FAQ() {
                   <div
                     className={`
                 absolute -top-3 ${index % 2 === 0 ? "-right-2" : "-left-2"} z-20
-                bg-primary dark:bg-primary border-3 border-foreground px-3 py-1 font-bangers text-sm text-foreground
-                shadow-[3px_3px_0px_0px_hsl(var(--foreground))]
+                bg-primary dark:bg-primary border-3 border-secondary px-3 py-1 font-bangers text-sm text-secondary
+                shadow-[3px_3px_0px_0px_hsl(var(--secondary))]
                 ${index % 2 === 0 ? "rotate-12" : "-rotate-12"}
               `}
                   >
@@ -245,7 +245,7 @@ export function FAQ() {
         {/* Bottom CTA Comic Element */}
         <div className="mt-14 flex justify-center">
           <div className="group relative cursor-pointer">
-            <div className="bg-primary border-4 border-foreground px-8 py-4 font-bangers text-2xl text-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rotate-1 group-hover:rotate-0 transition-all duration-200 flex items-center gap-3">
+            <div className="bg-primary border-4 border-secondary px-8 py-4 font-bangers text-2xl text-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rotate-1 group-hover:rotate-0 transition-all duration-200 flex items-center gap-3">
               <HelpCircle size={24} strokeWidth={3} />
               STILL HAVE QUESTIONS?
             </div>

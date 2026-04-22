@@ -30,6 +30,7 @@ export function UserProfileLink({
             src={profileImage}
             alt={user.fullName}
             fill
+            sizes="44px"
             className="object-cover"
           />
         ) : (

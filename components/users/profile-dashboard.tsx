@@ -128,7 +128,6 @@ function PostGrid({
   onStatusChange?: (status: string) => void;
   onDelete?: (id: string) => void;
 }) {
-  const router = useRouter();
   const [postToDelete, setPostToDelete] = useState<string | null>(null);
 
   const filteredContent = useMemo(() => {

@@ -12,7 +12,6 @@ import {
   Eye,
   Loader2,
   BookOpen,
-  LayoutGrid,
   ChevronDown,
 } from "lucide-react";
 import { BlogCard } from "@/components/blog/blog-card";
@@ -268,7 +267,7 @@ export default function BlogPage() {
             <div className="absolute -bottom-3 -right-3 w-8 h-8 bg-accent border-3 border-black dark:border-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.3)] z-20" />
 
             {/* Background gradient overlay */}
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 dark:from-primary/5 dark:to-accent/5" />
+            <div className="pointer-events-none absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-accent/10 dark:from-primary/5 dark:to-accent/5" />
 
             <div className="relative z-10 text-center">
               {/* Welcome Badge */}
@@ -400,7 +399,7 @@ export default function BlogPage() {
 
             <div
               className={`mt-3 grid gap-2 overflow-hidden transition-all duration-300 ${
-                isCategoryMenuOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0"
+                isCategoryMenuOpen ? "max-h-250 opacity-100" : "max-h-0 opacity-0"
               }`}
             >
               {categoriesLoading ? (

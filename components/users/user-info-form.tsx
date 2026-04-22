@@ -7,25 +7,20 @@ import { formatDate } from "./profile-utils";
 
 type ImageField = "profileImage" | "coverImage";
 
+export interface UserInfoFormData {
+  username: string;
+  fullName: string;
+  email: string;
+  profileImage: string;
+  coverImage: string;
+  bio: string;
+}
+
 interface UserInfoFormProps {
-  form: {
-    username: string;
-    fullName: string;
-    email: string;
-    profileImage: string;
-    coverImage: string;
-    bio: string;
-  };
-  setForm: React.Dispatch<React.SetStateAction<{
-    username: string;
-    fullName: string;
-    email: string;
-    profileImage: string;
-    coverImage: string;
-    bio: string;
-  }>>;
+  form: UserInfoFormData;
+  setForm: React.Dispatch<React.SetStateAction<UserInfoFormData>>;
   fieldErrors: Record<string, string>;
-  clearFieldError: (field: any) => void;
+  clearFieldError: (field: keyof UserInfoFormData) => void;
   uploadingField: string | null;
   uploadMessages: Record<string, string | null>;
   isUploadingImage: boolean;
@@ -73,7 +68,7 @@ export function UserInfoForm({
             </span>
             <Input
               value={form.fullName}
-              onChange={(event) => setForm((current: any) => ({ ...current, fullName: event.target.value }))}
+              onChange={(event) => setForm((current) => ({ ...current, fullName: event.target.value }))}
               className="h-11 bg-background comic-border-secondary"
             />
             {fieldErrors.fullName && <p className="text-sm text-red-500 mt-1">{fieldErrors.fullName}</p>}
@@ -86,7 +81,7 @@ export function UserInfoForm({
             </span>
             <Input
               value={form.username}
-              onChange={(event) => setForm((current: any) => ({ ...current, username: event.target.value }))}
+              onChange={(event) => setForm((current) => ({ ...current, username: event.target.value }))}
               className="h-11 bg-background comic-border-secondary"
             />
             {fieldErrors.username && <p className="text-sm text-red-500 mt-1">{fieldErrors.username}</p>}
@@ -100,7 +95,7 @@ export function UserInfoForm({
             <Input
               type="email"
               value={form.email}
-              onChange={(event) => setForm((current: any) => ({ ...current, email: event.target.value }))}
+              onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
               className="h-11 bg-background comic-border-secondary"
             />
             {fieldErrors.email && <p className="text-sm text-red-500 mt-1">{fieldErrors.email}</p>}
@@ -114,7 +109,7 @@ export function UserInfoForm({
             <Input
               value={form.profileImage}
               onChange={(event) => {
-                setForm((current: any) => ({
+                setForm((current) => ({
                   ...current,
                   profileImage: event.target.value,
                 }));
@@ -145,7 +140,7 @@ export function UserInfoForm({
                 <button
                   type="button"
                   onClick={() => {
-                    setForm((current: any) => ({
+                    setForm((current) => ({
                       ...current,
                       profileImage: "",
                     }));
@@ -173,7 +168,7 @@ export function UserInfoForm({
             <Input
               value={form.coverImage}
               onChange={(event) => {
-                setForm((current: any) => ({
+                setForm((current) => ({
                   ...current,
                   coverImage: event.target.value,
                 }));
@@ -204,7 +199,7 @@ export function UserInfoForm({
                 <button
                   type="button"
                   onClick={() => {
-                    setForm((current: any) => ({
+                    setForm((current) => ({
                       ...current,
                       coverImage: "",
                     }));
@@ -227,9 +222,10 @@ export function UserInfoForm({
 
         <label className="block space-y-2">
           <span className="font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">Bio</span>
+          <span className="sr-only">Bio</span>
           <Textarea
             value={form.bio}
-            onChange={(event) => setForm((current: any) => ({ ...current, bio: event.target.value }))}
+            onChange={(event) => setForm((current) => ({ ...current, bio: event.target.value }))}
             className="min-h-36 resize-y bg-background comic-border-secondary"
           />
         </label>

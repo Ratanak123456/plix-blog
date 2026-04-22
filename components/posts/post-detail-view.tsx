@@ -19,7 +19,7 @@ export function PostDetailView({ slug }: { slug: string }) {
           <div className="h-8 w-36 animate-pulse bg-card comic-border-secondary" />
           <div className="mt-8 h-16 max-w-4xl animate-pulse bg-card comic-border" />
           <div className="mt-4 h-6 max-w-2xl animate-pulse bg-card comic-border-secondary" />
-          <div className="mt-8 aspect-[16/7] w-full animate-pulse bg-card comic-border-accent" />
+          <div className="mt-8 aspect-16/7 w-full animate-pulse bg-card comic-border-accent" />
           <div className="mt-8 grid gap-4">
             {Array.from({ length: 5 }).map((_, index) => (
               <div key={index} className="h-6 animate-pulse bg-card comic-border-secondary" />

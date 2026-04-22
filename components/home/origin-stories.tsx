@@ -187,6 +187,7 @@ export function OriginStories() {
                             src={leadPost.author.profileImage}
                             alt={leadPost.author.fullName}
                             fill
+                            sizes="48px"
                             className="object-cover"
                           />
                         ) : (
@@ -288,6 +289,7 @@ export function OriginStories() {
                                 src={post.author.profileImage}
                                 alt={post.author.fullName}
                                 fill
+                                sizes="32px"
                                 className="object-cover"
                               />
                             ) : (

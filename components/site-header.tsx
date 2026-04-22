@@ -91,6 +91,7 @@ export function SiteHeader() {
                         src={user.profileImage}
                         alt={user.fullName}
                         fill
+                        sizes="32px"
                         className="object-cover"
                       />
                     ) : (
@@ -170,6 +171,7 @@ export function SiteHeader() {
                             src={user.profileImage}
                             alt={user.fullName}
                             fill
+                            sizes="32px"
                             className="object-cover"
                           />
                         ) : (

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Code2, Coffee, Cpu, Film, ShieldCheck, Smartphone } from "lucide-react";
+import { Code2, Coffee, Cpu, Film, ShieldCheck, Smartphone } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useGetCategoriesQuery } from "@/lib/services/auth-api";
 
@@ -52,14 +52,14 @@ export function Categories() {
         ) : isError ? (
           <div className="mx-auto max-w-2xl bg-card p-6 text-center comic-border">
             <p className="font-bangers text-2xl text-primary">Categories unavailable</p>
-            <p className="mt-2 font-oswald text-sm uppercase tracking-wider text-muted-foreground">
+            <p className="mt-2 font-oswald text-sm uppercase tracking-wider text-muted-secondary">
               We couldn&apos;t load the category list from the API.
             </p>
           </div>
         ) : categories.length === 0 ? (
           <div className="mx-auto max-w-2xl bg-card p-6 text-center comic-border">
             <p className="font-bangers text-2xl text-primary">No adventures yet</p>
-            <p className="mt-2 font-oswald text-sm uppercase tracking-wider text-muted-foreground">
+            <p className="mt-2 font-oswald text-sm uppercase tracking-wider text-muted-secondary">
               Add categories in the backend and they will appear here.
             </p>
           </div>
@@ -86,7 +86,7 @@ export function Categories() {
                     className="mb-4 text-primary transition-colors group-hover:text-accent"
                   />
                   <h3 className="mb-2 font-bangers text-2xl">{category.name}</h3>
-                  <p className="mb-4 font-sans text-sm text-muted-foreground">
+                  <p className="mb-4 font-sans text-sm text-muted-secondary">
                     {category.description || "Explore stories from this category."}
                   </p>
                   <div className="mb-4 font-oswald text-xs uppercase tracking-wider text-primary">

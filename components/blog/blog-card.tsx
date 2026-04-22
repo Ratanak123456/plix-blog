@@ -157,6 +157,7 @@ export function BlogCard({ post, index = 0, onDelete, showStatus = false }: Blog
                 src={post.author.profileImage}
                 alt={post.author.fullName}
                 fill
+                sizes="40px"
                 className="object-cover"
               />
             ) : (
