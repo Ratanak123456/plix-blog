@@ -92,9 +92,6 @@ export function Categories() {
                   <div className="mb-4 font-oswald text-xs uppercase tracking-wider text-primary">
                     {category.postCount} posts
                   </div>
-                  <span className="flex items-center gap-1 font-oswald text-sm text-accent transition-all group-hover:gap-2">
-                    Explore <ArrowRight size={14} />
-                  </span>
                 </motion.a>
               );
             })}
