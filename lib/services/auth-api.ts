@@ -35,6 +35,8 @@ export {
   useTogglePostLikeMutation,
 } from "@/lib/features/posts/post-engagement-api";
 
+export { useUploadImageMutation } from "@/lib/features/uploads/files-api";
+
 export type {
   BlogComment,
   BlogCategory,

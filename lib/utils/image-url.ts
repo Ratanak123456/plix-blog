@@ -1,7 +1,3 @@
-import { FILES_API_BASE_URL } from "@/lib/config/env";
-
-const filesApiPrefix = `${FILES_API_BASE_URL}/`;
-
 export function getRenderableImageUrl(imageUrl: string | null | undefined) {
   const normalizedUrl = imageUrl?.trim();
 
@@ -9,7 +5,8 @@ export function getRenderableImageUrl(imageUrl: string | null | undefined) {
     return null;
   }
 
-  if (normalizedUrl.startsWith(filesApiPrefix)) {
+  // Route external HTTPS URLs through proxy to avoid CORS issues
+  if (normalizedUrl.startsWith("https://")) {
     return `/api/image-proxy?url=${encodeURIComponent(normalizedUrl)}`;
   }
 

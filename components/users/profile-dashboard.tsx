@@ -46,13 +46,13 @@ import {
   useGetMyProfileQuery,
   useGetUserPostsPageQuery,
   useUpdateProfileMutation,
+  useUploadImageMutation,
 } from "@/lib/services/auth-api";
 import { BlogCard } from "@/components/blog/blog-card";
 import { PostActions } from "@/components/home/post-actions";
 import { useAppDispatch, useAppSelector } from "@/lib/store";
 import {
   getFileUploadErrorMessage,
-  uploadImageFile,
 } from "@/lib/utils/file-upload";
 import { getRenderableImageUrl } from "@/lib/utils/image-url";
 
@@ -390,6 +390,7 @@ export function ProfileDashboard() {
   const [updateProfile, { isLoading: isSaving }] = useUpdateProfileMutation();
   const [changePassword, { isLoading: isChangingPassword }] = useChangePasswordMutation();
   const [deletePost] = useDeletePostMutation();
+  const [uploadImage, { isLoading: isUploadingImage }] = useUploadImageMutation();
 
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
@@ -496,14 +497,15 @@ export function ProfileDashboard() {
     );
   }
 
-  const isUploadingImage = uploadingField !== null;
-  const previewFullName = form.fullName || profile.fullName;
-  const previewUsername = form.username || profile.username;
-  const previewBio = form.bio;
-  const previewProfileImage = form.profileImage.trim();
-  const previewCoverImage = form.coverImage.trim();
-  const previewProfileImageUrl = getRenderableImageUrl(previewProfileImage);
+  // uploadingField tracks which field is being uploaded for UI styling
+  // Sidebar always shows saved profile data - updates only after Save Profile is clicked
+  const previewFullName = profile.fullName;
+  const previewUsername = profile.username;
+  const previewBio = profile.bio;
+  const previewProfileImage = (profile.profileImage || "").trim();
+  const previewCoverImage = (profile.coverImage || "").trim();
   const previewCoverImageUrl = getRenderableImageUrl(previewCoverImage);
+  const previewProfileImageUrl = getRenderableImageUrl(previewProfileImage);
 
   function clearFieldError(field: keyof typeof form) {
     setFieldErrors((current) => {
@@ -538,7 +540,7 @@ export function ProfileDashboard() {
     setUploadingField(field);
 
     try {
-      const uploadedFile = await uploadImageFile(file);
+      const uploadedFile = await uploadImage(file).unwrap();
       setForm((current) => ({
         ...current,
         [field]: uploadedFile.location,

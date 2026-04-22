@@ -5,6 +5,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { emptyAuthState, saveAuthState } from "@/lib/features/auth/auth-storage";
 import { authReducer } from "@/lib/features/auth/auth-slice";
 import { authApi } from "@/lib/services/auth-api";
+import { filesApi } from "@/lib/features/uploads/files-api";
 
 const authPersistenceMiddleware: Middleware = (storeApi) => (next) => (action) => {
   const result = next(action);
@@ -26,9 +27,10 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     [authApi.reducerPath]: authApi.reducer,
+    [filesApi.reducerPath]: filesApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(authApi.middleware, authPersistenceMiddleware),
+    getDefaultMiddleware().concat(authApi.middleware, filesApi.middleware, authPersistenceMiddleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
