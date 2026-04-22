@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { PostDetailView } from "@/components/posts/post-detail-view";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://plix-blog-api.onrender.com/api/v1";
+import { API_BASE_URL } from "@/lib/config/env";
 
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await props.params;

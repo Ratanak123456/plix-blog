@@ -7,6 +7,7 @@ import {
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
 import { logout, setCredentials } from "@/lib/features/auth/auth-slice";
+import { API_BASE_URL } from "@/lib/config/env";
 import type { BackendAuthResponse } from "@/lib/types";
 import type { RootState } from "@/lib/store";
 
@@ -60,7 +61,7 @@ const endpointsWithJsonBody = new Set([
 ]);
 
 const rawBaseQuery = fetchBaseQuery({
-  baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://plix-blog-api.onrender.com/api/v1",
+  baseUrl: API_BASE_URL,
   prepareHeaders: (headers, { getState, endpoint, type }) => {
     const token = (getState() as RootState).auth.accessToken;
 
@@ -112,4 +113,3 @@ export const baseQueryWithReauth: BaseQueryFn<string | FetchArgs, unknown, Fetch
   result = await rawBaseQuery(args, api, extraOptions);
   return result;
 };
-

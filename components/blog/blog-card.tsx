@@ -7,6 +7,7 @@ import Link from "next/link";
 import type { BlogPost } from "@/lib/types";
 import { PostActions } from "@/components/home/post-actions";
 import { useAppSelector } from "@/lib/store";
+import { getRenderableImageUrl } from "@/lib/utils/image-url";
 
 interface BlogCardProps {
   post: BlogPost;
@@ -38,6 +39,7 @@ function estimateReadMinutes(content: string) {
 export function BlogCard({ post, index = 0, onDelete }: BlogCardProps) {
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const isAuthor = currentUser?.id === post.author.id;
+  const thumbnailUrl = getRenderableImageUrl(post.thumbnailUrl);
 
   return (
     <motion.article
@@ -58,11 +60,11 @@ export function BlogCard({ post, index = 0, onDelete }: BlogCardProps) {
           {/* Inner dashed border */}
           <div className="absolute inset-2 border-2 border-dashed border-gray-200 pointer-events-none z-10" />
 
-          {post.thumbnailUrl ? (
+          {thumbnailUrl ? (
             <>
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
-                style={{ backgroundImage: `url(${post.thumbnailUrl})` }}
+                style={{ backgroundImage: `url("${thumbnailUrl}")` }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
             </>

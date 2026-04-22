@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { type ChangeEvent, useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Bookmark,
@@ -13,6 +13,7 @@ import {
   EyeOff,
   FileText,
   ImagePlus,
+  LoaderCircle,
   Lock,
   LogOut,
   Mail,
@@ -48,8 +49,14 @@ import {
 import { BlogCard } from "@/components/blog/blog-card";
 import { PostActions } from "@/components/home/post-actions";
 import { useAppDispatch, useAppSelector } from "@/lib/store";
+import {
+  getFileUploadErrorMessage,
+  uploadImageFile,
+} from "@/lib/utils/file-upload";
+import { getRenderableImageUrl } from "@/lib/utils/image-url";
 
 type ProfileTab = "info" | "posts" | "bookmarks";
+type ImageField = "profileImage" | "coverImage";
 
 function formatDate(input: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -256,10 +263,10 @@ function PostGrid({
                   }}
                 >
                   <div className="relative aspect-[16/9] overflow-hidden bg-linear-to-br from-orange-800 via-primary/40 to-amber-300">
-                    {post.thumbnailUrl ? (
+                    {getRenderableImageUrl(post.thumbnailUrl) ? (
                       <div
                         className="absolute inset-0 bg-cover bg-center"
-                        style={{ backgroundImage: `url(${post.thumbnailUrl})` }}
+                        style={{ backgroundImage: `url("${getRenderableImageUrl(post.thumbnailUrl)}")` }}
                       />
                     ) : null}
                     <div className="absolute inset-0 opacity-20 halftone-bg" />
@@ -368,6 +375,13 @@ export function ProfileDashboard() {
     coverImage: "",
     bio: "",
   });
+  const [uploadingField, setUploadingField] = useState<ImageField | null>(null);
+  const [uploadMessages, setUploadMessages] = useState<
+    Record<ImageField, string | null>
+  >({
+    profileImage: null,
+    coverImage: null,
+  });
 
   const { data: profile, isLoading, isError } = useGetMyProfileQuery(undefined, {
     skip: !isAuthenticated,
@@ -404,7 +418,6 @@ export function ProfileDashboard() {
   );
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -413,7 +426,6 @@ export function ProfileDashboard() {
       return;
     }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setForm({
       username: profile.username ?? "",
       fullName: profile.fullName ?? "",
@@ -422,10 +434,13 @@ export function ProfileDashboard() {
       coverImage: profile.coverImage ?? "",
       bio: profile.bio ?? "",
     });
+    setUploadMessages({
+      profileImage: null,
+      coverImage: null,
+    });
   }, [profile]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSaveMessage(null);
     setSaveError(null);
 
@@ -480,6 +495,67 @@ export function ProfileDashboard() {
     );
   }
 
+  const isUploadingImage = uploadingField !== null;
+  const previewFullName = form.fullName || profile.fullName;
+  const previewUsername = form.username || profile.username;
+  const previewBio = form.bio;
+  const previewProfileImage = form.profileImage.trim();
+  const previewCoverImage = form.coverImage.trim();
+  const previewProfileImageUrl = getRenderableImageUrl(previewProfileImage);
+  const previewCoverImageUrl = getRenderableImageUrl(previewCoverImage);
+
+  function clearFieldError(field: keyof typeof form) {
+    setFieldErrors((current) => {
+      if (!(field in current)) {
+        return current;
+      }
+
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+  }
+
+  async function handleImageUpload(
+    field: ImageField,
+    event: ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    setSaveMessage(null);
+    setSaveError(null);
+    clearFieldError(field);
+    setUploadMessages((current) => ({
+      ...current,
+      [field]: null,
+    }));
+    setUploadingField(field);
+
+    try {
+      const uploadedFile = await uploadImageFile(file);
+      setForm((current) => ({
+        ...current,
+        [field]: uploadedFile.location,
+      }));
+      setUploadMessages((current) => ({
+        ...current,
+        [field]: `Uploaded "${file.name}". Save the profile to persist this image.`,
+      }));
+    } catch (error) {
+      setFieldErrors((current) => ({
+        ...current,
+        [field]: getFileUploadErrorMessage(error),
+      }));
+    } finally {
+      setUploadingField((current) => (current === field ? null : current));
+    }
+  }
+
   function validateProfileForm() {
     const errors: Record<string, string> = {};
 
@@ -522,6 +598,10 @@ export function ProfileDashboard() {
     setSaveMessage(null);
     setSaveError(null);
 
+    if (isUploadingImage) {
+      setSaveError("Wait for the image upload to finish before saving.");
+      return;
+    }
 
     if (!validateProfileForm()) {
       return;
@@ -628,7 +708,7 @@ export function ProfileDashboard() {
           <aside className="overflow-hidden bg-card comic-border">
             <div
               className="relative min-h-44 border-b-4 border-primary bg-linear-to-br from-primary via-orange-500 to-amber-300"
-              style={profile.coverImage ? { backgroundImage: `url(${profile.coverImage})`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
+              style={previewCoverImageUrl ? { backgroundImage: `url("${previewCoverImageUrl}")`, backgroundSize: "cover", backgroundPosition: "center" } : undefined}
             >
               <div className="absolute inset-0 bg-background/20" />
               <div className="absolute inset-0 opacity-25 halftone-bg" />
@@ -636,22 +716,22 @@ export function ProfileDashboard() {
 
             <div className="relative px-6 pb-6">
               <div className="-mt-12 flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-background bg-primary font-bangers text-3xl text-primary-foreground">
-                {profile.profileImage ? (
+                {previewProfileImageUrl ? (
                   <div
                     className="h-full w-full bg-cover bg-center"
-                    style={{ backgroundImage: `url(${profile.profileImage})` }}
+                    style={{ backgroundImage: `url("${previewProfileImageUrl}")` }}
                   />
                 ) : (
-                  getInitials(profile.fullName)
+                  getInitials(previewFullName)
                 )}
               </div>
 
               <div className="mt-4">
                 <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Profile HQ</p>
-                <h1 className="mt-2 font-bangers text-4xl leading-none text-primary sm:text-5xl">{profile.fullName}</h1>
-                <p className="mt-2 font-sans text-base text-muted-foreground">@{profile.username}</p>
+                <h1 className="mt-2 font-bangers text-4xl leading-none text-primary sm:text-5xl">{previewFullName}</h1>
+                <p className="mt-2 font-sans text-base text-muted-foreground">@{previewUsername}</p>
                 <p className="mt-5 font-sans text-sm leading-7 text-foreground">
-                  {profile.bio?.trim() || "Add a bio so readers know what kind of stories you publish."}
+                  {previewBio?.trim() || "Add a bio so readers know what kind of stories you publish."}
                 </p>
               </div>
 
@@ -799,31 +879,139 @@ export function ProfileDashboard() {
                       {fieldErrors.email && <p className="text-sm text-red-500 mt-1">{fieldErrors.email}</p>}
 
                     </label>
-                    <label className="space-y-2">
+                    <div className="space-y-2">
                       <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
                         <ImagePlus size={14} />
-                        Profile image URL
+                        Profile image
                       </span>
                       <Input
                         value={form.profileImage}
-                        onChange={(event) => setForm((current) => ({ ...current, profileImage: event.target.value }))}
+                        onChange={(event) => {
+                          setForm((current) => ({
+                            ...current,
+                            profileImage: event.target.value,
+                          }));
+                          clearFieldError("profileImage");
+                          setUploadMessages((current) => ({
+                            ...current,
+                            profileImage: null,
+                          }));
+                        }}
                         className="h-11 bg-background comic-border-secondary"
+                        placeholder="Paste a URL or upload an image below"
                       />
+                      <div className="flex flex-wrap items-center gap-2">
+                        <label className={`inline-flex cursor-pointer items-center gap-2 px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] comic-border-secondary ${uploadingField === "profileImage" ? "bg-primary text-primary-foreground" : "bg-background text-primary"}`}>
+                          {uploadingField === "profileImage" ? (
+                            <LoaderCircle size={14} className="animate-spin" />
+                          ) : (
+                            <ImagePlus size={14} />
+                          )}
+                          {uploadingField === "profileImage" ? "Uploading..." : "Upload image"}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="sr-only"
+                            onChange={(event) =>
+                              void handleImageUpload("profileImage", event)
+                            }
+                            disabled={isUploadingImage}
+                          />
+                        </label>
+                        {form.profileImage ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setForm((current) => ({
+                                ...current,
+                                profileImage: "",
+                              }));
+                              clearFieldError("profileImage");
+                              setUploadMessages((current) => ({
+                                ...current,
+                                profileImage: null,
+                              }));
+                            }}
+                            className="px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] comic-border-secondary"
+                          >
+                            Clear
+                          </button>
+                        ) : null}
+                      </div>
+                      {uploadMessages.profileImage ? (
+                        <p className="text-sm text-green-600">
+                          {uploadMessages.profileImage}
+                        </p>
+                      ) : null}
                       {fieldErrors.profileImage && <p className="text-sm text-red-500 mt-1">{fieldErrors.profileImage}</p>}
-                    </label>
+                    </div>
 
-                    <label className="space-y-2">
+                    <div className="space-y-2">
                       <span className="inline-flex items-center gap-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
                         <ImagePlus size={14} />
-                        Cover image URL
+                        Cover image
                       </span>
                       <Input
                         value={form.coverImage}
-                        onChange={(event) => setForm((current) => ({ ...current, coverImage: event.target.value }))}
+                        onChange={(event) => {
+                          setForm((current) => ({
+                            ...current,
+                            coverImage: event.target.value,
+                          }));
+                          clearFieldError("coverImage");
+                          setUploadMessages((current) => ({
+                            ...current,
+                            coverImage: null,
+                          }));
+                        }}
                         className="h-11 bg-background comic-border-secondary"
+                        placeholder="Paste a URL or upload an image below"
                       />
+                      <div className="flex flex-wrap items-center gap-2">
+                        <label className={`inline-flex cursor-pointer items-center gap-2 px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] comic-border-secondary ${uploadingField === "coverImage" ? "bg-primary text-primary-foreground" : "bg-background text-primary"}`}>
+                          {uploadingField === "coverImage" ? (
+                            <LoaderCircle size={14} className="animate-spin" />
+                          ) : (
+                            <ImagePlus size={14} />
+                          )}
+                          {uploadingField === "coverImage" ? "Uploading..." : "Upload image"}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="sr-only"
+                            onChange={(event) =>
+                              void handleImageUpload("coverImage", event)
+                            }
+                            disabled={isUploadingImage}
+                          />
+                        </label>
+                        {form.coverImage ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setForm((current) => ({
+                                ...current,
+                                coverImage: "",
+                              }));
+                              clearFieldError("coverImage");
+                              setUploadMessages((current) => ({
+                                ...current,
+                                coverImage: null,
+                              }));
+                            }}
+                            className="px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] comic-border-secondary"
+                          >
+                            Clear
+                          </button>
+                        ) : null}
+                      </div>
+                      {uploadMessages.coverImage ? (
+                        <p className="text-sm text-green-600">
+                          {uploadMessages.coverImage}
+                        </p>
+                      ) : null}
                       {fieldErrors.coverImage && <p className="text-sm text-red-500 mt-1">{fieldErrors.coverImage}</p>}
-                    </label>
+                    </div>
                   </div>
 
                   <label className="block space-y-2">
@@ -842,11 +1030,11 @@ export function ProfileDashboard() {
                   <div className="flex flex-wrap items-center gap-3">
                     <button
                       type="submit"
-                      disabled={isSaving}
+                      disabled={isSaving || isUploadingImage}
                       className="inline-flex items-center gap-2 bg-accent px-5 py-3 font-bangers text-xl text-accent-foreground disabled:cursor-not-allowed disabled:opacity-60 comic-border"
                     >
                       <Save size={16} />
-                      {isSaving ? "Saving..." : "Save profile"}
+                      {isSaving ? "Saving..." : isUploadingImage ? "Uploading image..." : "Save profile"}
                     </button>
                     <p className="font-sans text-sm text-muted-foreground">
                       Your join date stays fixed and cannot be edited.

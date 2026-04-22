@@ -6,6 +6,7 @@ import Link from "next/link";
 import { PostActions } from "@/components/home/post-actions";
 import { useGetLatestPostsQuery } from "@/lib/services/auth-api";
 import { BookOpen, Clock, Calendar } from "lucide-react";
+import { getRenderableImageUrl } from "@/lib/utils/image-url";
 
 function stripHtml(input: string) {
   return input
@@ -53,6 +54,7 @@ function getAuthorInitials(name: string) {
 export function OriginStories() {
   const { data: posts = [], isLoading, isError } = useGetLatestPostsQuery({ size: 4 });
   const [leadPost, ...sidePosts] = posts;
+  const leadThumbnailUrl = getRenderableImageUrl(leadPost?.thumbnailUrl);
 
   return (
     <section className="relative py-16 md:py-24 overflow-hidden border-y-8 border-foreground">
@@ -151,10 +153,10 @@ export function OriginStories() {
                       backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
                       backgroundSize: "8px 8px",
                     }}/>
-                    {leadPost.thumbnailUrl ? (
+                    {leadThumbnailUrl ? (
                       <div
                         className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                        style={{ backgroundImage: `url(${leadPost.thumbnailUrl})` }}
+                        style={{ backgroundImage: `url("${leadThumbnailUrl}")` }}
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-accent/80 transition-transform duration-500 group-hover:scale-105" />
@@ -246,7 +248,10 @@ export function OriginStories() {
 
             {/* Side Posts - Comic Stack */}
             <div className="flex flex-col gap-5">
-              {sidePosts.map((post, index) => (
+              {sidePosts.map((post, index) => {
+                const thumbnailUrl = getRenderableImageUrl(post.thumbnailUrl);
+
+                return (
                 <motion.article
                   key={post.id}
                   initial={{ opacity: 0, y: 30, rotate: index % 2 === 0 ? 1 : -1 }}
@@ -320,10 +325,10 @@ export function OriginStories() {
 
                       {/* Thumbnail */}
                       <Link href={`/posts/${post.slug}`} className="h-28 w-28 shrink-0 overflow-hidden border-3 border-foreground shadow-[4px_4px_0px_0px_hsl(var(--foreground))] order-2 sm:h-32 sm:w-32 transition-transform group-hover:scale-105">
-                        {post.thumbnailUrl ? (
+                        {thumbnailUrl ? (
                           <div
                             className="h-full w-full bg-cover bg-center"
-                            style={{ backgroundImage: `url(${post.thumbnailUrl})` }}
+                            style={{ backgroundImage: `url("${thumbnailUrl}")` }}
                           />
                         ) : (
                           <div className="h-full w-full bg-gradient-to-br from-orange-700 to-amber-500 flex items-center justify-center">
@@ -334,7 +339,8 @@ export function OriginStories() {
                     </div>
                   </div>
                 </motion.article>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}

@@ -5,6 +5,7 @@ import { ArrowRight, Clock, Eye, TrendingUp, Loader2, Star } from "lucide-react"
 import Image from "next/image";
 import Link from "next/link";
 import { useGetMostViewedPostsQuery } from "@/lib/services/auth-api";
+import { getRenderableImageUrl } from "@/lib/utils/image-url";
 
 function stripHtml(value: string) {
   return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
@@ -27,6 +28,7 @@ function estimateReadMinutes(content: string) {
 export function MostRead() {
   const { data: posts = [], isLoading } = useGetMostViewedPostsQuery({ page: 0, size: 1 });
   const post = posts[0];
+  const thumbnailUrl = getRenderableImageUrl(post?.thumbnailUrl);
 
   if (isLoading) {
     return (
@@ -40,9 +42,6 @@ export function MostRead() {
         <div className="container relative z-10 mx-auto px-4">
           <div className="flex h-64 items-center justify-center bg-background border-4 border-foreground shadow-[8px_8px_0px_0px_hsl(var(--foreground))]">
             <div className="relative">
-              <svg className="absolute -inset-8 w-[calc(100%+64px)] h-[calc(100%+64px)] text-primary animate-spin-slow" viewBox="0 0 100 100">
-                <path d="M50 0 L58 38 L95 30 L65 55 L85 90 L50 68 L15 90 L35 55 L5 30 L42 38Z" fill="currentColor" stroke="black" strokeWidth="2"/>
-              </svg>
               <Loader2 className="h-10 w-10 animate-spin text-primary relative z-10" strokeWidth={3} />
             </div>
           </div>
@@ -172,10 +171,10 @@ export function MostRead() {
             
             {/* Image Side */}
             <Link href={`/posts/${post.slug}`} className="relative aspect-video min-h-60 overflow-hidden bg-gradient-to-br from-violet-900 via-purple-700 to-pink-600 md:w-2/5 md:aspect-auto border-b-4 md:border-b-0 md:border-r-4 border-foreground">
-              {post.thumbnailUrl ? (
+              {thumbnailUrl ? (
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-                  style={{ backgroundImage: `url(${post.thumbnailUrl})` }}
+                  style={{ backgroundImage: `url("${thumbnailUrl}")` }}
                 />
               ) : (
                 <div className="absolute inset-0 bg-gradient-to-br from-violet-900 via-purple-700 to-pink-600">

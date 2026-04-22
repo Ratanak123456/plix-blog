@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Heart, Zap, Star, Skull, Flame } from "lucide-react";
 import Link from "next/link";
 import { useGetMostLikedPostsQuery } from "@/lib/services/auth-api";
+import { getRenderableImageUrl } from "@/lib/utils/image-url";
 import {
   stripHtml,
   formatPublishedDate,
@@ -108,6 +109,7 @@ export function Hero() {
     size: 1,
   });
   const featuredPost = posts[0];
+  const featuredThumbnailUrl = getRenderableImageUrl(featuredPost?.thumbnailUrl);
   const cleanedContent = featuredPost ? stripHtml(featuredPost.content) : "";
   const excerpt = cleanedContent ? cleanedContent.slice(0, 140) : "";
   const needsEllipsis = cleanedContent.length > 140;
@@ -262,11 +264,11 @@ export function Hero() {
               <ThickBorder color="accent" className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/80 to-accent">
                 <BenDayDots size={10} color="#fff" />
                 
-                {featuredPost?.thumbnailUrl ? (
+                {featuredThumbnailUrl ? (
                   <>
                     <div
                       className="aspect-square w-full bg-cover bg-center lg:aspect-[4/3]"
-                      style={{ backgroundImage: `url(${featuredPost.thumbnailUrl})` }}
+                      style={{ backgroundImage: `url("${featuredThumbnailUrl}")` }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
                   </>

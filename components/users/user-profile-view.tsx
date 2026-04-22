@@ -7,6 +7,7 @@ import {
   useGetUserPostsQuery,
 } from "@/lib/services/auth-api";
 import { BlogCard } from "@/components/blog/blog-card";
+import { getRenderableImageUrl } from "@/lib/utils/image-url";
 
 function formatDate(input: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -31,6 +32,8 @@ export function UserProfileView({ username }: { username: string }) {
     username, 
     size: 12 
   });
+  const coverImageUrl = getRenderableImageUrl(user?.coverImage);
+  const profileImageUrl = getRenderableImageUrl(user?.profileImage);
 
   if (isUserLoading) {
     return (
@@ -68,9 +71,9 @@ export function UserProfileView({ username }: { username: string }) {
         <div
           className="absolute inset-0 bg-linear-to-br from-primary/40 via-orange-500/30 to-amber-300/30"
           style={
-            user.coverImage
+            coverImageUrl
               ? {
-                  backgroundImage: `linear-gradient(to bottom right, rgba(0,0,0,0.2), rgba(0,0,0,0.05)), url(${user.coverImage})`,
+                  backgroundImage: `linear-gradient(to bottom right, rgba(0,0,0,0.2), rgba(0,0,0,0.05)), url("${coverImageUrl}")`,
                   backgroundSize: "cover",
                   backgroundPosition: "center",
                 }
@@ -91,10 +94,10 @@ export function UserProfileView({ username }: { username: string }) {
             <div className="bg-card p-6 md:p-8 comic-border">
               <div className="flex flex-wrap items-start gap-5">
                 <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-primary font-bangers text-4xl text-primary-foreground">
-                  {user.profileImage ? (
+                  {profileImageUrl ? (
                     <div
                       className="h-full w-full bg-cover bg-center"
-                      style={{ backgroundImage: `url(${user.profileImage})` }}
+                      style={{ backgroundImage: `url("${profileImageUrl}")` }}
                     />
                   ) : (
                     getInitials(user.fullName)

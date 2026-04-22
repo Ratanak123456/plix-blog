@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 import { UserProfileView } from "@/components/users/user-profile-view";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://plix-blog-api.onrender.com/api/v1";
+import { API_BASE_URL } from "@/lib/config/env";
 
 export async function generateMetadata(props: { params: Promise<{ username: string }> }): Promise<Metadata> {
   const { username } = await props.params;
@@ -29,9 +28,9 @@ export async function generateMetadata(props: { params: Promise<{ username: stri
         description,
         type: "profile",
         url: `https://plix-blog.vercel.app/users/${username}`,
-        images: user.avatarUrl ? [
+        images: user.profileImage ? [
           {
-            url: user.avatarUrl,
+            url: user.profileImage,
             width: 400,
             height: 400,
             alt: user.fullName || username,
@@ -49,7 +48,7 @@ export async function generateMetadata(props: { params: Promise<{ username: stri
         card: "summary",
         title,
         description,
-        images: user.avatarUrl ? [user.avatarUrl] : ["https://plix-blog.vercel.app/talk.jpg"],
+        images: user.profileImage ? [user.profileImage] : ["https://plix-blog.vercel.app/talk.jpg"],
       },
     };
   } catch {

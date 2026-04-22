@@ -1,5 +1,11 @@
 import type { NextConfig } from "next";
 
+const filesApiUrl = new URL(
+  process.env.NEXT_PUBLIC_FILES_API_BASE_URL ??
+    "https://api.escuelajs.co/api/v1/files",
+);
+const filesApiProtocol = filesApiUrl.protocol === "http:" ? "http" : "https";
+
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
@@ -21,6 +27,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "share.google",
+        pathname: "/**",
+      },
+      {
+        protocol: filesApiProtocol,
+        hostname: filesApiUrl.hostname,
         pathname: "/**",
       },
     ],

@@ -106,3 +106,9 @@ export type LikeStatusResponse = {
 export type BookmarkStatusResponse = {
   bookmarked: boolean;
 };
+
+export type UploadedFileResponse = {
+  originalname: string;
+  filename: string;
+  location: string;
+};

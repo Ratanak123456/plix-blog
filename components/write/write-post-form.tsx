@@ -10,9 +10,10 @@ import {
   PenSquare,
   Search,
   Tags,
+  Upload,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { type ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { QuillEditor } from "@/components/write/quill-editor";
 import {
@@ -29,6 +30,10 @@ import {
   type BlogPost,
 } from "@/lib/services/auth-api";
 import { useAppSelector } from "@/lib/store";
+import {
+  getFileUploadErrorMessage,
+  uploadImageFile,
+} from "@/lib/utils/file-upload";
 
 type ApiErrorPayload = {
   message?: string;
@@ -78,6 +83,13 @@ export function WritePostForm({
   const [feedback, setFeedback] = useState<string | null>(null);
   const [feedbackTone, setFeedbackTone] = useState<FeedbackTone>("error");
   const [createdSlug, setCreatedSlug] = useState<string | null>(null);
+  const [isThumbnailUploading, setIsThumbnailUploading] = useState(false);
+  const [thumbnailUploadMessage, setThumbnailUploadMessage] = useState<
+    string | null
+  >(null);
+  const [thumbnailUploadError, setThumbnailUploadError] = useState<
+    string | null
+  >(null);
 
   const { data: categories = [], isLoading: categoriesLoading } =
     useGetCategoriesQuery();
@@ -94,17 +106,16 @@ export function WritePostForm({
     .sort((left, right) => left.name.localeCompare(right.name))
     .slice(0, 20);
 
-  // Added categoryId requirement to canSubmit
   const canSubmit =
     isAuthenticated &&
     title.trim() &&
     categoryId &&
     content !== EMPTY_PARAGRAPH &&
-    !isSaving;
+    !isSaving &&
+    !isThumbnailUploading;
 
   useEffect(() => {
     if (initialData) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTitle(initialData.title);
       setThumbnail(initialData.thumbnailUrl ?? "");
       setCategoryId(initialData.category?.id ?? "");
@@ -119,6 +130,31 @@ export function WritePostForm({
         ? current.filter((value) => value !== tagId)
         : [...current, tagId].slice(0, 10),
     );
+  }
+
+  async function handleThumbnailFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    setThumbnailUploadError(null);
+    setThumbnailUploadMessage(null);
+    setIsThumbnailUploading(true);
+
+    try {
+      const uploadedFile = await uploadImageFile(file);
+      setThumbnail(uploadedFile.location);
+      setThumbnailUploadMessage(
+        `Uploaded "${file.name}". The post payload will use the returned location URL.`,
+      );
+    } catch (error) {
+      setThumbnailUploadError(getFileUploadErrorMessage(error));
+    } finally {
+      setIsThumbnailUploading(false);
+    }
   }
 
   async function handleCreateTag() {
@@ -182,6 +218,12 @@ export function WritePostForm({
       return;
     }
 
+    if (isThumbnailUploading) {
+      setFeedback("Wait for the thumbnail upload to finish before saving.");
+      setFeedbackTone("error");
+      return;
+    }
+
     if (!canSubmit) {
       return;
     }
@@ -232,6 +274,8 @@ export function WritePostForm({
         setCreatedSlug(post.slug);
         setTitle("");
         setThumbnail("");
+        setThumbnailUploadMessage(null);
+        setThumbnailUploadError(null);
         setCategoryId("");
         setTagIds([]);
         setNewTagName("");
@@ -472,15 +516,59 @@ export function WritePostForm({
                   {/* Thumbnail URL */}
                   <div className="md:col-span-2">
                     <label className="mb-2 inline-block bg-[#f28b6a] border-2 border-black dark:border-white px-3 py-1 font-oswald text-xs uppercase tracking-[0.28em] text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,0.3)]">
-                      Thumbnail URL
+                      Thumbnail
                     </label>
                     <input
                       value={thumbnail}
-                      onChange={(event) => setThumbnail(event.target.value)}
-                      placeholder="https://example.com/cover-image.jpg"
+                      onChange={(event) => {
+                        setThumbnail(event.target.value);
+                        setThumbnailUploadMessage(null);
+                        setThumbnailUploadError(null);
+                      }}
+                      placeholder="Paste a URL or upload an image below"
                       disabled={!isAuthenticated}
                       className="w-full bg-[#F5F5F0] dark:bg-gray-800 border-3 border-black dark:border-white px-4 py-3 font-sans text-base text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,0.3)] transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,0.1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,0.1)]"
                     />
+                    <div className="mt-3 flex flex-wrap items-center gap-3">
+                      <label className={`inline-flex cursor-pointer items-center gap-2 border-3 border-black dark:border-white px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all ${isThumbnailUploading ? "bg-[#f0b443] text-black" : "bg-white text-black dark:bg-gray-800 dark:text-white"}`}>
+                        {isThumbnailUploading ? (
+                          <LoaderCircle size={16} className="animate-spin" />
+                        ) : (
+                          <Upload size={16} />
+                        )}
+                        {isThumbnailUploading ? "Uploading..." : "Upload thumbnail"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="sr-only"
+                          onChange={(event) => void handleThumbnailFileChange(event)}
+                          disabled={!isAuthenticated || isThumbnailUploading}
+                        />
+                      </label>
+                      {thumbnail ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setThumbnail("");
+                            setThumbnailUploadMessage(null);
+                            setThumbnailUploadError(null);
+                          }}
+                          className="border-3 border-black dark:border-white bg-transparent px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:bg-[#f28b6a] hover:text-white dark:text-white"
+                        >
+                          Clear image
+                        </button>
+                      ) : null}
+                    </div>
+                    {thumbnailUploadMessage ? (
+                      <p className="mt-2 font-sans text-sm text-green-700 dark:text-green-400">
+                        {thumbnailUploadMessage}
+                      </p>
+                    ) : null}
+                    {thumbnailUploadError ? (
+                      <p className="mt-2 font-sans text-sm text-red-500">
+                        {thumbnailUploadError}
+                      </p>
+                    ) : null}
                   </div>
 
                   {/* Category Select */}

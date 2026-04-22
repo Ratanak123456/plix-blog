@@ -46,9 +46,10 @@ npm install
 
 ### Environment Variables
 
-Create `.env.local`:
+Create `.env` or `.env.local`:
 ```env
 NEXT_PUBLIC_API_BASE_URL=https://plix-blog-api.onrender.com/api/v1
+NEXT_PUBLIC_FILES_API_BASE_URL=https://api.escuelajs.co/api/v1/files
 ```
 
 ### Run Development

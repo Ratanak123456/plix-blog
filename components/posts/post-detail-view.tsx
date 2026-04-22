@@ -3,12 +3,14 @@
 import Link from "next/link";
 import { ArrowLeft, Eye, Heart, MessageCircle } from "lucide-react";
 import { PostEngagementBar } from "@/components/posts/post-engagement-bar";
+import { getRenderableImageUrl } from "@/lib/utils/image-url";
 import { formatDate, getReadTime } from "@/lib/utils/format";
 import { UserProfileLink } from "./user-profile-link";
 import { useGetPostBySlugQuery } from "@/lib/services/auth-api";
 
 export function PostDetailView({ slug }: { slug: string }) {
   const { data: post, isLoading, isError } = useGetPostBySlugQuery(slug);
+  const thumbnailUrl = getRenderableImageUrl(post?.thumbnailUrl);
 
   if (isLoading) {
     return (
@@ -121,10 +123,10 @@ export function PostDetailView({ slug }: { slug: string }) {
               <article className="overflow-hidden bg-card comic-border">
                 <div className="relative aspect-[16/7] overflow-hidden bg-linear-to-br from-orange-800 via-primary/50 to-amber-300">
                   <div className="absolute inset-0 opacity-25 halftone-bg" />
-                  {post.thumbnailUrl ? (
+                  {thumbnailUrl ? (
                     <div
                       className="absolute inset-0 bg-cover bg-center"
-                      style={{ backgroundImage: `url(${post.thumbnailUrl})` }}
+                      style={{ backgroundImage: `url("${thumbnailUrl}")` }}
                     />
                   ) : null}
                   <div className="absolute inset-0 bg-linear-to-t from-background/70 via-transparent to-transparent" />
