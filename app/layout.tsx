@@ -22,6 +22,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://plix-blog.vercel.app"),
   title: {
     default: "PlixBlog",
     template: "%s | PlixBlog",
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
     siteName: "PlixBlog",
     images: [
       {
-        url: "https://plix-blog.vercel.app/talk.jpg",
+        url: "/about/og.png",
         width: 1200,
         height: 630,
       },
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "PlixBlog",
     description: "Where silicon meets sequels. PlixBlog covers the arc of technology — from the first commit to the final panel.",
-    images: ["https://plix-blog.vercel.app/talk.jpg"],
+    images: ["/about/og.png"],
   },
 };
 
