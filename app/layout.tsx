@@ -31,11 +31,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "PlixBlog",
     description: "Where silicon meets sequels. PlixBlog covers the arc of technology — from the first commit to the final panel.",
-    url: "https://plix-blog.vercel.app",
+    url: "https://plix-blog.vercel.app/",
     siteName: "PlixBlog",
     images: [
       {
-        url: "/about/og.png",
+        url: "https://plix-blog.vercel.app/about/og.png",
         width: 1200,
         height: 630,
       },
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "PlixBlog",
     description: "Where silicon meets sequels. PlixBlog covers the arc of technology — from the first commit to the final panel.",
-    images: ["/about/og.png"],
+    images: ["https://plix-blog.vercel.app/about/og.png"],
   },
 };
 
