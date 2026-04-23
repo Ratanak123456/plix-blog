@@ -9,6 +9,7 @@ import { useTheme } from "next-themes";
 import { AuthModal } from "@/components/auth/auth-modal";
 import { useGetMyProfileQuery } from "@/lib/services/auth-api";
 import { useAppSelector } from "@/lib/store";
+import { getRenderableImageUrl } from "@/lib/utils/image-url";
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
@@ -86,19 +87,22 @@ export function SiteHeader() {
                   title={user.username}
                 >
                   <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[1px_1px_0px_0px_hsl(var(--foreground))]">
-                    {user.profileImage ? (
-                      <Image
-                        src={user.profileImage}
-                        alt={user.fullName}
-                        fill
-                        sizes="32px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <span className="font-bangers text-[10px] text-background uppercase">
-                        {user.fullName.charAt(0)}
-                      </span>
-                    )}
+                    {(() => {
+                      const profileImageUrl = getRenderableImageUrl(user.profileImage);
+                      return profileImageUrl ? (
+                        <Image
+                          src={profileImageUrl}
+                          alt={user.fullName}
+                          fill
+                          sizes="32px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <span className="font-bangers text-[10px] text-background uppercase">
+                          {user.fullName.charAt(0)}
+                        </span>
+                      );
+                    })()}
                   </div>
                 </Link>
               ) : (
@@ -166,19 +170,22 @@ export function SiteHeader() {
                       className="mt-2 flex items-center gap-3 px-4 py-2 font-oswald text-base uppercase transition-colors hover:text-primary comic-border"
                     >
                       <div className="relative flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[1px_1px_0px_0px_hsl(var(--foreground))]">
-                        {user.profileImage ? (
-                          <Image
-                            src={user.profileImage}
-                            alt={user.fullName}
-                            fill
-                            sizes="32px"
-                            className="object-cover"
-                          />
-                        ) : (
-                          <span className="font-bangers text-[10px] text-background uppercase">
-                            {user.fullName.charAt(0)}
-                          </span>
-                        )}
+                        {(() => {
+                          const profileImageUrl = getRenderableImageUrl(user.profileImage);
+                          return profileImageUrl ? (
+                            <Image
+                              src={profileImageUrl}
+                              alt={user.fullName}
+                              fill
+                              sizes="32px"
+                              className="object-cover"
+                            />
+                          ) : (
+                            <span className="font-bangers text-[10px] text-background uppercase">
+                              {user.fullName.charAt(0)}
+                            </span>
+                          );
+                        })()}
                       </div>
                       <span>{user.username}</span>
                     </Link>

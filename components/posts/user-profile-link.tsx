@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { type UserProfile, type BlogPost } from "@/lib/types";
 import { getAuthorInitials } from "@/lib/utils/format";
+import { getRenderableImageUrl } from "@/lib/utils/image-url";
 
 type ProfileLinkUser = (Pick<UserProfile, "id" | "username" | "fullName" | "profileImage">) | BlogPost["author"];
 
@@ -16,7 +17,7 @@ export function UserProfileLink({
   labelClassName?: string;
   replace?: boolean;
 }) {
-  const profileImage = user.profileImage;
+  const profileImageUrl = getRenderableImageUrl(user.profileImage);
 
   return (
     <Link
@@ -25,9 +26,9 @@ export function UserProfileLink({
       className="group inline-flex items-center gap-3 transition-transform hover:-translate-y-0.5"
     >
       <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-        {profileImage ? (
+        {profileImageUrl ? (
           <Image
-            src={profileImage}
+            src={profileImageUrl}
             alt={user.fullName}
             fill
             sizes="44px"

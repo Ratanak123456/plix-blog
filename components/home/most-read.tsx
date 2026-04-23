@@ -226,19 +226,22 @@ export function MostRead() {
                   <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden border-3 border-foreground bg-accent shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-transform group-hover/author:scale-110 group-hover/author:rotate-3"
                     style={{ clipPath: 'polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)' }}
                   >
-                    {post.author.profileImage ? (
-                      <Image
-                        src={post.author.profileImage}
-                        alt={post.author.fullName}
-                        fill
-                        sizes="56px"
-                        className="object-cover"
-                      />
-                    ) : (
-                      <span className="font-bangers text-lg text-white drop-shadow-md">
-                        {post.author.fullName.charAt(0)}
-                      </span>
-                    )}
+                    {(() => {
+                      const profileImageUrl = getRenderableImageUrl(post.author.profileImage);
+                      return profileImageUrl ? (
+                        <Image
+                          src={profileImageUrl}
+                          alt={post.author.fullName}
+                          fill
+                          sizes="56px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <span className="font-bangers text-lg text-white drop-shadow-md">
+                          {post.author.fullName.charAt(0)}
+                        </span>
+                      );
+                    })()}
                   </div>
                   <div>
                     <div className="font-bangers text-xl leading-tight text-foreground transition-colors group-hover/author:text-primary tracking-wide">

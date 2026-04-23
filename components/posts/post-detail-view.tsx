@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Eye, Heart, MessageCircle } from "lucide-react";
+import { ArrowLeft, Eye, Heart, MessageCircle, Edit3 } from "lucide-react";
 import { PostEngagementBar } from "@/components/posts/post-engagement-bar";
 import { getRenderableImageUrl } from "@/lib/utils/image-url";
 import { formatDate, getReadTime } from "@/lib/utils/format";
 import { UserProfileLink } from "./user-profile-link";
 import { useGetPostBySlugQuery } from "@/lib/services/auth-api";
+import { useAppSelector } from "@/lib/store";
 
 export function PostDetailView({ slug }: { slug: string }) {
+  const { user: currentUser } = useAppSelector((state) => state.auth);
   const { data: post, isLoading, isError } = useGetPostBySlugQuery(slug);
   const thumbnailUrl = getRenderableImageUrl(post?.thumbnailUrl);
 
@@ -82,7 +84,17 @@ export function PostDetailView({ slug }: { slug: string }) {
                 <div className="mt-6 flex flex-wrap items-center gap-4">
                   <div>
                     <p className="mb-2 font-oswald text-xs uppercase tracking-[0.3em] text-muted-foreground">Written by</p>
-                    <UserProfileLink user={post.author} />
+                    <div className="flex flex-wrap items-center gap-4">
+                      <UserProfileLink user={post.author} />
+                      {currentUser?.id === post.author.id && (
+                        <Link
+                          href={`/write/${post.slug}`}
+                          className="flex items-center gap-2 bg-accent px-4 py-2 font-bangers text-lg text-white comic-border shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all"
+                        >
+                          <Edit3 size={16} /> EDIT ISSUE
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

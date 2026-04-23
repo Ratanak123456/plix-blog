@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { BookOpen, Clock, Trash2, MessageCircle, Eye } from "lucide-react";
+import { BookOpen, Clock, Trash2, MessageCircle, Eye, Edit3 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import type { BlogPost } from "@/lib/types";
@@ -14,6 +14,7 @@ interface BlogCardProps {
   index?: number;
   onDelete?: (id: string) => void;
   showStatus?: boolean;
+  showEditButton?: boolean;
 }
 
 function stripHtml(value: string) {
@@ -37,7 +38,13 @@ function estimateReadMinutes(content: string) {
   return Math.max(1, Math.ceil(words / 200));
 }
 
-export function BlogCard({ post, index = 0, onDelete, showStatus = false }: BlogCardProps) {
+export function BlogCard({ 
+  post, 
+  index = 0, 
+  onDelete, 
+  showStatus = false,
+  showEditButton = false
+}: BlogCardProps) {
   const { user: currentUser } = useAppSelector((state) => state.auth);
   const isAuthor = currentUser?.id === post.author.id;
   const thumbnailUrl = getRenderableImageUrl(post.thumbnailUrl);
@@ -152,19 +159,22 @@ export function BlogCard({ post, index = 0, onDelete, showStatus = false }: Blog
             className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden border-3 border-foreground bg-accent shadow-[3px_3px_0px_0px_hsl(var(--foreground))] transition-transform group-hover/author:scale-110 group-hover/author:rotate-3"
             style={{ clipPath: "polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)" }}
           >
-            {post.author.profileImage ? (
-              <Image
-                src={post.author.profileImage}
-                alt={post.author.fullName}
-                fill
-                sizes="40px"
-                className="object-cover"
-              />
-            ) : (
-              <span className="font-bangers text-sm text-white drop-shadow-md">
-                {post.author.fullName.charAt(0)}
-              </span>
-            )}
+            {(() => {
+              const profileImageUrl = getRenderableImageUrl(post.author.profileImage);
+              return profileImageUrl ? (
+                <Image
+                  src={profileImageUrl}
+                  alt={post.author.fullName}
+                  fill
+                  sizes="40px"
+                  className="object-cover"
+                />
+              ) : (
+                <span className="font-bangers text-sm text-white drop-shadow-md">
+                  {post.author.fullName.charAt(0)}
+                </span>
+              );
+            })()}
           </div>
           <div className="font-oswald text-xs font-bold uppercase tracking-wider text-gray-600 transition-colors group-hover/author:text-primary">
             BY{" "}
@@ -183,6 +193,16 @@ export function BlogCard({ post, index = 0, onDelete, showStatus = false }: Blog
             initialBookmarked={post.bookmarkedByCurrentUser}
             compact
           />
+          {showEditButton && isAuthor && (
+            <Link
+              href={`/write/${post.slug}`}
+              className="inline-flex h-9 w-9 items-center justify-center bg-accent text-white border-3 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+              title="Edit this blog"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Edit3 size={14} strokeWidth={2.5} />
+            </Link>
+          )}
           {onDelete && isAuthor && (
             <button
               type="button"

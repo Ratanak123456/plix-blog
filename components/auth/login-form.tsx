@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff } from "lucide-react";
@@ -25,6 +26,7 @@ const defaultLoginValues: LoginFormValues = {
 };
 
 export function LoginForm({ onSuccess, onModeChange }: LoginFormProps) {
+  const router = useRouter();
   const [feedback, setFeedback] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [login, { isLoading: isLoggingIn }] = useLoginMutation();
@@ -40,6 +42,7 @@ export function LoginForm({ onSuccess, onModeChange }: LoginFormProps) {
     try {
       await login(values).unwrap();
       onSuccess();
+      router.push("/");
     } catch (error) {
       const payload = getErrorPayload(error);
       if (payload?.validationErrors?.identifier) {

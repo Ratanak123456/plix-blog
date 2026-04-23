@@ -111,6 +111,7 @@ function PostGrid({
   isLoading,
   emptyMessage,
   onPageChange,
+  showEditButton = false,
   showStatus = false,
   statusFilter,
   onStatusChange,
@@ -201,6 +202,7 @@ function PostGrid({
                   index={index}
                   onDelete={onDelete ? (id) => setPostToDelete(id) : undefined}
                   showStatus={showStatus}
+                  showEditButton={showEditButton}
                 />
               </div>
             ))}
@@ -449,8 +451,10 @@ export function ProfileDashboard() {
       errors.email = "Invalid email format";
     }
 
-    if (form.fullName.length > 100) {
-      errors.fullName = "Full name must be at most 100 characters";
+    if (!form.fullName.trim()) {
+      errors.fullName = "Full name is required";
+    } else if (form.fullName.trim().length < 3 || form.fullName.trim().length > 100) {
+      errors.fullName = "Full name must be 3-100 characters";
     }
 
     if (form.bio.length > 500) {
@@ -653,6 +657,7 @@ export function ProfileDashboard() {
                 }
                 onPageChange={setPostsPageIndex}
                 showStatus={true}
+                showEditButton={true}
                 statusFilter={statusFilter}
                 onStatusChange={(status) => {
                   setStatusFilter(status);

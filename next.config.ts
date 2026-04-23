@@ -8,6 +8,15 @@ const filesApiProtocol = filesApiUrl.protocol === "http:" ? "http" : "https";
 
 const nextConfig: NextConfig = {
   images: {
+    localPatterns: [
+      {
+        pathname: "/api/image-proxy",
+        search: "?url=**",
+      },
+      {
+        pathname: "/**",
+      },
+    ],
     remotePatterns: [
       {
         protocol: "https",

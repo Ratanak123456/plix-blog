@@ -2,6 +2,7 @@
 
 import { authApi } from "@/lib/api/base-api";
 import { setCredentials } from "@/lib/features/auth/auth-slice";
+import { normalizeUser } from "@/lib/features/profile/profile-mappers";
 import type { BackendAuthResponse, LoginRequest, RegisterRequest } from "@/lib/types";
 
 const extendedAuthApi = authApi.injectEndpoints({
@@ -26,7 +27,7 @@ const extendedAuthApi = authApi.injectEndpoints({
             setCredentials({
               accessToken: data.accessToken ?? null,
               refreshToken: data.refreshToken ?? null,
-              user: null,
+              user: data.user ? normalizeUser(data.user) : null,
               isAuthenticated: Boolean(data.accessToken && data.refreshToken),
             }),
           );
@@ -46,7 +47,7 @@ const extendedAuthApi = authApi.injectEndpoints({
             setCredentials({
               accessToken: data.accessToken ?? null,
               refreshToken: data.refreshToken ?? null,
-              user: null,
+              user: data.user ? normalizeUser(data.user) : null,
               isAuthenticated: Boolean(data.accessToken && data.refreshToken),
             }),
           );

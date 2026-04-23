@@ -8,6 +8,7 @@ import {
 } from "@/lib/services/auth-api";
 import { BlogCard } from "@/components/blog/blog-card";
 import { getRenderableImageUrl } from "@/lib/utils/image-url";
+import { useAppSelector } from "@/lib/store";
 
 function formatDate(input: string) {
   return new Intl.DateTimeFormat("en-US", {
@@ -27,6 +28,7 @@ function getInitials(name: string) {
 }
 
 export function UserProfileView({ username }: { username: string }) {
+  const { user: currentUser } = useAppSelector((state) => state.auth);
   const { data: user, isLoading: isUserLoading, isError: isUserError } = useGetPublicProfileQuery(username);
   const { data: posts = [], isLoading: arePostsLoading } = useGetUserPostsQuery({ 
     username, 
@@ -156,7 +158,12 @@ export function UserProfileView({ username }: { username: string }) {
             {posts
               .filter((post) => post.status === "PUBLISHED")
               .map((post, index) => (
-                <BlogCard key={post.id} post={post} index={index} />
+                <BlogCard 
+                  key={post.id} 
+                  post={post} 
+                  index={index} 
+                  showEditButton={currentUser?.id === post.author.id}
+                />
               ))}
           </div>
         ) : (
