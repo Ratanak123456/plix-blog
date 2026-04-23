@@ -39,6 +39,11 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       {
+        protocol: "https",
+        hostname: "static0.dualshockersimages.com",
+        pathname: "/**",
+      },
+      {
         protocol: filesApiProtocol,
         hostname: filesApiUrl.hostname,
         pathname: "/**",

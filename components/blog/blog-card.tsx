@@ -64,7 +64,7 @@ export function BlogCard({
     >
       <Link href={`/posts/${post.slug}`} className="block">
         {/* Comic Panel Frame */}
-        <div className="relative mb-5 aspect-[3/2] w-full overflow-hidden bg-card border-4 border-foreground shadow-[6px_6px_0px_0px_hsl(var(--accent))] transition-all duration-300 group-hover:shadow-[10px_10px_0px_0px_hsl(var(--primary))] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px]">
+        <div className="relative mb-5 aspect-[3/2] w-full overflow-hidden bg-card border-4 border-foreground shadow-[6px_6px_0px_0px_hsl(var(--accent))] transition-all duration-300 group-hover:shadow-[10px_10px_0px_0px_hsl(var(--primary))] group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
           {/* Inner dashed border */}
           <div className="absolute inset-2 border-2 border-dashed border-gray-200 pointer-events-none z-10" />
 
@@ -74,7 +74,7 @@ export function BlogCard({
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
                 style={{ backgroundImage: `url("${thumbnailUrl}")` }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/20 to-transparent" />
             </>
           ) : (
             <div className="absolute inset-0 bg-muted">
@@ -196,7 +196,7 @@ export function BlogCard({
           {showEditButton && isAuthor && (
             <Link
               href={`/write/${post.slug}`}
-              className="inline-flex h-9 w-9 items-center justify-center bg-accent text-white border-3 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+              className="inline-flex h-9 w-9 items-center justify-center bg-accent text-white border-3 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
               title="Edit this blog"
               onClick={(e) => e.stopPropagation()}
             >
@@ -211,7 +211,7 @@ export function BlogCard({
                 e.stopPropagation();
                 onDelete(post.id);
               }}
-              className="inline-flex h-9 w-9 items-center justify-center bg-red-500 text-white border-3 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:bg-red-600"
+              className="inline-flex h-9 w-9 items-center justify-center bg-red-500 text-white border-3 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:bg-red-600"
               title="Delete this blog"
             >
               <Trash2 size={14} strokeWidth={2.5} />

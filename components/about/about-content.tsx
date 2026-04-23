@@ -132,7 +132,7 @@ function PersonCard({
             </p>
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-white/10 opacity-0 transition-opacity group-hover:opacity-100" />
+        <div className="absolute inset-0 bg-linear-to-tr from-transparent via-transparent to-white/10 opacity-0 transition-opacity group-hover:opacity-100" />
       </div>
 
       <div className="mt-4 text-center">

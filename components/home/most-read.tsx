@@ -82,7 +82,7 @@ export function MostRead() {
                 </h2>
               </div>
             </div>
-            <div className="h-[4px] flex-1 bg-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)]" />
+            <div className="h-1 flex-1 bg-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)]" />
           </motion.div>
           
           <div className="flex min-h-[300px] flex-col items-center justify-center bg-card border-4 border-foreground p-8 text-center shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] relative">
@@ -143,7 +143,7 @@ export function MostRead() {
               </h2>
             </div>
           </div>
-          <div className="h-[4px] flex-1 bg-foreground/10 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.05)]" />
+          <div className="h-1 flex-1 bg-foreground/10 shadow-[3px_3px_0px_0px_rgba(0,0,0,0.05)]" />
           <div className="hidden sm:flex items-center gap-2 bg-primary border-3 border-foreground px-4 py-2 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] -rotate-2">
             <Star size={18} className="text-white fill-white" />
             <span className="font-bangers text-lg text-white">TOP CHART</span>
@@ -170,21 +170,21 @@ export function MostRead() {
             <div className="absolute inset-3 border-2 border-dashed border-gray-200 pointer-events-none z-20 hidden md:block"/>
             
             {/* Image Side */}
-            <Link href={`/posts/${post.slug}`} className="relative aspect-video min-h-60 overflow-hidden bg-gradient-to-br from-violet-900 via-purple-700 to-pink-600 md:w-2/5 md:aspect-auto border-b-4 md:border-b-0 md:border-r-4 border-foreground">
+            <Link href={`/posts/${post.slug}`} className="relative aspect-video min-h-60 overflow-hidden bg-linear-to-br from-violet-900 via-purple-700 to-pink-600 md:w-2/5 md:aspect-auto border-b-4 md:border-b-0 md:border-r-4 border-foreground">
               {thumbnailUrl ? (
                 <div 
                   className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                   style={{ backgroundImage: `url("${thumbnailUrl}")` }}
                 />
               ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-900 via-purple-700 to-pink-600">
+                <div className="absolute inset-0 bg-linear-to-br from-violet-900 via-purple-700 to-pink-600">
                   <div className="absolute inset-0 opacity-30" style={{
                     backgroundImage: "radial-gradient(circle, white 1.5px, transparent 1.5px)",
                     backgroundSize: "10px 10px",
                   }}/>
                 </div>
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
               
               {!post.thumbnailUrl && (
                 <div className="absolute inset-0 flex items-center justify-center">

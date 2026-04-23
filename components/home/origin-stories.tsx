@@ -101,7 +101,7 @@ export function OriginStories() {
               </h2>
             </div>
           </div>
-          <div className="h-[4px] flex-1 bg-foreground shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)]" />
+          <div className="h-1 flex-1 bg-foreground shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)]" />
           <div className="hidden sm:flex items-center gap-2 bg-accent border-3 border-foreground px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -rotate-2">
             <span className="font-bangers text-lg text-white">LATEST</span>
           </div>
@@ -148,7 +148,7 @@ export function OriginStories() {
                 <div className="absolute inset-3 border-2 border-dashed border-gray-200 pointer-events-none z-20"/>
                 
                 <Link href={`/posts/${leadPost.slug}`} className="block cursor-pointer relative">
-                  <div className="relative aspect-video w-full overflow-hidden bg-gradient-to-br from-primary/80 to-accent/80 md:aspect-[21/9]">
+                  <div className="relative aspect-video w-full overflow-hidden bg-linear-to-br from-primary/80 to-accent/80 md:aspect-21/9">
                     <div className="absolute inset-0 opacity-20" style={{
                       backgroundImage: "radial-gradient(circle, white 1px, transparent 1px)",
                       backgroundSize: "8px 8px",
@@ -159,15 +159,15 @@ export function OriginStories() {
                         style={{ backgroundImage: `url("${leadThumbnailUrl}")` }}
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/80 to-accent/80 transition-transform duration-500 group-hover:scale-105" />
+                      <div className="absolute inset-0 bg-linear-to-br from-primary/80 to-accent/80 transition-transform duration-500 group-hover:scale-105" />
                     )}
                     {/* Bottom gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
                     
                     {/* Floating category badge on image */}
                     {leadPost.category && (
                       <div className="absolute bottom-4 left-4 z-20">
-                        <div className="bg-primary border-3 border-foreground px-4 py-1 font-bangers text-lg text-white shadow-[3px_3px_0px_0px_hsl(var(--foreground))] rotate-[-2deg]">
+                        <div className="bg-primary border-3 border-foreground px-4 py-1 font-bangers text-lg text-white shadow-[3px_3px_0px_0px_hsl(var(--foreground))] -rotate-2">
                           {leadPost.category.name}
                         </div>
                       </div>
@@ -182,19 +182,22 @@ export function OriginStories() {
                       <div className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden border-3 border-foreground bg-accent shadow-[3px_3px_0px_0px_hsl(var(--foreground))] transition-transform group-hover/author:scale-110 group-hover/author:rotate-3"
                         style={{ clipPath: 'polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)' }}
                       >
-                        {leadPost.author.profileImage ? (
-                          <Image
-                            src={leadPost.author.profileImage}
-                            alt={leadPost.author.fullName}
-                            fill
-                            sizes="48px"
-                            className="object-cover"
-                          />
-                        ) : (
-                          <span className="font-bangers text-sm text-white drop-shadow-md">
-                            {getAuthorInitials(leadPost.author.fullName)}
-                          </span>
-                        )}
+                        {(() => {
+                          const profileImageUrl = getRenderableImageUrl(leadPost.author.profileImage);
+                          return profileImageUrl ? (
+                            <Image
+                              src={profileImageUrl}
+                              alt={leadPost.author.fullName}
+                              fill
+                              sizes="48px"
+                              className="object-cover"
+                            />
+                          ) : (
+                            <span className="font-bangers text-sm text-white drop-shadow-md">
+                              {getAuthorInitials(leadPost.author.fullName)}
+                            </span>
+                          );
+                        })()}
                       </div>
                       <div className="flex flex-col">
                         <span className="font-bangers text-lg text-foreground tracking-wide">
@@ -266,7 +269,7 @@ export function OriginStories() {
                     #{String(index + 2).padStart(3, '0')}
                   </div>
 
-                  <div className="bg-card border-4 border-foreground p-4 shadow-[6px_6px_0px_0px_hsl(var(--foreground))] transition-all duration-300 group-hover:shadow-[8px_8px_0px_0px_hsl(var(--foreground))] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px]">
+                  <div className="bg-card border-4 border-foreground p-4 shadow-[6px_6px_0px_0px_hsl(var(--foreground))] transition-all duration-300 group-hover:shadow-[8px_8px_0px_0px_hsl(var(--foreground))] group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
                     <div className="flex flex-row items-center gap-4">
                       <div className="flex flex-1 flex-col justify-center order-1">
                         {/* Category & Meta */}
@@ -284,19 +287,22 @@ export function OriginStories() {
                           <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden border-2 border-foreground bg-accent shadow-[2px_2px_0px_0px_hsl(var(--foreground))] transition-transform group-hover/author:scale-110"
                             style={{ clipPath: 'polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)' }}
                           >
-                            {post.author.profileImage ? (
-                              <Image
-                                src={post.author.profileImage}
-                                alt={post.author.fullName}
-                                fill
-                                sizes="32px"
-                                className="object-cover"
-                              />
-                            ) : (
-                              <span className="font-bangers text-[10px] text-white">
-                                {getAuthorInitials(post.author.fullName)}
-                              </span>
-                            )}
+                            {(() => {
+                              const profileImageUrl = getRenderableImageUrl(post.author.profileImage);
+                              return profileImageUrl ? (
+                                <Image
+                                  src={profileImageUrl}
+                                  alt={post.author.fullName}
+                                  fill
+                                  sizes="32px"
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <span className="font-bangers text-[10px] text-white">
+                                  {getAuthorInitials(post.author.fullName)}
+                                </span>
+                              );
+                            })()}
                           </div>
                           <div className="font-oswald text-[10px] font-bold uppercase tracking-widest text-gray-500 transition-colors group-hover/author:text-primary">
                             BY {post.author.fullName}
@@ -333,7 +339,7 @@ export function OriginStories() {
                             style={{ backgroundImage: `url("${thumbnailUrl}")` }}
                           />
                         ) : (
-                          <div className="h-full w-full bg-gradient-to-br from-orange-700 to-amber-500 flex items-center justify-center">
+                          <div className="h-full w-full bg-linear-to-br from-orange-700 to-amber-500 flex items-center justify-center">
                             <span className="font-bangers text-2xl text-white/50">?</span>
                           </div>
                         )}

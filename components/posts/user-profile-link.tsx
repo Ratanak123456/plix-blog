@@ -25,7 +25,7 @@ export function UserProfileLink({
       replace={replace}
       className="group inline-flex items-center gap-3 transition-transform hover:-translate-y-0.5"
     >
-      <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+      <div className="relative flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full border-2 border-primary bg-accent shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
         {profileImageUrl ? (
           <Image
             src={profileImageUrl}

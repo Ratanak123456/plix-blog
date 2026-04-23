@@ -81,7 +81,7 @@ export function PopularIssues() {
               </h2>
             </div>
           </div>
-          <div className="h-[4px] flex-1 bg-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)]" />
+          <div className="h-1 flex-1 bg-black shadow-[3px_3px_0px_0px_rgba(0,0,0,0.2)]" />
           <div className="hidden sm:flex items-center gap-2 bg-accent border-3 border-foreground px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -rotate-2">
             <Zap size={18} className="text-white fill-white" />
             <span className="font-bangers text-lg text-white">TOP PICKS</span>

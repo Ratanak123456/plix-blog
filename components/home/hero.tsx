@@ -260,7 +260,7 @@ export function Hero() {
 
             {/* ─── RIGHT: Image Panel ─── */}
             <div className="w-full flex-1">
-              <ThickBorder color="accent" className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/80 to-accent">
+              <ThickBorder color="accent" className="relative overflow-hidden bg-linear-to-br from-primary via-primary/80 to-accent">
                 <BenDayDots size={10} color="#fff" />
                 
                 {featuredThumbnailUrl ? (
@@ -269,7 +269,7 @@ export function Hero() {
                       className="aspect-square w-full bg-cover bg-center lg:aspect-[4/3]"
                       style={{ backgroundImage: `url("${featuredThumbnailUrl}")` }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-linear-to-t from-background/60 via-transparent to-transparent" />
                   </>
                 ) : (
                   <div className="flex aspect-square items-center justify-center lg:aspect-[4/3]">

@@ -107,7 +107,7 @@ export function AboutSummary() {
           <div className="pt-2">
             <Link
               href="/about"
-              className="group inline-flex items-center gap-3 bg-primary px-8 py-4 font-bangers text-xl text-white border-4 border-foreground shadow-[6px_6px_0px_0px_hsl(var(--accent))] transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:bg-foreground hover:text-background sm:text-2xl"
+              className="group inline-flex items-center gap-3 bg-primary px-8 py-4 font-bangers text-xl text-white border-4 border-foreground shadow-[6px_6px_0px_0px_hsl(var(--accent))] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[4px_4px_0px_0px_hsl(var(--foreground))] hover:bg-foreground hover:text-background sm:text-2xl"
             >
               MEET THE HEROES
               <ArrowRight size={24} strokeWidth={3} className="transition-transform group-hover:translate-x-3" />
