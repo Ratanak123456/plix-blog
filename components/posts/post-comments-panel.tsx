@@ -1,14 +1,25 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { MessageCircle, Send } from "lucide-react";
+import { MessageCircle, Send, Trash2 } from "lucide-react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { 
   useCreateCommentMutation, 
-  useGetPostCommentsQuery 
+  useGetPostCommentsQuery,
+  useDeleteCommentMutation
 } from "@/lib/services/auth-api";
 import { useAppSelector } from "@/lib/store";
 import { CommentCard } from "./comment-card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export function PostCommentsPanel({
   postId,
@@ -20,8 +31,11 @@ export function PostCommentsPanel({
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const { data: comments = [] } = useGetPostCommentsQuery(postId ? { postId } : skipToken);
   const [createComment, { isLoading: isSubmittingComment }] = useCreateCommentMutation();
+  const [deleteComment, { isLoading: isDeletingComment }] = useDeleteCommentMutation();
+  
   const [commentDraft, setCommentDraft] = useState("");
   const [commentError, setCommentError] = useState<string | null>(null);
+  const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
 
   async function handleCommentSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -47,8 +61,41 @@ export function PostCommentsPanel({
     }
   }
 
+  async function handleDeleteConfirm() {
+    if (!commentToDelete) return;
+
+    try {
+      await deleteComment({ commentId: commentToDelete, postId }).unwrap();
+      setCommentToDelete(null);
+    } catch {
+      alert("Unable to delete the comment right now.");
+    }
+  }
+
   return (
     <section className="bg-card p-6 comic-border-accent">
+      <AlertDialog open={!!commentToDelete} onOpenChange={(open) => !open && setCommentToDelete(null)}>
+        <AlertDialogContent className="comic-border-secondary">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-bangers text-3xl text-primary uppercase">Retract Comment?</AlertDialogTitle>
+            <AlertDialogDescription className="font-oswald text-lg uppercase tracking-wide">
+              This action will permanently erase your thoughts from this discussion thread. Are you sure?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-4">
+            <AlertDialogCancel className="font-bangers text-xl comic-border-secondary">Keep it</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground font-bangers text-xl hover:bg-destructive/90 comic-border"
+              disabled={isDeletingComment}
+            >
+              <Trash2 className="mr-2 h-5 w-5" />
+              {isDeletingComment ? "Erasing..." : "Delete Permanently"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Discussion</p>
@@ -97,6 +144,7 @@ export function PostCommentsPanel({
               key={comment.id} 
               comment={comment} 
               postId={postId}
+              onDelete={setCommentToDelete}
               replaceProfileNavigation={replaceProfileNavigation} 
             />
           ))
