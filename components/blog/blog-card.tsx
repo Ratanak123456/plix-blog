@@ -66,7 +66,7 @@ export function BlogCard({
         {/* Comic Panel Frame */}
         <div className="relative mb-5 aspect-[3/2] w-full overflow-hidden bg-card border-4 border-foreground shadow-[6px_6px_0px_0px_hsl(var(--accent))] transition-all duration-300 group-hover:shadow-[10px_10px_0px_0px_hsl(var(--primary))] group-hover:-translate-x-0.5 group-hover:-translate-y-0.5">
           {/* Inner dashed border */}
-          <div className="absolute inset-2 border-2 border-dashed border-gray-200 pointer-events-none z-10" />
+          <div className="absolute inset-2 border-2 border-dashed border-muted-border pointer-events-none z-10" />
 
           {thumbnailUrl ? (
             <>
@@ -82,7 +82,7 @@ export function BlogCard({
                 className="absolute inset-0 opacity-20"
                 style={{
                   backgroundImage:
-                    "radial-gradient(circle, black 1.5px, transparent 1.5px)",
+                    "radial-gradient(circle, hsl(var(--foreground)) 1.5px, transparent 1.5px)",
                   backgroundSize: "12px 12px",
                 }}
               />
@@ -92,7 +92,7 @@ export function BlogCard({
           {/* Category Badge - Comic Style */}
           {post.category && (
             <div className="absolute top-4 left-4 z-20 rotate-[-3deg] transition-transform duration-200 group-hover:rotate-0">
-              <div className="bg-primary border-3 border-foreground px-3 py-1 font-bangers text-sm text-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))]">
+              <div className="bg-primary border-3 border-foreground px-3 py-1 font-bangers text-sm text-primary-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))]">
                 {post.category.name}
               </div>
             </div>
@@ -109,18 +109,18 @@ export function BlogCard({
 
           {/* Corner accent */}
           <div className="absolute bottom-0 right-0 w-12 h-12 bg-primary border-l-4 border-t-4 border-foreground z-10 flex items-center justify-center">
-            <BookOpen size={20} className="text-white" strokeWidth={2.5} />
+            <BookOpen size={20} className="text-primary-foreground" strokeWidth={2.5} />
           </div>
         </div>
       </Link>
 
       {/* Meta Row */}
       <div className="mb-3 flex items-center justify-between font-oswald text-xs font-bold uppercase">
-        <div className="flex items-center gap-2 bg-primary px-2 py-1 text-white border-2 border-foreground shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+        <div className="flex items-center gap-2 bg-primary px-2 py-1 text-primary-foreground border-2 border-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))]">
           <Clock size={12} strokeWidth={2.5} />{" "}
           {estimateReadMinutes(post.content)} MIN READ
         </div>
-        <div className="text-gray-500 font-oswald text-xs uppercase tracking-wider border-b-2 border-gray-300 pb-0.5">
+        <div className="text-muted-foreground font-oswald text-xs uppercase tracking-wider border-b-2 border-muted-border pb-0.5">
           {formatPublishedDate(post.publishedAt || post.createdAt)}
         </div>
       </div>
@@ -170,13 +170,13 @@ export function BlogCard({
                   className="object-cover"
                 />
               ) : (
-                <span className="font-bangers text-sm text-white drop-shadow-md">
+                <span className="font-bangers text-sm text-accent-foreground drop-shadow-md">
                   {post.author.fullName.charAt(0)}
                 </span>
               );
             })()}
           </div>
-          <div className="font-oswald text-xs font-bold uppercase tracking-wider text-gray-600 transition-colors group-hover/author:text-primary">
+          <div className="font-oswald text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors group-hover/author:text-primary">
             BY{" "}
             <span className="text-foreground font-bangers text-sm tracking-wide">
               {post.author.fullName}
@@ -196,7 +196,7 @@ export function BlogCard({
           {showEditButton && isAuthor && (
             <Link
               href={`/write/${post.slug}`}
-              className="inline-flex h-9 w-9 items-center justify-center bg-accent text-white border-3 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]"
+              className="inline-flex h-9 w-9 items-center justify-center bg-accent text-accent-foreground border-3 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_hsl(var(--foreground))]"
               title="Edit this blog"
               onClick={(e) => e.stopPropagation()}
             >
@@ -211,7 +211,7 @@ export function BlogCard({
                 e.stopPropagation();
                 onDelete(post.id);
               }}
-              className="inline-flex h-9 w-9 items-center justify-center bg-red-500 text-white border-3 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:bg-red-600"
+              className="inline-flex h-9 w-9 items-center justify-center bg-red-500 text-white border-3 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[1px_1px_0px_0px_hsl(var(--foreground))] hover:bg-red-600"
               title="Delete this blog"
             >
               <Trash2 size={14} strokeWidth={2.5} />
@@ -221,7 +221,7 @@ export function BlogCard({
       </div>
 
       {/* Issue Number Badge */}
-      <div className="absolute -top-3 -right-3 bg-accent border-3 border-foreground px-2 py-1 font-bangers text-xs text-white shadow-[3px_3px_0px_0px_hsl(var(--foreground))] rotate-12 z-20">
+      <div className="absolute -top-3 -right-3 bg-accent border-3 border-foreground px-2 py-1 font-bangers text-xs text-accent-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] rotate-12 z-20">
         #{String(index + 1).padStart(3, "0")}
       </div>
     </motion.article>

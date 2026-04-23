@@ -3,10 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type ChangeEvent, useEffect, useMemo, useState } from "react";
-import {
-  ArrowLeft,
-} from "lucide-react";
+import { ArrowLeft, Zap, Skull, Trash2, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
 import { skipToken } from "@reduxjs/toolkit/query";
+import { motion, AnimatePresence } from "framer-motion";
 import { logout } from "@/lib/features/auth/auth-slice";
 import { getGeneralErrorMessage } from "@/lib/utils/auth-utils";
 import { navigateWithFallback } from "@/lib/utils/client-navigation";
@@ -33,9 +32,7 @@ import {
 } from "@/lib/services/auth-api";
 import { BlogCard } from "@/components/blog/blog-card";
 import { useAppDispatch, useAppSelector } from "@/lib/store";
-import {
-  getFileUploadErrorMessage,
-} from "@/lib/utils/file-upload";
+import { getFileUploadErrorMessage } from "@/lib/utils/file-upload";
 import { getRenderableImageUrl } from "@/lib/utils/image-url";
 import { ProfileSidebar } from "./profile-sidebar";
 import { UserInfoForm } from "./user-info-form";
@@ -44,6 +41,66 @@ import { formatDate } from "./profile-utils";
 
 type ProfileTab = "info" | "posts" | "bookmarks";
 type ImageField = "profileImage" | "coverImage";
+
+// ─── Comic Components ──────────────────────────────────────────
+
+function ThickBorder({ children, className = "", color = "foreground" }: {
+  children: React.ReactNode;
+  className?: string;
+  color?: string;
+}) {
+  return (
+    <div
+      className={`border-[4px] border-${color} ${className}`}
+      style={{ boxShadow: "6px 6px 0px 0px hsl(var(--foreground))" }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function BenDayDots({ className = "", size = 8, color = "var(--foreground)" }: {
+  className?: string;
+  size?: number;
+  color?: string;
+}) {
+  return (
+    <div
+      className={`pointer-events-none absolute inset-0 opacity-[0.08] ${className}`}
+      style={{
+        backgroundImage: `radial-gradient(circle, ${color} 2px, transparent 2px)`,
+        backgroundSize: `${size}px ${size}px`,
+      }}
+    />
+  );
+}
+
+function JaggedDivider({ className = "" }: { className?: string }) {
+  return (
+    <svg className={`w-full h-3 ${className}`} viewBox="0 0 100 12" preserveAspectRatio="none">
+      <polygon
+        points="0,6 4,0 8,6 12,0 16,6 20,0 24,6 28,0 32,6 36,0 40,6 44,0 48,6 52,0 56,6 60,0 64,6 68,0 72,6 76,0 80,6 84,0 88,6 92,0 96,6 100,0 100,12 0,12"
+        fill="hsl(var(--foreground))"
+      />
+    </svg>
+  );
+}
+
+function SoundFX({ text, className = "" }: { text: string; className?: string }) {
+  return (
+    <span
+      className={`font-bangers text-2xl uppercase leading-none ${className}`}
+      style={{
+        WebkitTextStroke: "1.5px hsl(var(--foreground))",
+        textShadow: "3px 3px 0px hsl(var(--foreground))",
+      }}
+    >
+      {text}
+    </span>
+  );
+}
+
+// ─── Pagination ────────────────────────────────────────────────
 
 function PaginationBar({
   page,
@@ -54,39 +111,39 @@ function PaginationBar({
   totalPages: number;
   onChange: (page: number) => void;
 }) {
-  if (totalPages <= 1) {
-    return null;
-  }
+  if (totalPages <= 1) return null;
 
-  const pages = Array.from({ length: totalPages }, (_, index) => index).slice(
+  const pages = Array.from({ length: totalPages }, (_, i) => i).slice(
     Math.max(0, page - 1),
     Math.min(totalPages, page + 2),
   );
 
   return (
-    <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+    <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t-[3px] border-foreground pt-6">
       <p className="font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
-        Page {page + 1} of {totalPages}
+        Page <span className="font-bangers text-lg text-accent">{page + 1}</span> of {totalPages}
       </p>
       <div className="flex flex-wrap items-center gap-2">
         <button
           type="button"
           onClick={() => onChange(page - 1)}
           disabled={page === 0}
-          className="bg-card px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-primary disabled:cursor-not-allowed disabled:opacity-50 comic-border-secondary"
+          className="bg-card px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-primary border-[3px] border-foreground transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+          style={{ boxShadow: "4px 4px 0px 0px hsl(var(--foreground))" }}
         >
-          Previous
+          Prev
         </button>
         {pages.map((pageIndex) => (
           <button
             key={pageIndex}
             type="button"
             onClick={() => onChange(pageIndex)}
-            className={`px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] comic-border ${
+            className={`px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] border-[3px] border-foreground transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none ${
               pageIndex === page
-                ? "bg-primary text-primary-foreground"
+                ? "bg-accent text-accent-foreground"
                 : "bg-card text-muted-foreground"
             }`}
+            style={pageIndex !== page ? { boxShadow: "4px 4px 0px 0px hsl(var(--foreground))" } : {}}
           >
             {pageIndex + 1}
           </button>
@@ -95,7 +152,8 @@ function PaginationBar({
           type="button"
           onClick={() => onChange(page + 1)}
           disabled={page >= totalPages - 1}
-          className="bg-card px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-primary disabled:cursor-not-allowed disabled:opacity-50 comic-border-secondary"
+          className="bg-card px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-primary border-[3px] border-foreground transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-x-0 disabled:hover:translate-y-0"
+          style={{ boxShadow: "4px 4px 0px 0px hsl(var(--foreground))" }}
         >
           Next
         </button>
@@ -103,6 +161,8 @@ function PaginationBar({
     </div>
   );
 }
+
+// ─── Post Grid ─────────────────────────────────────────────────
 
 function PostGrid({
   heading,
@@ -137,17 +197,26 @@ function PostGrid({
   }, [page, statusFilter]);
 
   return (
-    <section className="bg-card p-6 md:p-8 comic-border">
+    <ThickBorder className="relative bg-card p-6 md:p-8">
+      <BenDayDots size={10} />
+
       <AlertDialog open={!!postToDelete} onOpenChange={(open) => !open && setPostToDelete(null)}>
-        <AlertDialogContent className="comic-border-secondary">
+        <AlertDialogContent className="border-[4px] border-foreground bg-background" style={{ boxShadow: "8px 8px 0px 0px hsl(var(--destructive))" }}>
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-bangers text-3xl text-primary uppercase">Danger Zone!</AlertDialogTitle>
-            <AlertDialogDescription className="font-oswald text-lg uppercase tracking-wide">
-              This action cannot be undone. This will permanently delete your story and remove its data from our archives.
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-8 w-8 text-destructive" />
+              <AlertDialogTitle className="font-bangers text-3xl uppercase text-destructive">
+                Danger Zone!
+              </AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="font-oswald text-lg uppercase tracking-wide text-foreground">
+              This action cannot be undone. Your story will be permanently erased from the archives!
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4">
-            <AlertDialogCancel className="font-bangers text-xl comic-border-secondary">Abort Mission</AlertDialogCancel>
+          <AlertDialogFooter className="mt-6 gap-3">
+            <AlertDialogCancel className="bg-card px-6 py-3 font-bangers text-xl uppercase border-[3px] border-foreground transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none" style={{ boxShadow: "4px 4px 0px 0px hsl(var(--foreground))" }}>
+              Abort!
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (postToDelete && onDelete) {
@@ -155,46 +224,60 @@ function PostGrid({
                   setPostToDelete(null);
                 }
               }}
-              className="bg-destructive text-destructive-foreground font-bangers text-xl hover:bg-destructive/90 comic-border"
+              className="bg-destructive px-6 py-3 font-bangers text-xl uppercase text-destructive-foreground border-[3px] border-foreground transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+              style={{ boxShadow: "4px 4px 0px 0px hsl(var(--foreground))" }}
             >
-              Confirm Deletion
+              <Trash2 className="mr-2 h-5 w-5" />
+              Destroy It
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* Header */}
+      <div className="relative z-10 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">{description}</p>
-          <h2 className="mt-2 font-bangers text-4xl text-primary">{heading}</h2>
+          <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">
+            {description}
+          </p>
+          <h2
+            className="mt-2 font-bangers text-4xl uppercase text-primary sm:text-5xl"
+            style={{ textShadow: "3px 3px 0px hsl(var(--secondary))" }}
+          >
+            {heading}
+          </h2>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {onStatusChange && (
             <select
               value={statusFilter}
               onChange={(e) => onStatusChange(e.target.value)}
-              className="bg-background px-3 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-primary comic-border-secondary focus:outline-none"
+              className="bg-background px-3 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-primary border-[3px] border-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+              style={{ boxShadow: "3px 3px 0px 0px hsl(var(--foreground))" }}
             >
-              <option value="">All Status</option>
+              <option value="">All Issues</option>
               <option value="PUBLISHED">Published</option>
               <option value="DRAFT">Draft</option>
             </select>
           )}
-          <div className="bg-background px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground comic-border-secondary">
-            {(page?.totalElements ?? 0)} stories
-          </div>
+          <ThickBorder className="bg-background px-4 py-2">
+            <span className="font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground">
+              <span className="font-bangers text-lg text-accent">{page?.totalElements ?? 0}</span> stories
+            </span>
+          </ThickBorder>
         </div>
       </div>
 
+      {/* Content */}
       {isLoading ? (
-        <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="h-64 animate-pulse bg-background comic-border" />
+        <div className="relative z-10 mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-64 animate-pulse bg-muted border-[3px] border-foreground" style={{ boxShadow: "4px 4px 0px 0px hsl(var(--foreground))" }} />
           ))}
         </div>
       ) : filteredContent.length ? (
         <>
-          <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="relative z-10 mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {filteredContent.map((post, index) => (
               <div key={post.id} className="relative group">
                 <BlogCard
@@ -214,24 +297,31 @@ function PostGrid({
           />
         </>
       ) : (
-        <div className="mt-6 flex flex-col items-center justify-center bg-background p-12 text-center comic-border-secondary">
-          <div className="mb-4 h-16 w-16 opacity-20 halftone-bg" />
+        <div className="relative z-10 mt-6 flex flex-col items-center justify-center bg-background p-12 text-center border-[3px] border-foreground" style={{ boxShadow: "6px 6px 0px 0px hsl(var(--foreground))" }}>
+          <div className="mb-4 flex items-center justify-center h-20 w-20 bg-muted border-[3px] border-foreground">
+            <Skull className="h-10 w-10 text-muted-foreground opacity-40" />
+          </div>
+          <SoundFX text="EMPTY!" className="text-muted-foreground mb-2" />
           <p className="max-w-xs font-oswald text-lg uppercase tracking-wider text-muted-foreground">
             {emptyMessage}
           </p>
           {!statusFilter && (
             <Link
               href="/write"
-              className="mt-6 bg-accent px-6 py-2 font-bangers text-xl text-accent-foreground comic-border"
+              className="mt-6 inline-flex items-center gap-2 bg-accent px-6 py-3 font-bangers text-xl uppercase text-accent-foreground border-[3px] border-foreground transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+              style={{ boxShadow: "4px 4px 0px 0px hsl(var(--foreground))" }}
             >
+              <Zap className="h-5 w-5 fill-current" />
               Start Writing
             </Link>
           )}
         </div>
       )}
-    </section>
+    </ThickBorder>
   );
 }
+
+// ─── Main Dashboard ────────────────────────────────────────────
 
 export function ProfileDashboard() {
   const router = useRouter();
@@ -255,9 +345,7 @@ export function ProfileDashboard() {
     bio: "",
   });
   const [uploadingField, setUploadingField] = useState<ImageField | null>(null);
-  const [uploadMessages, setUploadMessages] = useState<
-    Record<ImageField, string | null>
-  >({
+  const [uploadMessages, setUploadMessages] = useState<Record<ImageField, string | null>>({
     profileImage: null,
     coverImage: null,
   });
@@ -282,11 +370,7 @@ export function ProfileDashboard() {
 
   const profileUsername = profile?.username ?? currentUser?.username;
   const postsQueryArg = profileUsername
-    ? { 
-        username: profileUsername, 
-        page: postsPageIndex, 
-        size: 9 
-      }
+    ? { username: profileUsername, page: postsPageIndex, size: 9 }
     : skipToken;
 
   const { data: postsPage, isLoading: postsLoading, refetch: refetchPosts } = useGetUserPostsPageQuery(postsQueryArg);
@@ -294,54 +378,24 @@ export function ProfileDashboard() {
     isAuthenticated ? { page: bookmarksPageIndex, size: 9 } : skipToken,
   );
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { if (!profile) return; setForm({ username: profile.username ?? "", fullName: profile.fullName ?? "", email: profile.email ?? "", profileImage: profile.profileImage ?? "", coverImage: profile.coverImage ?? "", bio: profile.bio ?? "" }); setUploadMessages({ profileImage: null, coverImage: null }); }, [profile]);
+  useEffect(() => { setSaveMessage(null); setSaveError(null); if (activeTab !== "posts") { setStatusFilter(""); setPostsPageIndex(0); } }, [activeTab]);
 
-  useEffect(() => {
-    if (!profile) {
-      return;
-    }
-
-    setForm({
-      username: profile.username ?? "",
-      fullName: profile.fullName ?? "",
-      email: profile.email ?? "",
-      profileImage: profile.profileImage ?? "",
-      coverImage: profile.coverImage ?? "",
-      bio: profile.bio ?? "",
-    });
-    setUploadMessages({
-      profileImage: null,
-      coverImage: null,
-    });
-  }, [profile]);
-
-  useEffect(() => {
-    setSaveMessage(null);
-    setSaveError(null);
-
-    if (activeTab !== "posts") {
-      setStatusFilter("");
-      setPostsPageIndex(0);
-    }
-  }, [activeTab]);
-
-  const tabs = useMemo(
-    () => [
-      { id: "info" as const, label: "User information" },
-      { id: "posts" as const, label: "My blogs" },
-      { id: "bookmarks" as const, label: "Saved bookmarks" },
-    ],
-    [],
-  );
+  const tabs = useMemo(() => [
+    { id: "info" as const, label: "User Info" },
+    { id: "posts" as const, label: "My Blogs" },
+    { id: "bookmarks" as const, label: "Bookmarks" },
+  ], []);
 
   if (!mounted) {
     return (
-      <main className="container mx-auto px-4 py-12">
-        <div className="grid gap-8 lg:grid-cols-[22rem_minmax(0,1fr)]">
-          <div className="h-[32rem] animate-pulse bg-card comic-border" />
-          <div className="h-[32rem] animate-pulse bg-card comic-border-secondary" />
+      <main className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid gap-8 lg:grid-cols-[22rem_minmax(0,1fr)]">
+            <div className="h-[32rem] animate-pulse bg-muted border-[4px] border-foreground" style={{ boxShadow: "6px 6px 0px 0px hsl(var(--foreground))" }} />
+            <div className="h-[32rem] animate-pulse bg-muted border-[4px] border-foreground" style={{ boxShadow: "6px 6px 0px 0px hsl(var(--foreground))" }} />
+          </div>
         </div>
       </main>
     );
@@ -349,10 +403,12 @@ export function ProfileDashboard() {
 
   if (isLoading) {
     return (
-      <main className="container mx-auto px-4 py-12">
-        <div className="grid gap-8 lg:grid-cols-[22rem_minmax(0,1fr)]">
-          <div className="h-[32rem] animate-pulse bg-card comic-border" />
-          <div className="h-[32rem] animate-pulse bg-card comic-border-secondary" />
+      <main className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid gap-8 lg:grid-cols-[22rem_minmax(0,1fr)]">
+            <div className="h-[32rem] animate-pulse bg-muted border-[4px] border-foreground" style={{ boxShadow: "6px 6px 0px 0px hsl(var(--foreground))" }} />
+            <div className="h-[32rem] animate-pulse bg-muted border-[4px] border-foreground" style={{ boxShadow: "6px 6px 0px 0px hsl(var(--foreground))" }} />
+          </div>
         </div>
       </main>
     );
@@ -360,20 +416,28 @@ export function ProfileDashboard() {
 
   if (isError || !profile) {
     return (
-      <main className="container mx-auto px-4 py-16">
-        <div className="mx-auto max-w-3xl bg-card p-6 text-center comic-border-secondary sm:p-8">
-          <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">Profile unavailable</p>
-          <h1 className="mt-3 font-bangers text-4xl text-primary sm:text-5xl md:text-6xl">Unable to load profile</h1>
-          <p className="mt-4 font-sans text-base text-muted-foreground">
-            The current user profile could not be loaded from the API.
-          </p>
+      <main className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-16">
+          <ThickBorder className="mx-auto max-w-3xl bg-card p-8 text-center">
+            <BenDayDots size={12} />
+            <div className="relative z-10">
+              <p className="font-oswald text-xs uppercase tracking-[0.35em] text-muted-foreground">System Failure</p>
+              <h1 className="mt-3 font-bangers text-5xl uppercase text-primary sm:text-6xl" style={{ textShadow: "4px 4px 0px hsl(var(--secondary))" }}>
+                Profile Offline!
+              </h1>
+              <div className="mt-4 flex justify-center">
+                <XCircle className="h-16 w-16 text-destructive" />
+              </div>
+              <p className="mt-4 font-oswald text-lg uppercase text-muted-foreground">
+                The current user profile could not be loaded from the API.
+              </p>
+            </div>
+          </ThickBorder>
         </div>
       </main>
     );
   }
 
-  // uploadingField tracks which field is being uploaded for UI styling
-  // Sidebar always shows saved profile data - updates only after Save Profile is clicked
   const previewFullName = profile.fullName;
   const previewUsername = profile.username;
   const previewBio = profile.bio;
@@ -384,51 +448,33 @@ export function ProfileDashboard() {
 
   function clearFieldError(field: keyof typeof form) {
     setFieldErrors((current) => {
-      if (!(field in current)) {
-        return current;
-      }
-
+      if (!(field in current)) return current;
       const next = { ...current };
       delete next[field];
       return next;
     });
   }
 
-  async function handleImageUpload(
-    field: ImageField,
-    event: ChangeEvent<HTMLInputElement>,
-  ) {
+  async function handleImageUpload(field: ImageField, event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
-
-    if (!file) {
-      return;
-    }
+    if (!file) return;
 
     setSaveMessage(null);
     setSaveError(null);
     clearFieldError(field);
-    setUploadMessages((current) => ({
-      ...current,
-      [field]: null,
-    }));
+    setUploadMessages((current) => ({ ...current, [field]: null }));
     setUploadingField(field);
 
     try {
       const uploadedFile = await uploadImage(file).unwrap();
-      setForm((current) => ({
-        ...current,
-        [field]: uploadedFile.location,
-      }));
+      setForm((current) => ({ ...current, [field]: uploadedFile.location }));
       setUploadMessages((current) => ({
         ...current,
-        [field]: `Uploaded "${file.name}". Save the profile to persist this image.`,
+        [field]: `Uploaded "${file.name}". Save to persist!`,
       }));
     } catch (error) {
-      setFieldErrors((current) => ({
-        ...current,
-        [field]: getFileUploadErrorMessage(error),
-      }));
+      setFieldErrors((current) => ({ ...current, [field]: getFileUploadErrorMessage(error) }));
     } finally {
       setUploadingField((current) => (current === field ? null : current));
     }
@@ -436,38 +482,19 @@ export function ProfileDashboard() {
 
   function validateProfileForm() {
     const errors: Record<string, string> = {};
+    if (!form.username.trim()) errors.username = "Username required!";
+    else if (form.username.length < 3 || form.username.length > 30) errors.username = "3-30 chars only!";
+    else if (!/^[A-Za-z0-9_]+$/.test(form.username)) errors.username = "Letters, numbers, underscores!";
 
-    if (!form.username.trim()) {
-      errors.username = "Username is required";
-    } else if (form.username.length < 3 || form.username.length > 30) {
-      errors.username = "Username must be 3-30 characters";
-    } else if (!/^[A-Za-z0-9_]+$/.test(form.username)) {
-      errors.username = "Username can only contain letters, numbers, and underscores";
-    }
+    if (!form.email.trim()) errors.email = "Email required!";
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = "Invalid email!";
 
-    if (!form.email.trim()) {
-      errors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      errors.email = "Invalid email format";
-    }
+    if (!form.fullName.trim()) errors.fullName = "Name required!";
+    else if (form.fullName.trim().length < 3 || form.fullName.trim().length > 100) errors.fullName = "3-100 chars!";
 
-    if (!form.fullName.trim()) {
-      errors.fullName = "Full name is required";
-    } else if (form.fullName.trim().length < 3 || form.fullName.trim().length > 100) {
-      errors.fullName = "Full name must be 3-100 characters";
-    }
-
-    if (form.bio.length > 500) {
-      errors.bio = "Bio must be at most 500 characters";
-    }
-
-    if (form.profileImage && !/^https?:\/\/.+$/i.test(form.profileImage)) {
-      errors.profileImage = "Profile image must be a valid URL (http/https)";
-    }
-
-    if (form.coverImage && !/^https?:\/\/.+$/i.test(form.coverImage)) {
-      errors.coverImage = "Cover image must be a valid URL (http/https)";
-    }
+    if (form.bio.length > 500) errors.bio = "Max 500 chars!";
+    if (form.profileImage && !/^https?:\/\/.+$/i.test(form.profileImage)) errors.profileImage = "Valid URL only!";
+    if (form.coverImage && !/^https?:\/\/.+$/i.test(form.coverImage)) errors.coverImage = "Valid URL only!";
 
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -477,15 +504,9 @@ export function ProfileDashboard() {
     event.preventDefault();
     setSaveMessage(null);
     setSaveError(null);
+    if (isUploadingImage) { setSaveError("Wait for upload to finish!"); return; }
+    if (!validateProfileForm()) return;
 
-    if (isUploadingImage) {
-      setSaveError("Wait for the image upload to finish before saving.");
-      return;
-    }
-
-    if (!validateProfileForm()) {
-      return;
-    }
     try {
       await updateProfile({
         username: form.username,
@@ -495,7 +516,7 @@ export function ProfileDashboard() {
         coverImage: form.coverImage || null,
         bio: form.bio || null,
       }).unwrap();
-      setSaveMessage("Profile updated successfully.");
+      setSaveMessage("Profile updated successfully!");
     } catch (error) {
       setSaveError(getGeneralErrorMessage(error));
     }
@@ -507,44 +528,29 @@ export function ProfileDashboard() {
     setPasswordError(null);
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setPasswordError("New passwords do not match.");
-      return;
+      setPasswordError("Passwords don't match!"); return;
     }
-
-    if (passwordForm.newPassword.length < 8) {
-      setPasswordError("Password must be at least 8 characters.");
-      return;
-    } else if (!/[A-Z]/.test(passwordForm.newPassword)) {
-      setPasswordError("Password must contain at least one uppercase letter.");
-      return;
-    } else if (!/[a-z]/.test(passwordForm.newPassword)) {
-      setPasswordError("Password must contain at least one lowercase letter.");
-      return;
-    } else if (!/\d/.test(passwordForm.newPassword)) {
-      setPasswordError("Password must contain at least one number.");
-      return;
-    }
+    if (passwordForm.newPassword.length < 8) { setPasswordError("Min 8 chars!"); return; }
+    if (!/[A-Z]/.test(passwordForm.newPassword)) { setPasswordError("Need uppercase!"); return; }
+    if (!/[a-z]/.test(passwordForm.newPassword)) { setPasswordError("Need lowercase!"); return; }
+    if (!/\d/.test(passwordForm.newPassword)) { setPasswordError("Need a number!"); return; }
 
     try {
       await changePassword({
         currentPassword: passwordForm.currentPassword,
         newPassword: passwordForm.newPassword,
       }).unwrap();
-      setPasswordMessage("Password changed successfully.");
-      setPasswordForm({
-        currentPassword: "",
-        newPassword: "",
-        confirmPassword: "",
-      });
+      setPasswordMessage("Password changed!");
+      setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (error) {
       setPasswordError(getGeneralErrorMessage(error));
     }
   }
 
   async function handleDeletePost(id: string) {
-        try {
+    try {
       await deletePost(id).unwrap();
-      setDeletionResult({ success: true, message: "Your story has been permanently removed from the archives." });
+      setDeletionResult({ success: true, message: "Story destroyed! Removed from archives." });
       refetchPosts();
       refetchBookmarks();
     } catch (error) {
@@ -554,20 +560,25 @@ export function ProfileDashboard() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
+      {/* Deletion Result Dialog */}
       <AlertDialog open={!!deletionResult} onOpenChange={(open) => !open && setDeletionResult(null)}>
-        <AlertDialogContent className="comic-border-secondary">
+        <AlertDialogContent className="border-[4px] border-foreground bg-background" style={{ boxShadow: deletionResult?.success ? "8px 8px 0px 0px hsl(var(--primary))" : "8px 8px 0px 0px hsl(var(--destructive))" }}>
           <AlertDialogHeader>
-            <AlertDialogTitle className={`font-bangers text-3xl uppercase ${deletionResult?.success ? "text-primary" : "text-destructive"}`}>
-              {deletionResult?.success ? "Mission Accomplished!" : "System Error!"}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="font-oswald text-lg uppercase tracking-wide">
+            <div className="flex items-center gap-2">
+              {deletionResult?.success ? <CheckCircle2 className="h-8 w-8 text-primary" /> : <XCircle className="h-8 w-8 text-destructive" />}
+              <AlertDialogTitle className={`font-bangers text-3xl uppercase ${deletionResult?.success ? "text-primary" : "text-destructive"}`}>
+                {deletionResult?.success ? "Mission Accomplished!" : "System Error!"}
+              </AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="font-oswald text-lg uppercase tracking-wide text-foreground">
               {deletionResult?.message}
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="mt-4">
+          <AlertDialogFooter className="mt-6">
             <AlertDialogAction
               onClick={() => setDeletionResult(null)}
-              className="bg-primary text-primary-foreground font-bangers text-xl hover:bg-primary/90 comic-border"
+              className="bg-primary px-6 py-3 font-bangers text-xl uppercase text-primary-foreground border-[3px] border-foreground transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+              style={{ boxShadow: "4px 4px 0px 0px hsl(var(--foreground))" }}
             >
               Acknowledged
             </AlertDialogAction>
@@ -576,15 +587,18 @@ export function ProfileDashboard() {
       </AlertDialog>
 
       <section className="container mx-auto px-4 py-10 md:py-12">
+        {/* Back button */}
         <Link
           href="/"
-          className="inline-flex items-center gap-2 bg-card px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-primary comic-border-secondary"
+          className="inline-flex items-center gap-2 bg-card px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-primary border-[3px] border-foreground transition-all hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none"
+          style={{ boxShadow: "4px 4px 0px 0px hsl(var(--foreground))" }}
         >
           <ArrowLeft size={14} />
-          Back to home
+          Back to Base
         </Link>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[22rem_minmax(0,1fr)]">
+          {/* Sidebar */}
           <ProfileSidebar
             profile={profile}
             previewFullName={previewFullName}
@@ -606,78 +620,93 @@ export function ProfileDashboard() {
             }}
           />
 
+          {/* Main Content */}
           <div className="space-y-6">
-            {activeTab === "info" ? (
-              <>
-                <UserInfoForm
-                  form={form}
-                  setForm={setForm}
-                  fieldErrors={fieldErrors}
-                  clearFieldError={clearFieldError}
-                  uploadingField={uploadingField}
-                  uploadMessages={uploadMessages}
-                  isUploadingImage={isUploadingImage}
-                  isSaving={isSaving}
-                  saveMessage={saveMessage}
-                  saveError={saveError}
-                  handleImageUpload={handleImageUpload}
-                  handleSaveProfile={handleSaveProfile}
-                  joinedDate={profile.createdAt}
-                />
+            <AnimatePresence mode="wait">
+              {activeTab === "info" && (
+                <motion.div
+                  key="info"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-6"
+                >
+                  <UserInfoForm
+                    form={form}
+                    setForm={setForm}
+                    fieldErrors={fieldErrors}
+                    clearFieldError={clearFieldError}
+                    uploadingField={uploadingField}
+                    uploadMessages={uploadMessages}
+                    isUploadingImage={isUploadingImage}
+                    isSaving={isSaving}
+                    saveMessage={saveMessage}
+                    saveError={saveError}
+                    handleImageUpload={handleImageUpload}
+                    handleSaveProfile={handleSaveProfile}
+                    joinedDate={profile.createdAt}
+                  />
 
-                <div className="my-10 h-px bg-muted" />
+                  <div className="py-4">
+                    <JaggedDivider />
+                  </div>
 
-                <ChangePasswordForm
-                  passwordForm={passwordForm}
-                  setPasswordForm={setPasswordForm}
-                  handlePasswordChange={handlePasswordChange}
-                  isChangingPassword={isChangingPassword}
-                  passwordMessage={passwordMessage}
-                  passwordError={passwordError}
-                />
-              </>
-            ) : null}
+                  <ChangePasswordForm
+                    passwordForm={passwordForm}
+                    setPasswordForm={setPasswordForm}
+                    handlePasswordChange={handlePasswordChange}
+                    isChangingPassword={isChangingPassword}
+                    passwordMessage={passwordMessage}
+                    passwordError={passwordError}
+                  />
+                </motion.div>
+              )}
 
-            {activeTab === "posts" ? (
-              <PostGrid
-                heading="My blogs"
-                description={
-                  statusFilter 
-                    ? `Showing ${statusFilter.toLowerCase()} stories` 
-                    : `Stories published by @${profile.username}`
-                }
-                page={postsPage}
-                isLoading={postsLoading}
-                emptyMessage={
-                  statusFilter === "DRAFT"
-                    ? "No draft issues found in your secret archives."
-                    : statusFilter === "PUBLISHED"
-                    ? "No published issues found. Time to hit the press!"
-                    : "Your story arc hasn't started yet. Create your first post!"
-                }
-                onPageChange={setPostsPageIndex}
-                showStatus={true}
-                showEditButton={true}
-                statusFilter={statusFilter}
-                onStatusChange={(status) => {
-                  setStatusFilter(status);
-                  setPostsPageIndex(0);
-                }}
-                onDelete={handleDeletePost}
-              />
-            ) : null}
+              {activeTab === "posts" && (
+                <motion.div
+                  key="posts"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <PostGrid
+                    heading="My Blogs"
+                    description={statusFilter ? `Showing ${statusFilter.toLowerCase()} issues` : `Stories by @${profile.username}`}
+                    page={postsPage}
+                    isLoading={postsLoading}
+                    emptyMessage={statusFilter === "DRAFT" ? "No drafts in your secret archives." : statusFilter === "PUBLISHED" ? "No published issues. Hit the press!" : "Your story arc hasn't started. Create your first post!"}
+                    onPageChange={setPostsPageIndex}
+                    showStatus={true}
+                    showEditButton={true}
+                    statusFilter={statusFilter}
+                    onStatusChange={(status) => { setStatusFilter(status); setPostsPageIndex(0); }}
+                    onDelete={handleDeletePost}
+                  />
+                </motion.div>
+              )}
 
-            {activeTab === "bookmarks" ? (
-              <PostGrid
-                heading="Saved bookmarks"
-                description="Stories you saved for later"
-                page={bookmarksPage}
-                isLoading={bookmarksLoading}
-                emptyMessage="You have not bookmarked any stories yet."
-                onPageChange={setBookmarksPageIndex}
-                onDelete={handleDeletePost}
-              />
-            ) : null}
+              {activeTab === "bookmarks" && (
+                <motion.div
+                  key="bookmarks"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <PostGrid
+                    heading="Saved Bookmarks"
+                    description="Stories you saved for later"
+                    page={bookmarksPage}
+                    isLoading={bookmarksLoading}
+                    emptyMessage="No bookmarks yet. Start exploring!"
+                    onPageChange={setBookmarksPageIndex}
+                    onDelete={handleDeletePost}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </section>

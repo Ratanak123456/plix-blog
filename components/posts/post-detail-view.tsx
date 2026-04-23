@@ -28,15 +28,15 @@ export function PostDetailView({ slug }: { slug: string }) {
     return (
       <div className="min-h-screen ">
         <main className="container mx-auto px-4 py-10 md:py-14">
-          <div className="h-8 w-36 animate-pulse bg-card border-3 border-black dark:border-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]" />
-          <div className="mt-8 h-16 max-w-4xl animate-pulse bg-card border-4 border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]" />
-          <div className="mt-4 h-6 max-w-2xl animate-pulse bg-card border-3 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]" />
-          <div className="mt-8 aspect-16/7 w-full animate-pulse bg-card border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]" />
+          <div className="h-8 w-36 animate-pulse bg-card border-3 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))]" />
+          <div className="mt-8 h-16 max-w-4xl animate-pulse bg-card border-4 border-foreground shadow-[6px_6px_0px_0px_hsl(var(--foreground))]" />
+          <div className="mt-4 h-6 max-w-2xl animate-pulse bg-card border-3 border-foreground shadow-[4px_4px_0px_0px_hsl(var(--foreground))]" />
+          <div className="mt-8 aspect-16/7 w-full animate-pulse bg-card border-4 border-foreground shadow-[8px_8px_0px_0px_hsl(var(--foreground))]" />
           <div className="mt-8 grid gap-4">
             {Array.from({ length: 5 }).map((_, index) => (
               <div
                 key={index}
-                className="h-6 animate-pulse bg-card border-3 border-black dark:border-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)]"
+                className="h-6 animate-pulse bg-card border-3 border-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))]"
               />
             ))}
           </div>
@@ -53,13 +53,13 @@ export function PostDetailView({ slug }: { slug: string }) {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: "spring", stiffness: 200 }}
-            className="mx-auto max-w-3xl bg-card border-4 border-black dark:border-white p-8 text-center shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] relative"
+            className="mx-auto max-w-3xl bg-card border-4 border-foreground p-8 text-center shadow-[10px_10px_0px_0px_hsl(var(--foreground))] relative"
           >
             {/* Inner dashed border */}
             <div className="absolute inset-3 border-2 border-dashed border-muted-border pointer-events-none" />
 
             {/* Error badge */}
-            <div className="absolute -top-4 -right-4 bg-red-500 border-3 border-black dark:border-white px-4 py-2 font-bangers text-xl text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] rotate-12">
+            <div className="absolute -top-4 -right-4 bg-red-500 border-3 border-foreground px-4 py-2 font-bangers text-xl text-white shadow-[3px_3px_0px_0px_hsl(var(--foreground))] rotate-12">
               404!
             </div>
 
@@ -82,7 +82,7 @@ export function PostDetailView({ slug }: { slug: string }) {
             </p>
             <Link
               href="/"
-              className="mt-8 inline-flex items-center gap-3 bg-accent border-3 border-black dark:border-white px-6 py-3 font-bangers text-xl text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:bg-primary"
+              className="mt-8 inline-flex items-center gap-3 bg-accent border-3 border-foreground px-6 py-3 font-bangers text-xl text-white shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_hsl(var(--foreground))] hover:bg-primary"
             >
               <ArrowLeft size={18} strokeWidth={3} />
               Back to Home
@@ -97,7 +97,7 @@ export function PostDetailView({ slug }: { slug: string }) {
     <div className="min-h-screen overflow-x-hidden ">
       <main>
         {/* Hero Section */}
-        <section className="relative overflow-hidden border-b-8 border-black dark:border-white">
+        <section className="relative overflow-hidden border-b-8 border-foreground">
           {/* Background gradient */}
           <div className="absolute inset-0 bg-linear-to-br from-primary/30 via-secondary/20 to-accent/10" />
 
@@ -155,7 +155,7 @@ export function PostDetailView({ slug }: { slug: string }) {
             >
               <Link
                 href="/#blog"
-                className="inline-flex items-center gap-2 bg-card border-3 border-black dark:border-white px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-foreground shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] transition-all hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[5px_5px_0px_0px_rgba(255,255,255,1)]"
+                className="inline-flex items-center gap-2 bg-card border-3 border-foreground px-4 py-2 font-oswald text-xs uppercase tracking-[0.28em] text-foreground shadow-[3px_3px_0px_0px_hsl(var(--foreground))] transition-all hover:-translate-y-1 hover:shadow-[5px_5px_0px_0px_hsl(var(--foreground))]"
               >
                 <ArrowLeft size={14} strokeWidth={3} />
                 Back to Issues
@@ -171,7 +171,7 @@ export function PostDetailView({ slug }: { slug: string }) {
               >
                 {/* Meta Row */}
                 <div className="flex flex-wrap items-center gap-3 font-oswald text-xs uppercase tracking-[0.28em] text-muted-foreground mb-4">
-                  <span className="bg-accent border-2 border-black dark:border-white px-3 py-1 text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] font-bold">
+                  <span className="bg-accent border-2 border-foreground px-3 py-1 text-white shadow-[2px_2px_0px_0px_hsl(var(--foreground))] font-bold">
                     {post.category?.name ?? "Latest"}
                   </span>
                   <span className="flex items-center gap-1">
@@ -194,7 +194,7 @@ export function PostDetailView({ slug }: { slug: string }) {
 
                 {/* Author Row */}
                 <div className="mt-8 flex flex-wrap items-center gap-4">
-                  <div className="flex items-center gap-3 bg-card border-3 border-black dark:border-white px-4 py-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                  <div className="flex items-center gap-3 bg-card border-3 border-foreground px-4 py-3 shadow-[4px_4px_0px_0px_hsl(var(--foreground))]">
                     <p className="font-oswald text-xs uppercase tracking-[0.3em] text-muted-foreground font-bold">
                       Written by
                     </p>
@@ -204,7 +204,7 @@ export function PostDetailView({ slug }: { slug: string }) {
                   {currentUser?.id === post.author.id && (
                     <Link
                       href={`/write/${post.slug}`}
-                      className="flex items-center gap-2 bg-primary border-3 border-black dark:border-white px-5 py-3 font-bangers text-lg text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:bg-secondary"
+                      className="flex items-center gap-2 bg-primary border-3 border-foreground px-5 py-3 font-bangers text-lg text-white shadow-[4px_4px_0px_0px_hsl(var(--foreground))] transition-all hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0px_0px_hsl(var(--foreground))] hover:bg-secondary"
                     >
                       <Edit3 size={18} strokeWidth={3} /> EDIT ISSUE
                     </Link>
@@ -217,16 +217,16 @@ export function PostDetailView({ slug }: { slug: string }) {
                 initial={{ opacity: 0, x: 30 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ type: "spring", stiffness: 100, delay: 0.2 }}
-                className="self-start bg-card border-4 border-black dark:border-white p-5 sm:p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] relative"
+                className="self-start bg-card border-4 border-foreground p-5 sm:p-6 shadow-[8px_8px_0px_0px_hsl(var(--foreground))] relative"
               >
                 {/* Inner dashed border */}
                 <div className="absolute inset-2 border-2 border-dashed border-muted-border pointer-events-none" />
 
                 {/* Corner accent */}
-                <div className="absolute -top-3 -right-3 w-8 h-8 bg-secondary border-3 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]" />
+                <div className="absolute -top-3 -right-3 w-8 h-8 bg-secondary border-3 border-foreground shadow-[2px_2px_0px_0px_hsl(var(--foreground))]" />
 
                 <div className="flex items-center gap-2 mb-5 relative z-10">
-                  <div className="bg-primary border-2 border-black dark:border-white p-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                  <div className="bg-primary border-2 border-foreground p-1.5 shadow-[2px_2px_0px_0px_hsl(var(--foreground))]">
                     <BarChart3
                       size={14}
                       className="text-white"
@@ -240,8 +240,8 @@ export function PostDetailView({ slug }: { slug: string }) {
 
                 <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-1 relative z-10">
                   {/* Views */}
-                  <div className="border-3 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] relative group hover:-translate-y-1 transition-transform bg-card">
-                    <div className="absolute -top-2 -right-2 bg-primary border-2 border-black dark:border-white px-2 py-0.5 font-bangers text-xs text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="border-3 border-foreground p-4 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] relative group hover:-translate-y-1 transition-transform bg-card">
+                    <div className="absolute -top-2 -right-2 bg-primary border-2 border-foreground px-2 py-0.5 font-bangers text-xs text-white shadow-[2px_2px_0px_0px_hsl(var(--foreground))] opacity-0 group-hover:opacity-100 transition-opacity">
                       VIEWS!
                     </div>
                     <div className="flex items-center gap-2 font-oswald text-xs uppercase tracking-wider text-muted-foreground mb-2">
@@ -254,8 +254,8 @@ export function PostDetailView({ slug }: { slug: string }) {
                   </div>
 
                   {/* Likes */}
-                  <div className="border-3 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] relative group hover:-translate-y-1 transition-transform bg-card">
-                    <div className="absolute -top-2 -right-2 bg-accent border-2 border-black dark:border-white px-2 py-0.5 font-bangers text-xs text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="border-3 border-foreground p-4 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] relative group hover:-translate-y-1 transition-transform bg-card">
+                    <div className="absolute -top-2 -right-2 bg-accent border-2 border-foreground px-2 py-0.5 font-bangers text-xs text-white shadow-[2px_2px_0px_0px_hsl(var(--foreground))] opacity-0 group-hover:opacity-100 transition-opacity">
                       LIKES!
                     </div>
                     <div className="flex items-center gap-2 font-oswald text-xs uppercase tracking-wider text-muted-foreground mb-2">
@@ -272,8 +272,8 @@ export function PostDetailView({ slug }: { slug: string }) {
                   </div>
 
                   {/* Comments */}
-                  <div className="border-3 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] relative group hover:-translate-y-1 transition-transform bg-card">
-                    <div className="absolute -top-2 -right-2 bg-secondary border-2 border-black dark:border-white px-2 py-0.5 font-bangers text-xs text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="border-3 border-foreground p-4 shadow-[4px_4px_0px_0px_hsl(var(--foreground))] relative group hover:-translate-y-1 transition-transform bg-card">
+                    <div className="absolute -top-2 -right-2 bg-secondary border-2 border-foreground px-2 py-0.5 font-bangers text-xs text-white shadow-[2px_2px_0px_0px_hsl(var(--foreground))] opacity-0 group-hover:opacity-100 transition-opacity">
                       CHAT!
                     </div>
                     <div className="flex items-center gap-2 font-oswald text-xs uppercase tracking-wider text-muted-foreground mb-2">
@@ -303,13 +303,13 @@ export function PostDetailView({ slug }: { slug: string }) {
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ type: "spring", stiffness: 100, delay: 0.3 }}
-                className="overflow-hidden bg-card border-4 border-black dark:border-white shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] relative"
+                className="overflow-hidden bg-card border-4 border-foreground shadow-[10px_10px_0px_0px_hsl(var(--foreground))] relative"
               >
                 {/* Inner dashed border */}
                 <div className="absolute inset-3 border-2 border-dashed border-muted-border pointer-events-none z-10" />
 
                 {/* Thumbnail */}
-                <div className="relative aspect-16/7 overflow-hidden bg-linear-to-br from-primary/40 via-secondary/30 to-accent/20 border-b-4 border-black dark:border-white">
+                <div className="relative aspect-16/7 overflow-hidden bg-linear-to-br from-primary/40 via-secondary/30 to-accent/20 border-b-4 border-foreground">
                   <div
                     className="absolute inset-0 opacity-20 pointer-events-none"
                     style={{
@@ -329,7 +329,7 @@ export function PostDetailView({ slug }: { slug: string }) {
                   {/* Floating category badge on image */}
                   {post.category && (
                     <div className="absolute bottom-4 left-4 z-20">
-                      <div className="bg-primary border-3 border-black dark:border-white px-4 py-2 font-bangers text-lg text-white shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] -rotate-2">
+                      <div className="bg-primary border-3 border-foreground px-4 py-2 font-bangers text-lg text-white shadow-[3px_3px_0px_0px_hsl(var(--foreground))] -rotate-2">
                         {post.category.name}
                       </div>
                     </div>
@@ -349,9 +349,9 @@ export function PostDetailView({ slug }: { slug: string }) {
                 </div>
 
                 {/* Bottom decorative bar */}
-                <div className="border-t-4 border-black dark:border-white p-4 flex items-center justify-between">
+                <div className="border-t-4 border-foreground p-4 flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-primary border-2 border-black dark:border-white rotate-45" />
+                    <div className="w-3 h-3 bg-primary border-2 border-foreground rotate-45" />
                     <span className="font-oswald text-xs uppercase tracking-widest text-muted-foreground">
                       End of Issue
                     </span>
